@@ -1,0 +1,88 @@
+ion-content {
+  --padding-top: 20px;
+  --padding-bottom: 20px;
+  --padding-start: 20px;
+  --padding-end: 20px;
+}
+
+.profile-container {
+  /* padding: 20px; */ /* Removed as padding is now on ion-content */
+}
+
+.login-card {
+  margin: 0; /* Removed margin-bottom */
+  background-color: #a498d9;
+  color: #fff;
+  border-radius: 8px; /* Changed border-radius to 8px */
+  box-shadow: none; /* Removed box-shadow */
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+.login-text {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0; /* Removed margin and padding */
+  padding: 0;
+  color: #fff;
+}
+
+.login-buttons {
+  display: flex;
+  gap: 10px;
+  padding: 0; /* Removed padding */
+  margin-top: 20px; /* Added margin-top */
+  margin-bottom: 20px; /* Space between buttons and list */
+  width: 100%; /* Make buttons take full width */
+}
+
+.login-button {
+  --background: #fff;
+  --background-activated: #fff;
+  --background-focused: #fff;
+  --background-hover: #fff;
+  --color: #2f264d;
+  --border-color: #795bda;
+  --border-width: 1px;
+  --border-style: solid;
+  font-size: 14px;
+  font-weight: 400;
+  height: 40px;
+  border-radius: 8px;
+  text-transform: none;
+  flex: 1; /* Make buttons take equal width */
+}
+
+.register-button {
+  --border-color: #795bda;
+  --color: #795bda;
+  font-size: 16px;
+  height: 40px;
+  border-radius: 8px;
+  text-transform: none;
+  flex: 1; /* Make buttons take equal width */
+}
+
+.page-list {
+  background: transparent;
+}
+
+.page-list ion-item {
+  --background: transparent;
+  --border-color: #423f4d;
+  --color: #423f4d;
+  font-size: 16px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+
+.page-list ion-item ion-icon {
+  color: #795bda;
+}
+
+.page-list ion-item ion-label {
+  font-size: 16px;
+  color: #423f4d;
+}

@@ -1,17 +1,42 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 1
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="ion-padding">
+  <div class="main-content">
+    <h1 class="main-title">Особливий простір, де ви знайдете свого психолога</h1>
+    <p class="description-text">My Sense — це сервіс по підбору психологів як для онлайн терапії, так і для очних зустрічей</p>
+    <ion-button expand="block" class="select-psychologist-button">Підібрати психолога</ion-button>
+    <p class="or-text">або виберіть з доступних психологів</p>
+    <ion-button expand="block" class="free-psychologists-button">Вільні психологи</ion-button>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
+    <div class="how-it-works">
+      <div class="step">
+        <h2 class="step-number">01</h2>
+        <h3 class="step-title">Пройдіть тест</h3>
+        <p class="step-description">Пройдіть короткий, але ефективний тест і ми запропонуємо фахівців, які максимально підходять до вашого запиту</p>
+      </div>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+      <div class="step">
+        <h2 class="step-number">02</h2>
+        <h3 class="step-title">Оберіть психолога</h3>
+        <p class="step-description">Перегляньте профілі запропонованих психологів та оберіть того, хто вам найбільше сподобався</p>
+      </div>
+
+      <div class="step">
+        <h2 class="step-number">03</h2>
+        <h3 class="step-title">Забронюйте консультацію</h3>
+        <p class="step-description">Оберіть зручний для вас час із графіка вільних годин, забронюйте цей час та здійсніть оплату через безпечну платіжну систему.</p>
+      </div>
+
+      <div class="step">
+        <h2 class="step-number">04</h2>
+        <h3 class="step-title">Працюйте з психологом в обраному форматі</h3>
+        <p class="step-description">Онлайн-зустрічі проходять за посиланням, які ви будете отримувати в чаті свого особистого профілю. Очні зустрічі проходять у кабінеті психолога.</p>
+      </div>
+    </div>
+
+    <div class="free-consultation-banner">
+      <span class="free-tag">це безкоштовно ;)</span>
+      <h2 class="banner-title">15 хвилин на знайомство</h2>
+      <p class="banner-description">Зустріч-знайомство з фахівцем, який Вам сподобався</p>
+      <ion-button expand="block" class="select-psychologist-button">Підібрати психолога</ion-button>
+    </div>
+  </div>
 </ion-content>

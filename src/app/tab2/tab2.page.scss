@@ -1,0 +1,190 @@
+.psychologist-cards-container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.psychologist-card {
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border: 1px solid #e0e0e0; /* Light border */
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.psychologist-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.online-offline-status {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.status-item {
+  font-size: 15px;
+  font-weight: 400;
+  color: #423f4d;
+  padding: 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center content horizontally */
+  gap: 5px; /* Space between icon and text */
+}
+
+.online {
+  /* color: #00bcd4; */ /* Cyan */
+}
+
+.offline {
+  /* color: #9c27b0; */ /* Purple */
+}
+
+.location {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 0;
+  margin-top: 5px;
+}
+
+.psychologist-name {
+  color: #423f4d;
+  margin-bottom: 0px;
+  font-size: 24px;
+  font-weight: 400;
+  margin-top: 5px;
+}
+
+.verified-specialist {
+  font-size: 14px;
+  font-weight: 400;
+  color: #9895a6;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+
+.specialization {
+  font-size: 15px;
+  color: #423f4d;
+  text-align: left;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.stats {
+  display: flex;
+  gap: 20px;
+  font-size: 15px;
+  color: #423f4d;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+
+.feedback-and-intro {
+  display: flex;
+  gap: 20px;
+  font-size: 15px;
+  color: #423f4d;
+}
+
+.feedback-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.feedback-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.intro-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #9895a6;
+}
+
+.pricing-and-profile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.pricing {
+  display: flex;
+  gap: 20px;
+}
+
+.price-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.price-item p {
+  margin: 0;
+  font-size: 14px;
+  color: #9895a6;
+  font-weight: 400;
+}
+
+.price-value {
+  color: #2f264d;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.currency {
+  font-size: 14px;
+  font-weight: 400;
+  color: #9895a6;
+}
+
+.profile-button {
+  --background: #795bda;
+  --background-activated: #795bda;
+  --background-focused: #795bda;
+  --background-hover: #795bda;
+  --color: #fff;
+  font-size: 16px;
+  height: 40px;
+  border-radius: 8px;
+  text-transform: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

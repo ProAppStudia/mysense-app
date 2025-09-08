@@ -34,4 +34,42 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* @import '@ionic/angular/css/palettes/dark.system.css'; */
+
+@import url('https://fonts.googleapis.com/css2?family=Golos+Text&display=swap');
+
+html, body, ion-app {
+  height: 100vh; /* Use viewport height to ensure full screen */
+}
+
+body {
+  font-family: "Golos Text", sans-serif;
+}
+
+ion-content {
+  --overflow: auto;
+  overflow-y: auto; /* Allow Ionic to manage scrolling, remove !important */
+}
+
+/* Remove shadows from all elements and Ionic components */
+* {
+  box-shadow: none !important;
+  --ion-box-shadow: none !important;
+  --ion-item-box-shadow: none !important;
+  --ion-card-box-shadow: none !important;
+  --ion-toolbar-box-shadow: none !important;
+  --ion-tab-bar-box-shadow: none !important;
+  --ion-header-box-shadow: none !important;
+  --ion-footer-box-shadow: none !important;
+  --box-shadow: none !important; /* Specifically target --box-shadow for buttons */
+}
+
+/* Custom color for mysense-badge */
+.ion-color-mysense-badge {
+  --ion-color-base: var(--ion-color-mysense-badge);
+  --ion-color-base-rgb: var(--ion-color-mysense-badge-rgb);
+  --ion-color-contrast: var(--ion-color-mysense-badge-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-mysense-badge-contrast-rgb);
+  --ion-color-shade: var(--ion-color-mysense-badge-shade);
+  --ion-color-tint: var(--ion-color-mysense-badge-tint);
+}

@@ -1,0 +1,141 @@
+ion-content {
+  --background: #fff; /* White background */
+  text-align: center;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 500px; /* Limit content width for better readability */
+  margin: 50px auto 0 auto; /* Add top margin */
+}
+
+.main-title {
+  font-size: 36px;
+  font-weight: bold;
+  color: #333; /* Darker text for contrast */
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.description-text {
+  font-size: 18px;
+  color: #666; /* Slightly lighter text for description */
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+.free-consultation-banner {
+  background-color: #a498d9; /* Purple background */
+  border-radius: 16px;
+  padding: 30px 20px;
+  margin-top: 60px;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  text-align: center;
+}
+
+.free-tag {
+  background-color: #ff69b4; /* Pink background */
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 8px 15px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.banner-title {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.banner-description {
+  font-size: 16px;
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+.free-consultation-banner .select-psychologist-button {
+  --background: #fff;
+  --background-activated: #f0f0f0;
+  --background-focused: #f0f0f0;
+  --background-hover: #f0f0f0;
+  --color: var(--ion-color-primary); /* Use primary color for text */
+  width: 100%;
+  max-width: 250px;
+}
+
+.select-psychologist-button {
+  --background: var(--ion-color-primary);
+  --background-activated: var(--ion-color-primary-shade);
+  --background-focused: var(--ion-color-primary-shade);
+  --background-hover: var(--ion-color-primary-shade);
+  --color: #fff; /* White text */
+  font-size: 18px;
+  height: 50px;
+  border-radius: 8px;
+  text-transform: none; /* Keep text as is */
+  width: 100%;
+  max-width: 300px; /* Limit button width */
+  box-shadow: none;
+}
+
+.how-it-works {
+  margin-top: 60px;
+  width: 100%;
+  text-align: left;
+}
+
+.step {
+  margin-bottom: 40px;
+}
+
+.step-number {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--ion-color-primary); /* Use primary color for numbers */
+  margin-bottom: 10px;
+}
+
+.step-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.step-description {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.or-text {
+  font-size: 16px;
+  color: #999;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.free-psychologists-button {
+  --background: var(--ion-color-primary);
+  --background-activated: var(--ion-color-primary-shade);
+  --background-focused: var(--ion-color-primary-shade);
+  --background-hover: var(--ion-color-primary-shade);
+  --color: #fff; /* White text */
+  font-size: 18px;
+  height: 50px;
+  border-radius: 8px;
+  text-transform: none; /* Keep text as is */
+  width: 100%;
+  max-width: 300px; /* Limit button width */
+  box-shadow: none;
+}
