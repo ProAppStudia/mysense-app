@@ -54,25 +54,21 @@
       <img [src]="homepageData.section_8.img" alt="Map">
     </div>
 
-    <!-- Section 9 -->
-    <div class="section-9">
-      <h2>{{ homepageData.section_9.heading }}</h2>
-      <div class="reviews-list">
-        <div *ngFor="let review of homepageData.section_9.reviews" class="review-card">
-          <p>{{ review.text }}</p>
-          <p class="review-date">{{ review.date }}</p>
-          <p class="review-user">{{ review.user_name }}</p>
-        </div>
-      </div>
-    </div>
+   
 
     <!-- Reviews Slider Section -->
     <div class="reviews-slider-section">
-      <swiper-container class="reviews-swiper" #reviewsSwiper [pagination]="true">
+       <h2>{{ homepageData.section_9.heading }}</h2>
+      <swiper-container class="reviews-swiper" #reviewsSwiper [pagination]="true" slides-per-view="auto" centered-slides="true">
         <swiper-slide *ngFor="let review of homepageData.section_9.reviews">
           <div class="review-slide-content">
             <h3>{{ review.user_name }}</h3>
-            <p>{{ review.text }}</p>
+            <p class="review-text-content" [class.expanded]="review.showFullText">
+              {{ review.text }}
+            </p>
+            <ion-button *ngIf="review.text.length > TRUNCATE_LENGTH" fill="clear" size="small" (click)="toggleText(review)">
+              {{ review.showFullText ? 'Згорнути' : 'Більше' }}
+            </ion-button>
             <p class="review-date">{{ review.date }}</p>
           </div>
         </swiper-slide>

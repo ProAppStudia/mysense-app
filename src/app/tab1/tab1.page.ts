@@ -32,7 +32,7 @@ interface HomepageData {
   };
   section_9: {
     heading: string;
-    reviews: { text: string; date: string; user_name: string }[];
+    reviews: { text: string; date: string; user_name: string; showFullText?: boolean; truncatedText?: string }[];
   };
   section_10: {
     heading: string;
@@ -57,11 +57,16 @@ export class Tab1Page implements OnInit, AfterViewInit {
   @ViewChild('reviewsSwiper') reviewsSwiper?: ElementRef;
 
   homepageData: HomepageData | null = null;
+  readonly TRUNCATE_LENGTH = 100; // Define a constant for truncation length
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
     this.getHomepageData();
+  }
+
+  toggleText(review: any) {
+    review.showFullText = !review.showFullText;
   }
 
   ngAfterViewInit() {
@@ -85,6 +90,13 @@ export class Tab1Page implements OnInit, AfterViewInit {
   getHomepageData() {
     this.http.get<HomepageData>('https://mysense.care/app/connector.php?action=get_homepage').subscribe((data) => {
       this.homepageData = data;
+      if (this.homepageData && this.homepageData.section_9 && this.homepageData.section_9.reviews) {
+        this.homepageData.section_9.reviews = this.homepageData.section_9.reviews.map(review => ({
+          ...review,
+          showFullText: false,
+          truncatedText: review.text.length > this.TRUNCATE_LENGTH ? review.text.substring(0, this.TRUNCATE_LENGTH) + '...' : review.text
+        }));
+      }
       console.log(this.homepageData);
     });
   }

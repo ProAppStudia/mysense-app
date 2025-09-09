@@ -264,14 +264,19 @@ ion-content {
   --swiper-pagination-bullet-inactive-color: #999; /* Color of inactive pagination dots */
   --swiper-pagination-bullet-inactive-opacity: 1;
   --swiper-pagination-bullet-size: 8px;
-  --swiper-pagination-bottom: 0px; /* Position pagination at the bottom */
+  --swiper-pagination-bottom: -20px; /* Position pagination at the bottom */
+  --swiper-spacing: 40px; /* Increased space between slides */
 }
 
 .reviews-swiper swiper-slide {
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  height: 100%;
+  width: 78%;
+    display: flex
+;
+    justify-content: center;
+    align-items: stretch;
+    height: 100%;
+    margin-right: 1%;
+    margin-left: 1%;
 }
 
 .review-slide-content {
@@ -282,10 +287,10 @@ ion-content {
   text-align: center;
   width: 100%;
   box-sizing: border-box;
-  min-height: 150px; /* Minimum height for review slides */
+  min-height: 290px; /* Fixed height for review slides */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between; /* Distribute content vertically */
 }
 
 .review-slide-content h3 {
@@ -299,6 +304,37 @@ ion-content {
   font-size: 16px;
   color: #666;
   line-height: 1.5;
+}
+
+.review-text-content {
+  margin-bottom: 10px;
+  /* Default styles for truncated text */
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* Show up to 4 lines by default */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1; /* Allow text content to grow */
+}
+
+.review-text-content.expanded {
+  -webkit-line-clamp: unset; /* Show full text when expanded */
+  overflow: visible;
+  text-overflow: unset;
+}
+
+.review-slide-content ion-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  --color: var(--ion-color-primary);
+  font-size: 14px;
+  text-transform: none;
+  height: auto;
+  align-self: flex-start; /* Align button to the start */
+}
+
+.review-date {
+  margin-top: auto; /* Push the date to the bottom */
 }
 
 .articles-swiper {
