@@ -4,37 +4,35 @@
     <p class="description-text">{{ homepageData.section_1.sub_heading }}</p>
     <ion-button expand="block" class="select-psychologist-button">{{ homepageData.section_1.button_test_text }}</ion-button>
     <p class="or-text">{{ homepageData.section_1.text_choise_psyhologist }}</p>
-    <ion-button expand="block" class="free-psychologists-button">Вільні психологи</ion-button>
-
-    <!-- Doctors Section -->
-    <div class="doctors-section">
-      <h2>Наші психологи</h2>
-      <div class="doctor-list">
-        <div *ngFor="let doctor of homepageData.doctors" class="doctor-card">
+    <div class="doctor-list">
+        <div *ngFor="let doctor of homepageData.doctors | slice:0:6" class="doctor-card">
           <img [src]="'https://mysense.care' + doctor.img" alt="{{ doctor.firstname }}">
-          <h3>{{ doctor.firstname }}</h3>
-          <p>{{ doctor.practice_years_text }}</p>
         </div>
       </div>
-    </div>
+    <ion-button expand="block" class="free-psychologists-button">Вільні психологи</ion-button>
 
-    <!-- Section 2 -->
-    <div class="section-2">
-      <div>
-        <h3>{{ homepageData.section_2.conunt_1 }}</h3>
-        <p>{{ homepageData.section_2.heading_1 }}</p>
+    <!-- How It Works Section -->
+    <div class="how-it-works-section">
+      <h2>Як це працює?</h2>
+      <div class="step">
+        <p class="step-number">01</p>
+        <h3 class="step-title">Пройдіть тест</h3>
+        <p class="step-description">Пройдіть короткий, але ефективний тест і ми запропонуємо фахівців, які максимально підходять до вашого запиту</p>
       </div>
-      <div>
-        <h3>{{ homepageData.section_2.conunt_2 }}</h3>
-        <p>{{ homepageData.section_2.heading_2 }}</p>
+      <div class="step">
+        <p class="step-number">02</p>
+        <h3 class="step-title">Оберіть психолога</h3>
+        <p class="step-description">Перегляньте профілі запропонованих психологів та оберіть того, хто вам найбільше сподобався</p>
       </div>
-      <div>
-        <h3>{{ homepageData.section_2.conunt_3 }}</h3>
-        <p>{{ homepageData.section_2.heading_3 }}</p>
+      <div class="step">
+        <p class="step-number">03</p>
+        <h3 class="step-title">Забронюйте консультацію</h3>
+        <p class="step-description">Оберіть зручний для вас час із графіка вільних годин, забронюйте цей час та здійсніть оплату через безпечну платіжну систему.</p>
       </div>
-      <div>
-        <h3>{{ homepageData.section_2.conunt_4 }}</h3>
-        <p>{{ homepageData.section_2.heading_4 }}</p>
+      <div class="step">
+        <p class="step-number">04</p>
+        <h3 class="step-title">Працюйте з психологом в обраному форматі</h3>
+        <p class="step-description">Онлайн-зустрічі проходять за посиланням, які ви будете отримувати в чаті свого особистого профілю. Очні зустрічі проходять у кабінеті психолога.</p>
       </div>
     </div>
 
@@ -44,35 +42,6 @@
       <h2 class="banner-title">{{ homepageData.section_3.heading_acquaintance }}</h2>
       <p class="banner-description">{{ homepageData.section_3.text_acquaintance }}</p>
       <ion-button expand="block" class="select-psychologist-button">Підібрати психолога</ion-button>
-    </div>
-
-    <!-- Section 4 -->
-    <div class="section-4">
-      <h2>{{ homepageData.section_4.heading }}</h2>
-      <h3>{{ homepageData.section_4.sub_heading }}</h3>
-      <div [innerHTML]="homepageData.section_4.content"></div>
-      <img [src]="homepageData.section_4.img" alt="Tetyana Verbytska">
-    </div>
-
-    <!-- Section 5 -->
-    <div class="section-5">
-      <div *ngFor="let item of homepageData.section_5.items">
-        <img [src]="item.img" alt="">
-        <h3>{{ item.heading }}</h3>
-        <p>{{ item.text }}</p>
-      </div>
-    </div>
-
-    <!-- Section 6 -->
-    <div class="section-6">
-      <h2>{{ homepageData.section_6.heading }}</h2>
-      <ion-button expand="block">{{ homepageData.section_6.button_text }}</ion-button>
-    </div>
-
-    <!-- Section 7 -->
-    <div class="section-7">
-      <h2>{{ homepageData.section_7.heading }}</h2>
-      <p>{{ homepageData.section_7.sub_heading }}</p>
     </div>
 
     <!-- Section 8 -->
@@ -97,13 +66,19 @@
       </div>
     </div>
 
-    <!-- Section 10 -->
+    <!-- Section 10 - Accordion for Questions and Answers -->
     <div class="section-10">
       <h2>{{ homepageData.section_10.heading }}</h2>
-      <div *ngFor="let item of homepageData.section_10.items">
-        <h3>{{ item.heading }}</h3>
-        <div [innerHTML]="item.content"></div>
-      </div>
+      <ion-accordion-group>
+        <ion-accordion *ngFor="let item of homepageData.section_10.items" value="{{ item.heading }}">
+          <ion-item slot="header" color="light">
+            <ion-label>{{ item.heading }}</ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <div [innerHTML]="item.content"></div>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
       <ion-button expand="block">{{ homepageData.section_10.text_button }}</ion-button>
     </div>
 
