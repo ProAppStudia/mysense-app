@@ -66,6 +66,19 @@
       </div>
     </div>
 
+    <!-- Reviews Slider Section -->
+    <div class="reviews-slider-section">
+      <swiper-container class="reviews-swiper" #reviewsSwiper [pagination]="true">
+        <swiper-slide *ngFor="let review of homepageData.section_9.reviews">
+          <div class="review-slide-content">
+            <h3>{{ review.user_name }}</h3>
+            <p>{{ review.text }}</p>
+            <p class="review-date">{{ review.date }}</p>
+          </div>
+        </swiper-slide>
+      </swiper-container>
+    </div>
+
     <!-- Section 10 - Accordion for Questions and Answers -->
     <div class="section-10">
       <h2>{{ homepageData.section_10.heading }}</h2>

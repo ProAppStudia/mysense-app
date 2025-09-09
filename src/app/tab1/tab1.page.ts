@@ -53,8 +53,8 @@ interface HomepageData {
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class Tab1Page implements OnInit, AfterViewInit {
-  @ViewChild('articlesSwiper')
-  swiperEl?: ElementRef;
+  @ViewChild('articlesSwiper') articlesSwiper?: ElementRef;
+  @ViewChild('reviewsSwiper') reviewsSwiper?: ElementRef;
 
   homepageData: HomepageData | null = null;
 
@@ -65,10 +65,18 @@ export class Tab1Page implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    if (this.swiperEl) {
-      this.swiperEl.nativeElement.addEventListener('swiperinit', () => {
-        if (this.swiperEl && this.swiperEl.nativeElement.swiper) {
-          this.swiperEl.nativeElement.swiper.update();
+    if (this.articlesSwiper) {
+      this.articlesSwiper.nativeElement.addEventListener('swiperinit', () => {
+        if (this.articlesSwiper && this.articlesSwiper.nativeElement.swiper) {
+          this.articlesSwiper.nativeElement.swiper.update();
+        }
+      });
+    }
+
+    if (this.reviewsSwiper) {
+      this.reviewsSwiper.nativeElement.addEventListener('swiperinit', () => {
+        if (this.reviewsSwiper && this.reviewsSwiper.nativeElement.swiper) {
+          this.reviewsSwiper.nativeElement.swiper.update();
         }
       });
     }

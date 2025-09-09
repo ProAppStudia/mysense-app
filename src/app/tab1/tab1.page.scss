@@ -245,6 +245,62 @@ ion-content {
   width: 150px; /* Adjust as needed */
 }
 
+.reviews-slider-section {
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+}
+
+.reviews-swiper {
+  width: 100%;
+  height: auto; /* Adjust height based on content */
+  padding: 20px 0;
+  display: block;
+  --swiper-pagination-color: var(--ion-color-primary); /* Color of active pagination dot */
+  --swiper-pagination-bullet-inactive-color: #999; /* Color of inactive pagination dots */
+  --swiper-pagination-bullet-inactive-opacity: 1;
+  --swiper-pagination-bullet-size: 8px;
+  --swiper-pagination-bottom: 0px; /* Position pagination at the bottom */
+}
+
+.reviews-swiper swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  height: 100%;
+}
+
+.review-slide-content {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 150px; /* Minimum height for review slides */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.review-slide-content h3 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.review-slide-content p {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.5;
+}
+
 .articles-swiper {
   width: 100%;
   height: 300px; /* Fixed height for the swiper container */
