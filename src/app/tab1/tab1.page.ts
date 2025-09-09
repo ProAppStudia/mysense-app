@@ -41,7 +41,7 @@ interface HomepageData {
   };
   section_11: {
     heading: string;
-    articles: { title: string }[];
+    articles: { id: number; slug: string; img: string; title: string; short_description: string; date: string }[];
   };
 }
 

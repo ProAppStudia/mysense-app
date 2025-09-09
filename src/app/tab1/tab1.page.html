@@ -94,13 +94,17 @@
     <!-- Section 11 -->
     <div class="section-11">
       <h2>{{ homepageData.section_11.heading }}</h2>
-      <swiper-container class="articles-swiper" #articlesSwiper>
-        <swiper-slide *ngFor="let article of homepageData.section_11.articles">
-          <div class="article-card">
-            <h3>{{ article.title }}</h3>
-          </div>
-        </swiper-slide>
-      </swiper-container>
+      <div class="articles-slider-container">
+        <swiper-container class="articles-swiper" #articlesSwiper [pagination]="true" slides-per-view="auto" centered-slides="true">
+          <swiper-slide *ngFor="let article of homepageData.section_11.articles">
+            <div class="article-card">
+              <img [src]="article.img" alt="{{ article.title }}">
+              <h3>{{ article.title }}</h3>
+              <p>{{ article.short_description }}</p>
+            </div>
+          </swiper-slide>
+        </swiper-container>
+      </div>
     </div>
 
   </div>
