@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content>
-  <div class="profile-container" style="margin-top: 20px;">
+  <div class="profile-container" >
     <ion-card class="login-card">
       <ion-card-content>
         <p class="login-text">Увійдіть або зареєструйтеся, щоб не втратити дані особистого кабінету, а також мати можливість доступу з іншого пристрою.</p>
@@ -13,49 +13,62 @@
     </ion-card>
 
     <div class="login-buttons">
-      <ion-button expand="block" class="login-button">
+      <ion-button expand="block" class="login-button" (click)="openLoginModal()">
         <ion-icon slot="start" src="assets/icon/sing-in.svg"></ion-icon>
         Вхід
       </ion-button>
-      <ion-button expand="block" class="login-button">Реєстрація</ion-button>
+      <ion-button expand="block" class="login-button" (click)="openRegisterModal()">Реєстрація</ion-button>
     </div>
 
-    <ion-list class="page-list">
-      <ion-item routerLink="/how-to-save">
-        <ion-icon name="help-circle-outline" slot="start"></ion-icon>
-        <ion-label>Як економити?</ion-label>
+    <ion-list class="profile-menu-group">
+      <ion-item detail routerLink="/profile-details">
+        <ion-icon slot="start" name="person-outline"></ion-icon>
+        <ion-label>Мій профіль</ion-label>
       </ion-item>
-      <ion-item routerLink="/my-bookings">
-        <ion-icon name="bookmark-outline" slot="start"></ion-icon>
-        <ion-label>Мої броні</ion-label>
+      <ion-item detail routerLink="/my-sessions">
+        <ion-icon slot="start" name="calendar-outline"></ion-icon>
+        <ion-label>Мої сесії</ion-label>
       </ion-item>
-      <ion-item routerLink="/my-products">
-        <ion-icon name="cube-outline" slot="start"></ion-icon>
-        <ion-label>Мої товари</ion-label>
+      <ion-item detail routerLink="/book-session">
+        <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+        <ion-label>Забронювати сесію</ion-label>
       </ion-item>
-      <ion-item routerLink="/my-pharmacies">
-        <ion-icon name="location-outline" slot="start"></ion-icon>
-        <ion-label>Мої аптеки</ion-label>
+    </ion-list>
+
+    <ion-list class="profile-menu-group">
+      <ion-item detail routerLink="/my-diary">
+        <ion-icon slot="start" name="book-outline"></ion-icon>
+        <ion-label>Мій щоденник</ion-label>
       </ion-item>
-      <ion-item routerLink="/booked-products">
-        <ion-icon name="time-outline" slot="start"></ion-icon>
-        <ion-label>Товари з бронювань</ion-label>
+      <ion-item detail routerLink="/my-library">
+        <ion-icon slot="start" name="library-outline"></ion-icon>
+        <ion-label>Моя бібліотека</ion-label>
       </ion-item>
-      <ion-item routerLink="/settings">
-        <ion-icon name="settings-outline" slot="start"></ion-icon>
-        <ion-label>Налаштування</ion-label>
+      <ion-item detail routerLink="/how-to-use">
+        <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+        <ion-label>Як користуватись додатком</ion-label>
       </ion-item>
-      <ion-item routerLink="/medication-intake">
-        <ion-icon name="calendar-outline" slot="start"></ion-icon>
-        <ion-label>Прийом ліків</ion-label>
+    </ion-list>
+
+    <ion-list class="profile-menu-group">
+      <ion-item detail routerLink="/notifications">
+        <ion-icon slot="start" name="notifications-outline"></ion-icon>
+        <ion-label>Сповіщення</ion-label>
       </ion-item>
-      <ion-item routerLink="/feedback">
-        <ion-icon name="chatbox-ellipses-outline" slot="start"></ion-icon>
-        <ion-label>Зворотній зв'язок</ion-label>
+      <ion-item detail routerLink="/support">
+        <ion-icon slot="start" name="headset-outline"></ion-icon>
+        <ion-label>Служба підтримки</ion-label>
       </ion-item>
-      <ion-item routerLink="/legal-info">
-        <ion-icon name="document-text-outline" slot="start"></ion-icon>
-        <ion-label>Правова інформація</ion-label>
+      <ion-item detail routerLink="/legal-info">
+        <ion-icon slot="start" name="document-text-outline"></ion-icon>
+        <ion-label>Правова Інформація</ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-list class="profile-menu-group">
+      <ion-item button detail="false" (click)="logout()">
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        <ion-label>Вийти</ion-label>
       </ion-item>
     </ion-list>
   </div>
