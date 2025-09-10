@@ -7,8 +7,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenStorage = inject(TokenStorageService);
   const token = tokenStorage.getToken();
 
-  // Do not intercept login request
-  if (req.url.includes(`${environment.baseUrl}/connector.php?action=login`)) {
+  // Do not intercept login or register requests
+  if (
+    req.url.includes(`${environment.baseUrl}/connector.php?action=login`) ||
+    req.url.includes(`${environment.baseUrl}/connector.php?action=register`)
+  ) {
     return next(req);
   }
 
