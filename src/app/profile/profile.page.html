@@ -77,27 +77,32 @@
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-title>Вхід</ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="closeLoginModal()">Закрити</ion-button>
+            <ion-button (click)="closeLoginModal()">
+              <ion-icon name="close-outline" class="close-icon"></ion-icon>
+            </ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding">
         <form [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()">
+          <ion-text>
+            <h1 class="ion-text-center">Вхід в особистий кабінет</h1>
+            <p class="ion-text-center">Увійдіть до свого облікового запису</p>
+          </ion-text>
           <ion-list>
             <ion-item>
               <ion-input
-                label="Ім'я користувача"
+                label="Ел. адреса"
                 labelPlacement="floating"
-                formControlName="username"
-                autocomplete="username"
-                type="text"
+                formControlName="email"
+                autocomplete="email"
+                type="email"
               ></ion-input>
             </ion-item>
-            <ion-text color="danger" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
-              <p class="ion-padding-start" *ngIf="loginForm.get('username')?.errors?.['required']">Ім'я користувача обов'язкове.</p>
-              <p class="ion-padding-start" *ngIf="loginForm.get('username')?.errors?.['minlength']">Ім'я користувача повинно бути не менше 3 символів.</p>
+            <ion-text color="danger" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+              <p class="ion-padding-start" *ngIf="loginForm.get('email')?.errors?.['required']">Ел. адреса обов'язкова.</p>
+              <p class="ion-padding-start" *ngIf="loginForm.get('email')?.errors?.['email']">Будь ласка, введіть дійсну ел. адресу.</p>
             </ion-text>
 
             <ion-item>
@@ -106,14 +111,23 @@
                 labelPlacement="floating"
                 formControlName="password"
                 autocomplete="current-password"
-                type="password"
+                [type]="passwordVisible() ? 'text' : 'password'"
               ></ion-input>
+              <ion-button slot="end" fill="clear" (click)="togglePasswordVisibility()">
+                <ion-icon [name]="passwordVisible() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </ion-button>
             </ion-item>
             <ion-text color="danger" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
               <p class="ion-padding-start" *ngIf="loginForm.get('password')?.errors?.['required']">Пароль обов'язковий.</p>
               <p class="ion-padding-start" *ngIf="loginForm.get('password')?.errors?.['minlength']">Пароль повинен бути не менше 6 символів.</p>
             </ion-text>
           </ion-list>
+
+          <div class="ion-padding-vertical ion-text-center">
+            <a routerLink="/register" (click)="closeLoginModal()">Реєстрація</a>
+            <span class="ion-padding-horizontal"></span>
+            <a routerLink="/forgot-password" (click)="closeLoginModal()">Не пам'ятаєте свій пароль?</a>
+          </div>
 
           <ion-text color="danger" *ngIf="errorMsg()">
             <p class="ion-padding-start">{{ errorMsg() }}</p>

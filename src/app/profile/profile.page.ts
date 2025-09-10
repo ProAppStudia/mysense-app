@@ -21,9 +21,10 @@ export class ProfilePage implements OnInit {
   loading = signal(false);
   errorMsg = signal<string | null>(null);
   isLoggedIn = signal(false);
+  passwordVisible = signal(false);
 
   loginForm = new FormGroup({
-    username: new FormControl('', [Validators.required, Validators.minLength(3)]),
+    email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)])
   });
 
@@ -48,12 +49,14 @@ export class ProfilePage implements OnInit {
     this.loginOpen.set(true);
     this.errorMsg.set(null);
     this.loginForm.reset();
+    this.passwordVisible.set(false);
   }
 
   closeLoginModal() {
     this.loginOpen.set(false);
     this.errorMsg.set(null);
     this.loginForm.reset();
+    this.passwordVisible.set(false);
   }
 
   onSubmitLogin() {
@@ -65,10 +68,10 @@ export class ProfilePage implements OnInit {
     this.loading.set(true);
     this.errorMsg.set(null);
 
-    const { username, password } = this.loginForm.value;
+    const { email, password } = this.loginForm.value;
 
-    if (username && password) {
-      this.authService.login(username, password).subscribe({
+    if (email && password) {
+      this.authService.login(email, password).subscribe({
         next: (response) => {
           this.loading.set(false);
           if (response.success) {
@@ -91,5 +94,9 @@ export class ProfilePage implements OnInit {
     this.authService.logout();
     this.isLoggedIn.set(false);
     console.log('User logged out');
+  }
+
+  togglePasswordVisibility() {
+    this.passwordVisible.update(value => !value);
   }
 }
