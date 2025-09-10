@@ -1,24 +1,40 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonContent, IonCard, IonCardContent, IonButton, IonList, IonItem, IonIcon, IonLabel, IonHeader, IonToolbar, IonTitle, ModalController } from '@ionic/angular/standalone';
-import { LoginPage } from '../login/login.page';
+import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { IonContent, IonCard, IonCardContent, IonButton, IonList, IonItem, IonIcon, IonLabel, IonHeader, IonToolbar, IonTitle, IonModal, IonInput, IonSpinner, IonText, IonButtons, ModalController } from '@ionic/angular/standalone';
 import { RegisterPage } from '../register/register.page';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [IonContent, IonCard, IonCardContent, IonButton, IonList, IonItem, IonIcon, IonLabel, IonHeader, IonToolbar, IonTitle, CommonModule, FormsModule, LoginPage, RegisterPage]
+  imports: [
+    IonContent, IonCard, IonCardContent, IonButton, IonList, IonItem, IonIcon, IonLabel,
+    IonHeader, IonToolbar, IonTitle, IonModal, IonInput, IonSpinner, IonText, IonButtons,
+    CommonModule, FormsModule, ReactiveFormsModule, RegisterPage
+  ]
 })
 export class ProfilePage implements OnInit {
+  loginOpen = signal(false);
+  loading = signal(false);
+  errorMsg = signal<string | null>(null);
+  isLoggedIn = signal(false);
 
-  constructor(private modalController: ModalController) { }
+  loginForm = new FormGroup({
+    username: new FormControl('', [Validators.required, Validators.minLength(3)]),
+    password: new FormControl('', [Validators.required, Validators.minLength(6)])
+  });
+
+  constructor(
+    private modalController: ModalController,
+    private authService: AuthService
+  ) { }
 
   ngOnInit() {
+    this.isLoggedIn.set(this.authService.isAuthenticated());
   }
-
 
   async openRegisterModal() {
     const modal = await this.modalController.create({
@@ -28,18 +44,52 @@ export class ProfilePage implements OnInit {
     return await modal.present();
   }
 
-  async openLoginModal() {
-    const modal = await this.modalController.create({
-      component: LoginPage,
-      cssClass: 'login-modal'
-    });
-    return await modal.present();
+  openLoginModal() {
+    this.loginOpen.set(true);
+    this.errorMsg.set(null);
+    this.loginForm.reset();
+  }
+
+  closeLoginModal() {
+    this.loginOpen.set(false);
+    this.errorMsg.set(null);
+    this.loginForm.reset();
+  }
+
+  onSubmitLogin() {
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+
+    this.loading.set(true);
+    this.errorMsg.set(null);
+
+    const { username, password } = this.loginForm.value;
+
+    if (username && password) {
+      this.authService.login(username, password).subscribe({
+        next: (response) => {
+          this.loading.set(false);
+          if (response.success) {
+            this.isLoggedIn.set(true);
+            this.closeLoginModal();
+          } else {
+            this.errorMsg.set(response.message || 'Login failed. Please try again.');
+          }
+        },
+        error: (err) => {
+          this.loading.set(false);
+          this.errorMsg.set('An unexpected error occurred. Please try again later.');
+          console.error('Login error:', err);
+        }
+      });
+    }
   }
 
   logout() {
-    // Implement logout logic here
+    this.authService.logout();
+    this.isLoggedIn.set(false);
     console.log('User logged out');
-    // Example: navigate to login page or clear user data
   }
-
 }
