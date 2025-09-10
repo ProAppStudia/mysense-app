@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { IonContent, IonCard, IonCardContent, IonButton, IonList, IonItem, IonIcon, IonLabel, IonHeader, IonToolbar, IonTitle, IonModal, IonInput, IonSpinner, IonText, IonButtons, IonCheckbox } from '@ionic/angular/standalone';
 import { AuthService } from '../services/auth.service';
 import { Subscription, interval } from 'rxjs';
@@ -37,6 +37,7 @@ export class ProfilePage implements OnInit, OnDestroy {
   registerStep = signal<'form' | 'code'>('form');
   countdown = signal(0);
   canResend = signal(false);
+  registerPasswordVisible = signal(false);
   private countdownSubscription: Subscription | null = null;
 
   registerForm = new FormGroup({
@@ -44,6 +45,7 @@ export class ProfilePage implements OnInit, OnDestroy {
     surname: new FormControl('', [Validators.required, Validators.minLength(2)]),
     email: new FormControl('', [Validators.required, Validators.email]),
     phone: new FormControl('', [Validators.required, Validators.pattern(/^\+?[0-9\s\-()]{7,25}$/)]),
+    password: new FormControl('', [Validators.required, Validators.minLength(6)]),
     confirm: new FormControl(false, [Validators.requiredTrue]),
     code: new FormControl('', []) // Code field initially not required
   });
@@ -139,6 +141,7 @@ export class ProfilePage implements OnInit, OnDestroy {
     this.stopCountdown();
     this.countdown.set(0);
     this.canResend.set(false);
+    this.registerPasswordVisible.set(false);
   }
 
   onSubmitRegister() {
@@ -151,6 +154,7 @@ export class ProfilePage implements OnInit, OnDestroy {
           this.registerForm.get('surname')?.invalid ||
           this.registerForm.get('email')?.invalid ||
           this.registerForm.get('phone')?.invalid ||
+          this.registerForm.get('password')?.invalid ||
           this.registerForm.get('confirm')?.invalid) {
         this.registerForm.markAllAsTouched();
         return;
@@ -169,17 +173,18 @@ export class ProfilePage implements OnInit, OnDestroy {
     this.registerLoading.set(true);
     this.registerErrorMsg.set(null);
 
-    const { name, surname, email, phone, confirm, code } = this.registerForm.value;
+    const { name, surname, email, phone, password, confirm, code } = this.registerForm.value;
 
     // Ensure confirm is always a boolean
     const isConfirmed = confirm ?? false;
 
-    if (name && surname && email && phone && isConfirmed !== undefined) {
+    if (name && surname && email && phone && password && isConfirmed !== undefined) {
       const payload = {
         name,
         surname,
         email,
         phone,
+        password,
         confirm: isConfirmed,
         code: this.registerStep() === 'code' ? code || '' : undefined // Only send code if on 'code' step
       };
@@ -220,8 +225,7 @@ export class ProfilePage implements OnInit, OnDestroy {
     this.registerForm.get('code')?.updateValueAndValidity();
     this.registerForm.get('code')?.setValue(''); // Clear code field
     this.canResend.set(false);
-    this.infoMsg.set('Sending new code...');
-    this.onSubmitRegister(); // Re-submit without code
+    this.registerPasswordVisible.set(false);
   }
 
   startCountdown(seconds: number) {
@@ -255,5 +259,9 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   private pad(num: number): string {
     return num < 10 ? '0' + num : '' + num;
+  }
+
+  toggleRegisterPasswordVisibility() {
+    this.registerPasswordVisible.update(value => !value);
   }
 }

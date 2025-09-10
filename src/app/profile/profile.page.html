@@ -203,6 +203,23 @@
               <p class="ion-padding-start" *ngIf="registerForm.get('phone')?.errors?.['pattern']">Будь ласка, введіть дійсний номер телефону.</p>
             </ion-text>
 
+            <ion-item>
+              <ion-input
+                label="Пароль"
+                labelPlacement="floating"
+                formControlName="password"
+                autocomplete="new-password"
+                [type]="registerPasswordVisible() ? 'text' : 'password'"
+              ></ion-input>
+              <ion-button slot="end" fill="clear" (click)="toggleRegisterPasswordVisibility()">
+                <ion-icon [name]="registerPasswordVisible() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </ion-button>
+            </ion-item>
+            <ion-text color="danger" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+              <p class="ion-padding-start" *ngIf="registerForm.get('password')?.errors?.['required']">Пароль обов'язковий.</p>
+              <p class="ion-padding-start" *ngIf="registerForm.get('password')?.errors?.['minlength']">Пароль повинен бути не менше 6 символів.</p>
+            </ion-text>
+
             <ion-item lines="none">
               <ion-checkbox slot="start" formControlName="confirm"></ion-checkbox>
               <ion-label>Я погоджуюся з умовами використання</ion-label>
