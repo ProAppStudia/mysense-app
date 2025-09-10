@@ -6,21 +6,21 @@
 
 <ion-content>
   <div class="profile-container" >
-    <ion-card class="login-card">
+    <ion-card class="login-card" *ngIf="!isLoggedIn()">
       <ion-card-content>
         <p class="login-text">Увійдіть або зареєструйтеся, щоб не втратити дані особистого кабінету, а також мати можливість доступу з іншого пристрою.</p>
       </ion-card-content>
     </ion-card>
 
-    <div class="login-buttons">
-      <ion-button *ngIf="!isLoggedIn()" expand="block" class="login-button" (click)="openLoginModal()">
+    <div class="login-buttons" *ngIf="!isLoggedIn()">
+      <ion-button expand="block" class="login-button" (click)="openLoginModal()">
         <ion-icon slot="start" src="assets/icon/sing-in.svg"></ion-icon>
         Вхід
       </ion-button>
-      <ion-button *ngIf="!isLoggedIn()" expand="block" class="login-button" (click)="openRegisterModal()">Реєстрація</ion-button>
+      <ion-button expand="block" class="login-button" (click)="openRegisterModal()">Реєстрація</ion-button>
     </div>
 
-    <ion-list class="profile-menu-group">
+    <ion-list class="profile-menu-group" *ngIf="isLoggedIn()">
       <ion-item detail routerLink="/profile-details">
         <ion-icon slot="start" name="person-outline"></ion-icon>
         <ion-label>Мій профіль</ion-label>
@@ -44,13 +44,17 @@
         <ion-icon slot="start" name="library-outline"></ion-icon>
         <ion-label>Моя бібліотека</ion-label>
       </ion-item>
+    </ion-list>
+
+    <ion-list class="profile-menu-group">
       <ion-item detail routerLink="/how-to-use">
         <ion-icon slot="start" name="information-circle-outline"></ion-icon>
         <ion-label>Як користуватись додатком</ion-label>
       </ion-item>
-    </ion-list>
-
-    <ion-list class="profile-menu-group">
+      <ion-item detail routerLink="/faq">
+        <ion-icon slot="start" name="help-circle-outline"></ion-icon>
+        <ion-label>Питання/Відповіді</ion-label>
+      </ion-item>
       <ion-item detail routerLink="/notifications">
         <ion-icon slot="start" name="notifications-outline"></ion-icon>
         <ion-label>Сповіщення</ion-label>
@@ -63,12 +67,16 @@
         <ion-icon slot="start" name="document-text-outline"></ion-icon>
         <ion-label>Правова Інформація</ion-label>
       </ion-item>
-    </ion-list>
-
-    <ion-list class="profile-menu-group">
       <ion-item *ngIf="isLoggedIn()" button detail="false" (click)="logout()">
         <ion-icon slot="start" name="log-out-outline"></ion-icon>
         <ion-label>Вийти</ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-list class="profile-menu-group">
+      <ion-item detail routerLink="/emergency-help">
+        <ion-icon slot="start" name="warning-outline"></ion-icon>
+        <ion-label>Термінова допомога</ion-label>
       </ion-item>
     </ion-list>
   </div>
