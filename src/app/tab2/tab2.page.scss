@@ -188,3 +188,8 @@
   align-items: center;
   justify-content: center;
 }
+
+ion-header ion-toolbar ion-buttons ion-button ion-icon {
+  font-size: 2.0em; /* Match tab icon size */
+  color: var(--ion-color-primary); /* Apply primary color */
+}
