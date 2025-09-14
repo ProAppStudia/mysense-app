@@ -444,3 +444,174 @@ ion-content {
   padding: 16px; /* Consistent padding */
   box-sizing: border-box;
 }
+
+/* My Sessions Block Styles */
+.my-sessions-block {
+  background-color: #f8f8f8;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 500px;
+  text-align: left;
+}
+
+.quick-actions-block {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* Distribute items evenly */
+  gap: 10px; /* Space between items */
+  margin-top: 20px;
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 30%; /* 3 items per row */
+}
+
+.action-item ion-icon {
+  background-color: #f0f0f0; /* Light grey background for icons */
+  border-radius: 50%;
+  padding: 15px;
+  font-size: 30px;
+  color: var(--ion-color-primary); /* Primary color for icons */
+  margin-bottom: 8px;
+}
+
+.action-item p {
+  font-size: 14px;
+  color: #333;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.sessions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.sessions-header h2 {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.sessions-header a {
+  font-size: 14px;
+  color: var(--ion-color-primary);
+  text-decoration: none;
+}
+
+.book-session-button {
+  --background: var(--ion-color-primary);
+  --background-activated: var(--ion-color-primary-shade);
+  --background-focused: var(--ion-color-primary-shade);
+  --background-hover: var(--ion-color-primary-shade);
+  --color: #fff;
+  font-size: 18px;
+  height: 50px;
+  border-radius: 8px;
+  text-transform: none;
+  width: calc(100% - 40px); /* Adjust width to account for padding */
+  max-width: 460px; /* Max width to match other content */
+  margin-top: 20px;
+  box-shadow: none;
+}
+
+.sessions-swiper {
+  width: 100%;
+  height: auto;
+  padding: 0; /* Removed horizontal padding */
+  box-sizing: border-box;
+}
+
+.sessions-swiper swiper-slide {
+  width: 85%; /* Adjust slide width to show part of the next card */
+  margin-right: 15px; /* Space between cards */
+  display: flex;
+  height: auto; /* Allow height to adjust to content */
+}
+
+.session-card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%; /* Ensure card takes full width of its slide */
+  box-sizing: border-box;
+  padding-right: 50px; /* Add padding to make space for the icon */
+}
+
+.session-type-indicator {
+  width: 4px;
+  height: 100%;
+  background-color: var(--ion-color-primary); /* Green indicator */
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.session-details {
+  margin-left: 15px;
+  flex-grow: 1;
+}
+
+.session-details h3 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 5px 0;
+}
+
+.session-status {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.doctor-info {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.doctor-info img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 8px;
+}
+
+.doctor-info span {
+  margin-right: 10px;
+}
+
+.doctor-info ion-icon {
+  font-size: 16px;
+  margin-right: 5px;
+  color: #999;
+}
+
+.session-icon {
+  font-size: 24px;
+  color: var(--ion-color-primary);
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}

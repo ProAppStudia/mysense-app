@@ -3,13 +3,28 @@ import { IonContent, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLab
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { register } from 'swiper/element/bundle';
+import { AuthService } from '../services/auth.service'; // Import AuthService
+import { environment } from '../../environments/environment'; // Import environment for base URL
+import { addIcons } from 'ionicons';
+import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline } from 'ionicons/icons';
 
+addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline });
 register();
 
 interface Doctor {
   img: string;
   firstname: string;
   practice_years_text: string;
+}
+
+interface Session {
+  id: number;
+  type: 'Індивідуальна сесія' | 'Сімейна сесія' | 'Дитяча сесія' ;
+  status: string; // e.g., 'Waiting for call', 'Confirmed', 'Completed'
+  doctor_name: string;
+  doctor_image: string;
+  time_range: string; // e.g., '4:00 PM-9:00 PM'
+  icon: string; // e.g., 'videocam-outline' or 'person-outline'
 }
 
 interface HomepageData {
@@ -58,11 +73,51 @@ export class Tab1Page implements OnInit, AfterViewInit {
 
   homepageData: HomepageData | null = null;
   readonly TRUNCATE_LENGTH = 100; // Define a constant for truncation length
+  isLoggedIn: boolean = false;
+  userSessions: Session[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   ngOnInit() {
-    this.getHomepageData();
+    this.getHomepageData(); // Fetch homepage data first
+  }
+
+  formatSessionTime(timeRange: string): { date: string; time: string } {
+    const parts = timeRange.split(' о ');
+    if (parts.length === 2) {
+      return { date: parts[0], time: parts[1] };
+    }
+    return { date: timeRange, time: '' }; // Fallback if format is unexpected
+  }
+
+  checkLoginStatus() {
+    // For demonstration purposes, force isLoggedIn to true to display example sessions.
+    // In a real application, this would be: this.isLoggedIn = this.authService.isAuthenticated();
+    this.isLoggedIn = true; 
+    if (this.isLoggedIn && this.homepageData && this.homepageData.doctors && this.homepageData.doctors.length >= 2) {
+      this.userSessions = [
+        {
+          id: 1,
+          type: 'Індивідуальна сесія', // Changed to match interface
+          status: 'Очікується', // Changed status to "Очікується"
+          doctor_name: this.homepageData.doctors[0].firstname,
+          doctor_image: this.homepageData.doctors[0].img, // Use the image path directly from API
+          time_range: '20 вересня о 14:00', // Changed time to "20 вересня о 14:00"
+          icon: 'videocam-outline'
+        },
+        {
+          id: 2,
+          type: 'Сімейна сесія', // Changed to match interface
+          status: 'Очікується', // Changed status to "Очікується"
+          doctor_name: this.homepageData.doctors[1].firstname,
+          doctor_image: this.homepageData.doctors[1].img, // Use the image path directly from API
+          time_range: '20 вересня о 14:00', // Changed time to "20 вересня о 14:00"
+          icon: 'videocam-outline'
+        }
+      ];
+      // In a real scenario, you would call getUserSessions() here
+      // this.getUserSessions();
+    }
   }
 
   toggleText(review: any) {
@@ -87,8 +142,31 @@ export class Tab1Page implements OnInit, AfterViewInit {
     }
   }
 
+  // getUserSessions() {
+  //   const token = this.authService.getToken();
+  //   if (token) {
+  //     this.http.get<Session[]>(`${environment.baseUrl}/connector.php?action=get_user_sessions&token=${token}`).subscribe(
+  //       (sessions) => {
+  //         this.userSessions = sessions.map(session => ({
+  //           ...session,
+  //           icon: session.type === 'Video Consultation' ? 'videocam-outline' : 'person-outline'
+  //         }));
+  //         console.log('User Sessions:', this.userSessions);
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching user sessions:', error);
+  //         // Handle error, e.g., clear token if it's invalid
+  //         if (error.status === 401) { // Unauthorized
+  //           this.authService.logout();
+  //           this.isLoggedIn = false;
+  //         }
+  //       }
+  //     );
+  //   }
+  // }
+
   getHomepageData() {
-    this.http.get<HomepageData>('https://mysense.care/app/connector.php?action=get_homepage').subscribe((data) => {
+    this.http.get<HomepageData>(`${environment.baseUrl}/connector.php?action=get_homepage`).subscribe((data) => {
       this.homepageData = data;
       if (this.homepageData && this.homepageData.section_9 && this.homepageData.section_9.reviews) {
         this.homepageData.section_9.reviews = this.homepageData.section_9.reviews.map(review => ({
@@ -98,6 +176,7 @@ export class Tab1Page implements OnInit, AfterViewInit {
         }));
       }
       console.log(this.homepageData);
+      this.checkLoginStatus(); // Call checkLoginStatus after homepageData is loaded
     });
   }
 }

@@ -1,5 +1,65 @@
 <ion-content class="ion-padding">
   <div class="main-content" *ngIf="homepageData">
+    <!-- My Sessions Block -->
+    <div *ngIf="isLoggedIn && userSessions.length > 0" class="my-sessions-block">
+      <div class="sessions-header">
+        <h2>Мої сесії</h2>
+        <a href="/tabs/tab2">Дивитись всі</a>
+      </div>
+      <swiper-container class="sessions-swiper" #sessionsSwiper slides-per-view="auto" free-mode="true">
+        <swiper-slide *ngFor="let session of userSessions">
+          <div class="session-card">
+            <div class="session-type-indicator"></div>
+            <div class="session-details">
+              <h3>{{ session.type }}</h3>
+              <p class="session-status">{{ session.status }}</p>
+              <div class="doctor-info">
+                <img [src]="'https://mysense.care' + session.doctor_image" alt="{{ session.doctor_name }}">
+                <span>{{ session.doctor_name }}</span>
+                <ion-icon name="time-outline"></ion-icon>
+                <span>{{ formatSessionTime(session.time_range).date }}
+                
+                {{ formatSessionTime(session.time_range).time }}</span>
+              </div>
+            </div>
+            <ion-icon [name]="session.icon" class="session-icon"></ion-icon>
+          </div>
+        </swiper-slide>
+      </swiper-container>
+      <ion-button expand="block" class="book-session-button">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Забронювати сесію
+      </ion-button>
+    </div>
+
+    <!-- New Navigation Block -->
+    <div class="quick-actions-block">
+      <div class="action-item">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <p>Мої сесії</p>
+      </div>
+      <div class="action-item">
+        <ion-icon name="add-circle-outline"></ion-icon>
+        <p>Забронювати сесію</p>
+      </div>
+      <div class="action-item">
+        <ion-icon name="chatbubbles-outline"></ion-icon>
+        <p>Мої чати</p>
+      </div>
+      <div class="action-item">
+        <ion-icon name="checkbox-outline"></ion-icon>
+        <p>Підібрати психолога</p>
+      </div>
+      <div class="action-item">
+        <ion-icon name="people-outline"></ion-icon>
+        <p>Список психологів</p>
+      </div>
+      <div class="action-item">
+        <ion-icon name="person-outline"></ion-icon>
+        <p>Кабінет</p>
+      </div>
+    </div>
+
     <h1 class="main-title">{{ homepageData.section_1.heading }}</h1>
     <p class="description-text">{{ homepageData.section_1.sub_heading }}</p>
     <ion-button expand="block" class="select-psychologist-button">{{ homepageData.section_1.button_test_text }}</ion-button>
