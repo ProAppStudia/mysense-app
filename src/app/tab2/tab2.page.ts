@@ -17,6 +17,7 @@ import { FilterModalComponent } from '../components/filter-modal/filter-modal.co
 export class Tab2Page implements OnInit {
   
   doctors: (DoctorCardView | { error: string })[] = [];
+  private allDoctors: DoctorCardView[] = [];
 
   constructor(
     private doctorService: DoctorService,
@@ -29,12 +30,9 @@ export class Tab2Page implements OnInit {
   }
 
   ngOnInit() {
-    this.loadDoctors();
-  }
-
-  loadDoctors(filters?: any) {
-    this.doctorService.getPsychologists(filters).subscribe(psychologists => {
-      this.doctors = psychologists;
+    this.doctorService.getPsychologists().subscribe(psychologists => {
+      this.allDoctors = psychologists.filter(p => this.isDoctorCardView(p)) as DoctorCardView[];
+      this.doctors = [...this.allDoctors];
       this.cdr.detectChanges();
     });
   }
@@ -59,11 +57,39 @@ export class Tab2Page implements OnInit {
 
     const { data } = await modal.onWillDismiss();
     if (data) {
-      this.applyFilters(data);
+      if (data.reset) {
+        this.doctors = [...this.allDoctors];
+      } else {
+        this.applyFilters(data);
+      }
     }
   }
 
   applyFilters(filters: any) {
-    this.loadDoctors(filters);
+    this.doctors = this.allDoctors.filter(doctor => {
+      if (!this.isDoctorCardView(doctor)) return false;
+
+      const typeMatch = !filters.type || 
+                        (filters.type === 'individual' && doctor.priceIndividual) ||
+                        (filters.type === 'family' && doctor.priceFamily) ||
+                        (filters.type === 'child'); // Assuming there is a property for this
+
+      const formatMatch = !filters.format ||
+                          (filters.format === 'online' && doctor.online) ||
+                          (filters.format === 'in-person' && doctor.inPerson);
+
+      const genderMatch = !filters.gender || filters.gender === 'any'; // Assuming no gender property
+
+      const languageMatch = !filters.language || filters.language === 'any' || (doctor.languages && doctor.languages.includes(filters.language));
+
+      const priceMatch = (!filters.priceRange || !doctor.priceIndividual) || 
+                         (doctor.priceIndividual >= filters.priceRange.lower && doctor.priceIndividual <= filters.priceRange.upper);
+
+      const directionMatch = !filters.directions || filters.directions.length === 0 || 
+                             filters.directions.some((direction: string) => doctor.specialization?.includes(direction));
+
+      return typeMatch && formatMatch && genderMatch && languageMatch && priceMatch && directionMatch;
+    });
+    this.cdr.detectChanges();
   }
 }

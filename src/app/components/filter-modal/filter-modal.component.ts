@@ -58,5 +58,6 @@ export class FilterModalComponent implements OnInit {
       directions: []
     };
     this.directions.forEach(d => d.checked = false);
+    this.modalController.dismiss({ reset: true });
   }
 }
