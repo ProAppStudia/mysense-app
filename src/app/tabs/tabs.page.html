@@ -6,8 +6,8 @@
       </ion-buttons>
       <ion-buttons slot="end">
        
-        <ion-button>
-          <ion-icon name="headset-outline"></ion-icon> <!-- SOS icon -->
+        <ion-button (click)="presentPopover($event)">
+         <ion-icon name="help-circle-outline"></ion-icon>
         </ion-button>
         <ion-button>
           <ion-icon name="notifications-outline"></ion-icon>

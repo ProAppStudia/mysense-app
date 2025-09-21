@@ -1,0 +1,15 @@
+ion-icon {
+  color: var(--ion-color-primary);
+}
+
+/* This targets the icon in the start slot inside an ion-item
+   and reduces the default spacing. */
+ion-item ion-icon[slot="start"] {
+  margin-inline-end: 10px;
+}
+ion-item  {
+  font-size: 14px;
+}
+button.item-native {
+  padding-left: 5px;
+}

@@ -1,18 +1,29 @@
 import { Component, EnvironmentInjector, inject } from '@angular/core';
-import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonHeader, IonToolbar, IonButtons, IonButton, IonBadge } from '@ionic/angular/standalone';
+import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonHeader, IonToolbar, IonButtons, IonButton, IonBadge, PopoverController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { notificationsOutline, helpCircleOutline, peopleOutline, homeOutline, checkboxOutline, headsetOutline } from 'ionicons/icons';
+import { notificationsOutline, helpCircleOutline, peopleOutline, homeOutline, checkboxOutline, headsetOutline, chatbubblesOutline, personOutline } from 'ionicons/icons';
+import { HelpPopoverComponent } from '../components/help-popover/help-popover.component';
 
 @Component({
   selector: 'app-tabs',
   templateUrl: 'tabs.page.html',
   styleUrls: ['tabs.page.scss'],
-  imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonHeader, IonToolbar, IonButtons, IonButton, IonBadge],
+  standalone: true,
+  imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonHeader, IonToolbar, IonButtons, IonButton, IonBadge, HelpPopoverComponent],
 })
 export class TabsPage {
   public environmentInjector = inject(EnvironmentInjector);
 
-  constructor() {
-    addIcons({ notificationsOutline, helpCircleOutline, peopleOutline, homeOutline, checkboxOutline, headsetOutline });
+  constructor(private popoverController: PopoverController) {
+    addIcons({ notificationsOutline, helpCircleOutline, peopleOutline, homeOutline, checkboxOutline, headsetOutline, chatbubblesOutline, personOutline });
+  }
+
+  async presentPopover(e: Event) {
+    const popover = await this.popoverController.create({
+      component: HelpPopoverComponent,
+      event: e,
+      translucent: true
+    });
+    await popover.present();
   }
 }
