@@ -1,0 +1,101 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Фільтри</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">Закрити</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-radio-group [(ngModel)]="filters.type">
+      <ion-list-header>
+        <ion-label>Індивідуальна</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-label>Індивідуальна</ion-label>
+        <ion-radio slot="start" value="individual"></ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label>Сімейна</ion-label>
+        <ion-radio slot="start" value="family"></ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label>Дитяча</ion-label>
+        <ion-radio slot="start" value="child"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+
+    <ion-list-header>
+      <ion-label>Напрямки</ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let direction of directions">
+      <ion-label>{{ direction.name }}</ion-label>
+      <ion-checkbox slot="start" [(ngModel)]="direction.checked"></ion-checkbox>
+    </ion-item>
+
+    <ion-radio-group [(ngModel)]="filters.format">
+      <ion-list-header>
+        <ion-label>Оберіть формат сесії</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-label>Онлайн</ion-label>
+        <ion-radio slot="start" value="online"></ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label>Очно</ion-label>
+        <ion-radio slot="start" value="in-person"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+
+    <ion-radio-group [(ngModel)]="filters.gender">
+      <ion-list-header>
+        <ion-label>Оберіть стать психолога</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-label>Не важливо</ion-label>
+        <ion-radio slot="start" value="any"></ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label>Чоловік</ion-label>
+        <ion-radio slot="start" value="male"></ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label>Жінка</ion-label>
+        <ion-radio slot="start" value="female"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+
+    <ion-radio-group [(ngModel)]="filters.language">
+      <ion-list-header>
+        <ion-label>Оберіть мову спілкування</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-label>Українська</ion-label>
+        <ion-radio slot="start" value="ukrainian"></ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label>Російська</ion-label>
+        <ion-radio slot="start" value="russian"></ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label>Не важливо</ion-label>
+        <ion-radio slot="start" value="any"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+
+    <ion-list-header>
+      <ion-label>Оберіть прийнятну ціну</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-range min="900" max="2700" dualKnobs="true" pin="true" [(ngModel)]="filters.priceRange">
+        <ion-label slot="start">900</ion-label>
+        <ion-label slot="end">2700</ion-label>
+      </ion-range>
+    </ion-item>
+  </ion-list>
+
+  <ion-button expand="block" (click)="applyFilters()">Застосувати</ion-button>
+  <ion-button expand="block" fill="clear" (click)="resetFilters()">Скинути фільтри</ion-button>
+</ion-content>

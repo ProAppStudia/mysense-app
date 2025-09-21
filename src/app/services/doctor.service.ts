@@ -12,8 +12,30 @@ export class DoctorService {
 
   constructor(private http: HttpClient) { }
 
-  getPsychologists(): Observable<DoctorCardView[]> {
-    const params = new HttpParams().set('action', 'get_psychologists');
+  getPsychologists(filters?: any): Observable<DoctorCardView[]> {
+    let params = new HttpParams().set('action', 'get_psychologists');
+    if (filters) {
+      if (filters.type) {
+        params = params.append('type', filters.type);
+      }
+      if (filters.format) {
+        params = params.append('format', filters.format);
+      }
+      if (filters.gender) {
+        params = params.append('gender', filters.gender);
+      }
+      if (filters.language) {
+        params = params.append('language', filters.language);
+      }
+      if (filters.priceRange) {
+        params = params.append('price_min', filters.priceRange.lower);
+        params = params.append('price_max', filters.priceRange.upper);
+      }
+      if (filters.directions && filters.directions.length > 0) {
+        params = params.append('directions', filters.directions.join(','));
+      }
+    }
+
     return this.http.get(this.apiUrl, { params, responseType: 'text' }).pipe(
       map(response => {
         try {
