@@ -186,9 +186,47 @@
           </div>
         </div>
       </div>
+
+      <div class="info-block reviews-block">
+        <h4 class="info-title">Відгуки клієнтів</h4>
+        <div *ngIf="doctor.reviews && doctor.reviews.length > 0; else noReviews">
+          <div class="list-container" [class.expanded]="isReviewsExpanded">
+            <div *ngFor="let review of doctor.reviews" class="review-item">
+              <div class="review-header">
+                <div>
+                  <span class="author">{{ review.author }}</span>
+                  <span class="date">{{ review.date }}</span>
+                </div>
+                <ion-icon src="assets/icon/quetes-comment.svg" class="quote-icon"></ion-icon>
+              </div>
+              <p class="text">{{ review.text }}</p>
+            </div>
+          </div>
+          <button (click)="toggleReviews()" class="show-more-button" *ngIf="doctor.reviews.length > 1">
+            {{ isReviewsExpanded ? 'Згорнути' : 'Показати ще' }}
+          </button>
+        </div>
+        <ng-template #noReviews>
+          <p>Відгуків поки що немає.</p>
+        </ng-template>
+        <ion-button class="leave-review-button" expand="block" fill="outline">Залишити відгук</ion-button>
+      </div>
     </div>
     <ng-template #errorView>
       <p>Не вдалося завантажити профіль.</p>
     </ng-template>
   </div>
 </ion-content>
+
+<ion-footer>
+  <div class="footer-buttons">
+    <ion-button class="book-button">
+      <ion-icon slot="start" name="calendar-outline"></ion-icon>
+      Забронювати зустріч
+    </ion-button>
+    <ion-button class="message-button" fill="outline">
+      <ion-icon slot="start" name="chatbubble-ellipses-outline"></ion-icon>
+      Написати психологу
+    </ion-button>
+  </div>
+</ion-footer>

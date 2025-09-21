@@ -88,6 +88,7 @@ worksWithLgbt:     data.work_with_lgbt     === 1 || data.work_with_lgbt     === 
       universities: data.universities || [],
       doctorFiles: data.doctor_files || [],
       calendar: data.calendar,
+      reviews: data.reviews || [],
     };
   }
 }

@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonBackButton, IonButtons, IonIcon, IonButton } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
+import { addIcons } from 'ionicons';
+import { calendarOutline, chatbubbleEllipsesOutline } from 'ionicons/icons';
 import { DoctorService } from '../../services/doctor.service';
 import { DoctorCardView } from '../../models/doctor-card-view.model';
 import { register } from 'swiper/element/bundle';
@@ -23,6 +25,7 @@ export class TherapistProfilePage implements OnInit {
   doctor: DoctorCardView | { error: string } | null = null;
   isDescriptionExpanded = false;
   isEducationExpanded = false;
+  isReviewsExpanded = false;
 
   sessionType: 'online' | 'offline' = 'online';
   bookingFor: 'me' | 'pair' | 'child' = 'me';
@@ -33,7 +36,9 @@ export class TherapistProfilePage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private doctorService: DoctorService
-  ) { }
+  ) {
+    addIcons({ calendarOutline, chatbubbleEllipsesOutline });
+  }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -58,6 +63,10 @@ export class TherapistProfilePage implements OnInit {
 
   toggleEducation() {
     this.isEducationExpanded = !this.isEducationExpanded;
+  }
+
+  toggleReviews() {
+    this.isReviewsExpanded = !this.isReviewsExpanded;
   }
 
   get currentWeek(): Week | undefined {
