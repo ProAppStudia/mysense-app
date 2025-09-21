@@ -13,4 +13,9 @@ export interface DoctorCardView {
   priceIndividual?: number | string;
   priceFamily?: number | string;
   verified?: boolean;
+  videoAppealUrl?: string;
+  workWithTypes?: string[];
+  worksWithMilitary?: boolean;
+  worksWithLgbt?: boolean;
+  languages?: string[];
 }

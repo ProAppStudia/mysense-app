@@ -40,8 +40,6 @@ export class DoctorService {
           if (data.error) {
             return { error: data.error };
           }
-          // The single profile response might have a different structure
-          // For now, we assume it can be transformed by the same function
           return this.transformToDoctorCardView(data);
         } catch (e) {
           if (response.includes('error')) {
@@ -57,6 +55,18 @@ export class DoctorService {
   }
 
   private transformToDoctorCardView(data: any): DoctorCardView {
+    const worksWith = [];
+    if (Array.isArray(data.work_with)) {
+        worksWith.push(...data.work_with);
+    } else {
+        if (data.work_with_military === '1' || data.work_with_military === true) {
+            worksWith.push('Військовими');
+        }
+        if (data.work_with_lgbt === '1' || data.work_with_lgbt === true) {
+            worksWith.push('ЛГБТКІ+');
+        }
+    }
+
     return {
       id: data.doctor_id,
       fullName: data.fullname,
@@ -67,11 +77,16 @@ export class DoctorService {
       specialization: data.specialisation,
       experienceYears: data.practice_years,
       sessionsCount: data.practice_time_hours,
-      feedbackCount: data.reiviews, // Corrected from 'reviews_count' to 'reiviews' based on log
-      introMinutes: undefined, // Not directly available in the list view
+      feedbackCount: data.reiviews,
+      introMinutes: data.acquaintance ? 15 : undefined,
       priceIndividual: data.session_amount,
       priceFamily: data.family_session_amount,
-      verified: true, // Assuming all listed are verified
+      verified: true,
+      videoAppealUrl: data.video_appeal_file,
+      workWithTypes: data.types || [],
+     worksWithMilitary: data.work_with_military === 1 || data.work_with_military === '1' || data.work_with_military === true,
+worksWithLgbt:     data.work_with_lgbt     === 1 || data.work_with_lgbt     === '1' || data.work_with_lgbt     === true,
+      languages: data.languages || [],
     };
   }
 }

@@ -62,6 +62,42 @@
           <p class="price-value" style="color: #2f264d; font-size: 20px; font-weight: 500;">{{ doctor.priceFamily }} <span class="currency" style="font-size: 14px; color: #9895a6; font-weight: 400;">грн.</span></p>
         </div>
       </div>
+
+      <div *ngIf="doctor.videoAppealUrl" class="video-container">
+        <video controls [src]="doctor.videoAppealUrl" width="100%"></video>
+      </div>
+
+      <ion-button *ngIf="doctor.introMinutes" class="intro-button" expand="block" fill="outline">
+        <ion-icon src="assets/icon/hello.svg" slot="start"></ion-icon>
+        Домовитись про знайомство {{ doctor.introMinutes }} хв
+      </ion-button>
+
+      <div class="info-block">
+        <h4 class="info-title">
+          <ion-icon src="assets/icon/zkem.svg"></ion-icon>
+          З ким я працюю
+        </h4>
+        <ul>
+          <li *ngFor="let type of doctor.workWithTypes">{{ type }}</li>
+        </ul>
+
+        <h4 class="info-title">
+          <ion-icon src="assets/icon/star.svg"></ion-icon>
+          Працюю з:
+        </h4>
+        <ul>
+          <li *ngIf="doctor.worksWithMilitary">Військовими</li>
+          <li *ngIf="doctor.worksWithLgbt">ЛГБТКІ+</li>
+        </ul>
+
+        <h4 class="info-title">
+          <ion-icon src="assets/icon/lang.svg"></ion-icon>
+          Мова спілкування:
+        </h4>
+        <ul>
+          <li *ngFor="let lang of doctor.languages">{{ lang }}</li>
+        </ul>
+      </div>
     </div>
     <ng-template #errorView>
       <p>Не вдалося завантажити профіль.</p>
