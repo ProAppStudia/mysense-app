@@ -108,6 +108,20 @@
           {{ isDescriptionExpanded ? 'Згорнути' : 'Показати більше' }}
         </button>
       </div>
+
+      <div class="info-block">
+        <h4 class="info-title">Я працюю з:</h4>
+        <ul>
+          <li *ngFor="let item of doctor.worksWith">{{ item }}</li>
+        </ul>
+      </div>
+
+      <div class="info-block">
+        <h4 class="info-title">Я не працюю з:</h4>
+        <ul>
+          <li *ngFor="let item of doctor.doNotWorkWith" class="not-work-with">{{ item }}</li>
+        </ul>
+      </div>
     </div>
     <ng-template #errorView>
       <p>Не вдалося завантажити профіль.</p>

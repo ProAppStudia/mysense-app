@@ -88,6 +88,13 @@
         left: 0;
         top: 2px;
       }
+
+      &.not-work-with::before {
+        content: '×';
+        background-image: none;
+        color: red;
+        font-weight: bold;
+      }
     }
   }
 }

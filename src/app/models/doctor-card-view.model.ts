@@ -15,6 +15,8 @@ export interface DoctorCardView {
   verified?: boolean;
   videoAppealUrl?: string;
   workWithTypes?: string[];
+  worksWith?: string[];
+  doNotWorkWith?: string[];
   worksWithMilitary?: boolean;
   worksWithLgbt?: boolean;
   languages?: string[];

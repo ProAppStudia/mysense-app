@@ -15,7 +15,7 @@ import { DoctorCardView } from '../../models/doctor-card-view.model';
 })
 export class TherapistProfilePage implements OnInit {
 
-  doctor: DoctorCardView | { error: string } | null = null;
+  doctor: DoctorCardView | { error:string } | null = null;
   isDescriptionExpanded = false;
 
   constructor(

@@ -55,6 +55,13 @@ export class DoctorService {
   }
 
   private transformToDoctorCardView(data: any): DoctorCardView {
+    let worksWith = [];
+    if (Array.isArray(data.work_with)) {
+      worksWith = data.work_with;
+    } else if (typeof data.work_with === 'string') {
+      worksWith = data.work_with.split(',').map((s: string) => s.trim());
+    }
+
     return {
       id: data.doctor_id,
       fullName: data.fullname,
@@ -72,8 +79,10 @@ export class DoctorService {
       verified: true,
       videoAppealUrl: data.video_appeal_file,
       workWithTypes: data.types || [],
+      worksWith: worksWith,
+      doNotWorkWith: data.do_not_work_with || [],
       worksWithMilitary: data.work_with_military === 1 || data.work_with_military === '1' || data.work_with_military === true,
-      worksWithLgbt:     data.work_with_lgbt     === 1 || data.work_with_lgbt     === '1' || data.work_with_lgbt     === true,
+worksWithLgbt:     data.work_with_lgbt     === 1 || data.work_with_lgbt     === '1' || data.work_with_lgbt     === true,
       languages: data.languages || [],
       description: data.description,
     };
