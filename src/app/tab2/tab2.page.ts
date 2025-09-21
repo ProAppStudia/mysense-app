@@ -15,7 +15,6 @@ import { CommonModule } from '@angular/common';
 export class Tab2Page implements OnInit {
   
   doctors: (DoctorCardView | { error: string })[] = [];
-  doctorIds = [6, 7]; // Example doctor IDs
 
   constructor(
     private doctorService: DoctorService,
@@ -25,11 +24,9 @@ export class Tab2Page implements OnInit {
   }
 
   ngOnInit() {
-    this.doctorIds.forEach(id => {
-      this.doctorService.getDoctorProfile(id).subscribe(data => {
-        this.doctors.push(data);
-        this.cdr.detectChanges(); // Manually trigger change detection
-      });
+    this.doctorService.getPsychologists().subscribe(psychologists => {
+      this.doctors = psychologists;
+      this.cdr.detectChanges();
     });
   }
   
