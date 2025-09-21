@@ -1,3 +1,5 @@
+import { University } from './university.model';
+
 export interface DoctorCardView {
   id: number | string;
   fullName: string;
@@ -21,4 +23,5 @@ export interface DoctorCardView {
   worksWithLgbt?: boolean;
   languages?: string[];
   description?: string;
+  universities?: University[];
 }

@@ -109,6 +109,24 @@
         </button>
       </div>
 
+      <div class="info-block education-block">
+        <h4 class="info-title">Освіта</h4>
+        <div class="list-container education-list" [class.expanded]="isEducationExpanded">
+          <div *ngFor="let uni of doctor.universities" class="education-item">
+            <p class="date">{{ uni.date }}</p>
+            <p class="name">{{ uni.name }}</p>
+            <p class="speciality">{{ uni.speciality }}</p>
+            <p class="checked">
+              <ion-icon src="assets/icon/verified.svg"></ion-icon>
+              {{ uni.checked }}
+            </p>
+          </div>
+        </div>
+        <button (click)="toggleEducation()"  *ngIf="doctor.universities && doctor.universities.length > 2" class="show-more-button">
+          {{ isEducationExpanded ? 'Згорнути' : 'Показати більше' }}
+        </button>
+      </div>
+
       <div class="info-block">
         <h4 class="info-title">Я працюю з:</h4>
         <ul>

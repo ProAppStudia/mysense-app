@@ -47,6 +47,71 @@
     padding: 10px 0;
     cursor: pointer;
     font-size: 16px;
+    text-align: left;
+    display: block;
+    width: 100%;
+  }
+}
+
+.education-block {
+  .list-container {
+    max-height: 300px; // Adjust to show a few items
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+
+    &.expanded {
+      max-height: 1000px; // A large value to allow full expansion
+    }
+  }
+.show-more-button {
+    background: none;
+    border: none;
+    color: #795bda;
+    font-weight: 500;
+    padding: 10px 0;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: left;
+    display: block;
+    width: 100%;
+  }
+  .education-item {
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+
+    &:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    p {
+      margin: 0 0 5px 0;
+    }
+
+    .date {
+      font-size: 16px;
+      font-weight: 500;
+      color: #423f4d;
+    }
+
+    .name {
+      font-size: 16px;
+      color: #423f4d;
+    }
+
+    .speciality {
+      font-size: 15px;
+      color: #666;
+    }
+
+    .checked {
+      font-size: 14px;
+      color: #9895a6;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
   }
 }
 

@@ -85,6 +85,7 @@ export class DoctorService {
 worksWithLgbt:     data.work_with_lgbt     === 1 || data.work_with_lgbt     === '1' || data.work_with_lgbt     === true,
       languages: data.languages || [],
       description: data.description,
+      universities: data.universities || [],
     };
   }
 }
