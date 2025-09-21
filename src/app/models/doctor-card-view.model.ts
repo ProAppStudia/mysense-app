@@ -1,4 +1,5 @@
 import { University } from './university.model';
+import { DoctorFile } from './doctor-file.model';
 
 export interface DoctorCardView {
   id: number | string;
@@ -24,4 +25,5 @@ export interface DoctorCardView {
   languages?: string[];
   description?: string;
   universities?: University[];
+  doctorFiles?: DoctorFile[];
 }

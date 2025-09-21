@@ -53,6 +53,25 @@
   }
 }
 
+.diploma-gallery {
+  margin-top: 20px;
+
+  swiper-container {
+    --swiper-pagination-color: #795bda;
+  }
+
+  swiper-slide {
+    width: 60%;
+    padding: 0 5px;
+
+    img {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #eee;
+    }
+  }
+}
+
 .education-block {
   .list-container {
     max-height: 300px; // Adjust to show a few items

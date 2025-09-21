@@ -122,9 +122,19 @@
             </p>
           </div>
         </div>
-        <button (click)="toggleEducation()"  *ngIf="doctor.universities && doctor.universities.length > 2" class="show-more-button">
+        <button (click)="toggleEducation()" class="show-more-button" *ngIf="doctor.universities && doctor.universities.length > 2">
           {{ isEducationExpanded ? 'Згорнути' : 'Показати більше' }}
         </button>
+      </div>
+
+      <div class="diploma-gallery" *ngIf="doctor.doctorFiles && doctor.doctorFiles.length > 0">
+        <swiper-container slides-per-view="auto" space-between="10">
+          <swiper-slide *ngFor="let file of doctor.doctorFiles">
+            <a [href]="file.file" target="_blank">
+              <img [src]="file.thumb">
+            </a>
+          </swiper-slide>
+        </swiper-container>
       </div>
 
       <div class="info-block">

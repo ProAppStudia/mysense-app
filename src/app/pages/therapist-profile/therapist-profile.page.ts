@@ -1,17 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonBackButton, IonButtons, IonIcon, IonButton } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
 import { DoctorService } from '../../services/doctor.service';
 import { DoctorCardView } from '../../models/doctor-card-view.model';
+import { register } from 'swiper/element/bundle';
+
+register();
 
 @Component({
   selector: 'app-therapist-profile',
   templateUrl: './therapist-profile.page.html',
   styleUrls: ['./therapist-profile.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonBackButton, IonButtons, IonIcon, IonButton]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonBackButton, IonButtons, IonIcon, IonButton],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class TherapistProfilePage implements OnInit {
 
