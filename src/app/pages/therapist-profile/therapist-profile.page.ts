@@ -16,6 +16,7 @@ import { DoctorCardView } from '../../models/doctor-card-view.model';
 export class TherapistProfilePage implements OnInit {
 
   doctor: DoctorCardView | { error: string } | null = null;
+  isDescriptionExpanded = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -33,5 +34,9 @@ export class TherapistProfilePage implements OnInit {
 
   isDoctorCardView(doctor: any): doctor is DoctorCardView {
     return doctor && doctor.id !== undefined;
+  }
+
+  toggleDescription() {
+    this.isDescriptionExpanded = !this.isDescriptionExpanded;
   }
 }

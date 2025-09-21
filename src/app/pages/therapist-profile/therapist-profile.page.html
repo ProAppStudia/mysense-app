@@ -98,6 +98,16 @@
           <li *ngFor="let lang of doctor.languages">{{ lang }}</li>
         </ul>
       </div>
+
+      <div class="info-block about-me">
+        <h4 class="info-title">Про мене</h4>
+        <div class="description" [class.expanded]="isDescriptionExpanded">
+          <p>{{ doctor.description }}</p>
+        </div>
+        <button (click)="toggleDescription()" class="show-more-button">
+          {{ isDescriptionExpanded ? 'Згорнути' : 'Показати більше' }}
+        </button>
+      </div>
     </div>
     <ng-template #errorView>
       <p>Не вдалося завантажити профіль.</p>

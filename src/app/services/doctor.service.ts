@@ -55,18 +55,6 @@ export class DoctorService {
   }
 
   private transformToDoctorCardView(data: any): DoctorCardView {
-    const worksWith = [];
-    if (Array.isArray(data.work_with)) {
-        worksWith.push(...data.work_with);
-    } else {
-        if (data.work_with_military === '1' || data.work_with_military === true) {
-            worksWith.push('Військовими');
-        }
-        if (data.work_with_lgbt === '1' || data.work_with_lgbt === true) {
-            worksWith.push('ЛГБТКІ+');
-        }
-    }
-
     return {
       id: data.doctor_id,
       fullName: data.fullname,
@@ -84,9 +72,10 @@ export class DoctorService {
       verified: true,
       videoAppealUrl: data.video_appeal_file,
       workWithTypes: data.types || [],
-     worksWithMilitary: data.work_with_military === 1 || data.work_with_military === '1' || data.work_with_military === true,
-worksWithLgbt:     data.work_with_lgbt     === 1 || data.work_with_lgbt     === '1' || data.work_with_lgbt     === true,
+      worksWithMilitary: data.work_with_military === 1 || data.work_with_military === '1' || data.work_with_military === true,
+      worksWithLgbt:     data.work_with_lgbt     === 1 || data.work_with_lgbt     === '1' || data.work_with_lgbt     === true,
       languages: data.languages || [],
+      description: data.description,
     };
   }
 }

@@ -18,4 +18,5 @@ export interface DoctorCardView {
   worksWithMilitary?: boolean;
   worksWithLgbt?: boolean;
   languages?: string[];
+  description?: string;
 }
