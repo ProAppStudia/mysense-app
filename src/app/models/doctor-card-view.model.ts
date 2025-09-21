@@ -1,5 +1,6 @@
 import { University } from './university.model';
 import { DoctorFile } from './doctor-file.model';
+import { Calendar } from './calendar.model';
 
 export interface DoctorCardView {
   id: number | string;
@@ -26,4 +27,5 @@ export interface DoctorCardView {
   description?: string;
   universities?: University[];
   doctorFiles?: DoctorFile[];
+  calendar?: Calendar;
 }

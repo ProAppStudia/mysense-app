@@ -53,6 +53,93 @@
   }
 }
 
+.booking-block {
+  margin-top: 20px;
+
+  h3 {
+    font-size: 20px;
+    font-weight: 500;
+    color: #423f4d;
+  }
+
+  .timezone-info {
+    color: #9895a6;
+    font-size: 14px;
+  }
+
+  .session-type-toggle, .booking-for-toggle {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+
+    ion-button {
+      --border-radius: 8px;
+      --border-color: #eee;
+      --color: #9895a6;
+      --background: #fff;
+      flex: 1;
+      text-transform: none;
+
+      &.active {
+        --background: #795bda;
+        --color: #fff;
+        --border-color: #795bda;
+      }
+    }
+  }
+
+  .week-navigator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+
+    button {
+      background: #f0f0f0;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+
+  .day-column {
+    text-align: center;
+  }
+
+  .day-header {
+    margin-bottom: 10px;
+  }
+
+  .time-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    button {
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+
+      &:disabled {
+        background: #fafafa;
+        color: #ccc;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
 .diploma-gallery {
   margin-top: 20px;
 

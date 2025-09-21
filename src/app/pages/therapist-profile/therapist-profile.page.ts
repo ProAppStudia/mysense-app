@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { DoctorService } from '../../services/doctor.service';
 import { DoctorCardView } from '../../models/doctor-card-view.model';
 import { register } from 'swiper/element/bundle';
+import { Week } from 'src/app/models/calendar.model';
 
 register();
 
@@ -23,6 +24,12 @@ export class TherapistProfilePage implements OnInit {
   isDescriptionExpanded = false;
   isEducationExpanded = false;
 
+  sessionType: 'online' | 'offline' = 'online';
+  bookingFor: 'me' | 'pair' | 'child' = 'me';
+  
+  currentWeekIndex = 0;
+  weeks: Week[] = [];
+  
   constructor(
     private route: ActivatedRoute,
     private doctorService: DoctorService
@@ -33,6 +40,10 @@ export class TherapistProfilePage implements OnInit {
     if (id) {
       this.doctorService.getDoctorProfile(id).subscribe(data => {
         this.doctor = data;
+        if (this.isDoctorCardView(this.doctor) && this.doctor.calendar) {
+          this.weeks = Object.values(this.doctor.calendar.weeks);
+          this.currentWeekIndex = this.weeks.findIndex(w => w.active);
+        }
       });
     }
   }
@@ -47,5 +58,25 @@ export class TherapistProfilePage implements OnInit {
 
   toggleEducation() {
     this.isEducationExpanded = !this.isEducationExpanded;
+  }
+
+  get currentWeek(): Week | undefined {
+    return this.weeks[this.currentWeekIndex];
+  }
+
+  get dayKeys(): string[] {
+    return this.currentWeek ? Object.keys(this.currentWeek.days) : [];
+  }
+
+  nextWeek() {
+    if (this.currentWeekIndex < this.weeks.length - 1) {
+      this.currentWeekIndex++;
+    }
+  }
+
+  prevWeek() {
+    if (this.currentWeekIndex > 0) {
+      this.currentWeekIndex--;
+    }
   }
 }
