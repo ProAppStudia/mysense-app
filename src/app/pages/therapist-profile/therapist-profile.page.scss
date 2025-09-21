@@ -1,7 +1,6 @@
 .psychologist-card.profile-page {
   box-shadow: none;
-  border-radius: 0;
-  padding-top: 0;
+ 
 }
 
 .video-container {
@@ -15,14 +14,14 @@
   --color: #795bda;
   --border-radius: 12px;
   height: 50px;
-  font-size: 16px;
+  font-size: 14px;
   margin-top: 20px;
   text-transform: none;
 }
 
 .info-block.about-me {
   .description {
-    max-height: 100px; // Adjust this value to control the truncated height
+    max-height: 225px; // Adjust this value to control the truncated height
     overflow: hidden;
     transition: max-height 0.3s ease-in-out;
     position: relative;
@@ -34,7 +33,7 @@
     p {
       margin: 0;
       color: #423f4d;
-      font-size: 16px;
+      font-size: 14px;
       line-height: 1.6;
     }
   }
@@ -204,7 +203,7 @@
 
 .education-block {
   .list-container {
-    max-height: 300px; // Adjust to show a few items
+    max-height: 255px; // Adjust to show a few items
     overflow: hidden;
     transition: max-height 0.3s ease-in-out;
 
