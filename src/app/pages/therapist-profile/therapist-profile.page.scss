@@ -160,6 +160,27 @@
 }
 
 .reviews-block {
+  .list-container {
+    max-height: 250px; // Adjust to show one or two reviews
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+
+    &.expanded {
+      max-height: 1000px; // A large value to allow full expansion
+    }
+  }
+  .show-more-button {
+    background: none;
+    border: none;
+    color: #795bda;
+    font-weight: 500;
+    padding: 10px 0;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: left;
+    display: block;
+    width: 100%;
+  }
   .review-item {
     padding-bottom: 15px;
     margin-bottom: 15px;
@@ -479,7 +500,7 @@ ion-footer {
       flex: 1;
       height: 50px;
       --border-radius: 12px;
-      font-size: 16px;
+      font-size: 14px;
       text-transform: none;
       margin: 0;
     }
