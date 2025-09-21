@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/filter"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isDoctorCardView(doctor) ? doctor.fullName : 'Профіль' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="doctor">
+    <div *ngIf="isDoctorCardView(doctor); else errorView">
+      <img [src]="doctor.avatarUrl" alt="Avatar" *ngIf="doctor.avatarUrl">
+      <h1>{{ doctor.fullName }}</h1>
+      <p>{{ doctor.specialization }}</p>
+      <!-- Add more fields as needed -->
+    </div>
+    <ng-template #errorView>
+      <p>Не вдалося завантажити профіль.</p>
+    </ng-template>
+  </div>
+</ion-content>

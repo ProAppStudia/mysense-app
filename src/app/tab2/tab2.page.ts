@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonIcon, IonButtons } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { filterCircleOutline } from 'ionicons/icons';
@@ -18,7 +19,9 @@ export class Tab2Page implements OnInit {
 
   constructor(
     private doctorService: DoctorService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     addIcons({ filterCircleOutline });
   }
@@ -28,6 +31,10 @@ export class Tab2Page implements OnInit {
       this.doctors = psychologists;
       this.cdr.detectChanges();
     });
+  }
+
+  goToProfile(doctorId: number | string) {
+    this.router.navigate(['therapist-profile', doctorId]);
   }
   
   isDoctorCardView(doctor: DoctorCardView | { error: string }): doctor is DoctorCardView {

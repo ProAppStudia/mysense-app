@@ -30,6 +30,32 @@ export class DoctorService {
     );
   }
 
+  getDoctorProfile(doctorId: number | string): Observable<DoctorCardView | { error: string }> {
+    const params = new HttpParams().set('action', 'get_doctor_profile').set('doctor_id', doctorId.toString());
+
+    return this.http.get(this.apiUrl, { params, responseType: 'text' }).pipe(
+      map(response => {
+        try {
+          const data = JSON.parse(response);
+          if (data.error) {
+            return { error: data.error };
+          }
+          // The single profile response might have a different structure
+          // For now, we assume it can be transformed by the same function
+          return this.transformToDoctorCardView(data);
+        } catch (e) {
+          if (response.includes('error')) {
+            return { error: 'An error occurred while fetching the doctor profile.' };
+          }
+          return { error: 'Invalid response format.' };
+        }
+      }),
+      catchError(error => {
+        return of({ error: 'Failed to fetch doctor profile.' });
+      })
+    );
+  }
+
   private transformToDoctorCardView(data: any): DoctorCardView {
     return {
       id: data.doctor_id,
