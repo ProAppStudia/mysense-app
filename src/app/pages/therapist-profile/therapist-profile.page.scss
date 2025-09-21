@@ -125,14 +125,15 @@
     gap: 5px;
 
     button {
-      background: #f0f0f0;
-      border: 1px solid #ddd;
+      background: transparent;
+      border: 0px solid #ddd;
       border-radius: 8px;
       padding: 8px;
+      color: #795bda;
       cursor: pointer;
 
       &:disabled {
-        background: #fafafa;
+        background: #795bda1A; // 10% opacity
         color: #ccc;
         cursor: not-allowed;
       }
