@@ -1,0 +1,75 @@
+.calendar-container {
+  padding: 16px;
+}
+
+ion-toolbar ion-button {
+  --color: var(--ion-color-primary);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.no-entry-container {
+  text-align: center;
+  padding: 0 32px 32px;
+
+  img {
+    max-width: 300px;
+    margin: 0 auto 16px;
+    display: block;
+  }
+}
+
+.date-scroller {
+  display: flex;
+  overflow-x: auto;
+  padding-bottom: 16px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+
+  &::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+}
+
+.date-item {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+  margin-right: 8px;
+  cursor: pointer;
+
+  .day-number {
+    font-family: 'Golos Text', sans-serif;
+    font-weight: bold;
+    font-size: 18px;
+    color: #2D2D2D;
+  }
+
+  .day-name {
+    font-family: 'Golos Text', sans-serif;
+    font-size: 14px;
+    color: #9B9B9B;
+  }
+
+  &.selected {
+    background: #7a5bda;
+
+    .day-number {
+      color: #FFFFFF;
+    }
+
+    .day-name {
+      color: #FFFFFF;
+    }
+  }
+}

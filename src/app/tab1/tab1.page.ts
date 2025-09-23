@@ -7,6 +7,7 @@ import { AuthService } from '../services/auth.service'; // Import AuthService
 import { environment } from '../../environments/environment'; // Import environment for base URL
 import { addIcons } from 'ionicons';
 import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline } from 'ionicons/icons';
+import { RouterLink } from '@angular/router';
 
 addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline });
 register();
@@ -64,7 +65,8 @@ interface HomepageData {
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
-  imports: [IonContent, IonButton, CommonModule, IonAccordionGroup, IonAccordion, IonItem, IonLabel],
+  standalone: true,
+  imports: [IonContent, IonButton, CommonModule, IonAccordionGroup, IonAccordion, IonItem, IonLabel, RouterLink],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class Tab1Page implements OnInit, AfterViewInit {

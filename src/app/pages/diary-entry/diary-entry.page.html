@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="previousStep()" *ngIf="step > 1 && step < 5">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+      <ion-button routerLink="/tabs/diary" *ngIf="step === 1">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Додати запис</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Step 1: Mood -->
+  <div *ngIf="step === 1 && diaryData">
+    <h2>{{ diaryData.mood.header }}</h2>
+    <div class="mood-options">
+      <ion-button *ngFor="let mood of positiveMoods" (click)="setMood(mood.id); nextStep()">
+        <div class="button-content">
+          <img [src]="mood.icon" alt="">
+          <span>{{ mood.name }}</span>
+        </div>
+      </ion-button>
+    </div>
+    <div class="mood-options">
+      <ion-button *ngFor="let mood of negativeMoods" (click)="setMood(mood.id); nextStep()">
+        <div class="button-content">
+          <img [src]="mood.icon" alt="">
+          <span>{{ mood.name }}</span>
+        </div>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Step 2: Body Feeling -->
+  <div *ngIf="step === 2 && diaryData">
+    <h2>{{ diaryData.body.header }}</h2>
+    <div class="feeling-options">
+      <ion-button *ngFor="let feeling of diaryData.body.items" (click)="setBodyFeeling(feeling.id); nextStep()">
+        <div class="button-content">
+          <img [src]="feeling.icon" alt="">
+          <span>{{ feeling.name }}</span>
+        </div>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Step 3: Thoughts -->
+  <div *ngIf="step === 3">
+    <h2>Використовуйте цей простір, щоб записати свої думки.</h2>
+    <ion-textarea [(ngModel)]="diaryEntry.thoughts" rows="6"></ion-textarea>
+    <ion-button expand="block" (click)="nextStep()">Далі</ion-button>
+  </div>
+
+  <!-- Step 4: Therapeutic Questions -->
+  <div *ngIf="step === 4 && diaryData">
+    <h2>{{ diaryData.questions.header }}</h2>
+    <div *ngFor="let question of diaryData.questions; let i = index">
+      <ion-label>{{ question.title }}</ion-label>
+      <ion-input [(ngModel)]="diaryEntry.answers[i].answer" placeholder="{{ question.placeholder }}"></ion-input>
+    </div>
+    <ion-button expand="block" (click)="saveEntry()">Далі</ion-button>
+  </div>
+
+  <!-- Step 5: Confirmation -->
+  <div *ngIf="step === 5" class="confirmation-container">
+    <img src="assets/img/problem06.png" alt="Confirmation">
+    <h2>Ваш запис у щоденнику створено</h2>
+    <p>Новий запис у щоденнику створено. Ви можете редагувати свої записи в будь-який час.</p>
+    <ion-button expand="block" (click)="finish()">Добре</ion-button>
+  </div>
+</ion-content>

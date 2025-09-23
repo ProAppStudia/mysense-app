@@ -36,6 +36,18 @@ export const routes: Routes = [
         redirectTo: '/tabs/home',
         pathMatch: 'full',
       },
+      {
+        path: 'diary',
+        loadComponent: () =>
+          import('../pages/diary/diary.page').then((m) => m.DiaryPage),
+      },
+      {
+        path: 'diary-entry',
+        loadComponent: () =>
+          import('../pages/diary-entry/diary-entry.page').then(
+            (m) => m.DiaryEntryPage
+          ),
+      },
     ],
   },
   {

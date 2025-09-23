@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button routerLink="/tabs/home">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Записи у щоденнику</ion-title>
+    <ion-buttons slot="end">
+      <ion-button>
+        Архів
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="calendar-container">
+    <div class="calendar-header">
+      <ion-button fill="clear" (click)="previousMonth()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+      <h2>{{ currentMonth }} {{ currentYear }}</h2>
+      <ion-button fill="clear" (click)="nextMonth()">
+        <ion-icon name="arrow-forward"></ion-icon>
+      </ion-button>
+    </div>
+    <div class="date-scroller" #dateScroller>
+      <div *ngFor="let date of dates"
+           class="date-item"
+           [class.selected]="isSelected(date)"
+           (click)="selectDate(date)">
+        <div class="day-number">{{ date?.getDate() }}</div>
+        <div class="day-name">{{ getDayName(date) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="diaryEntry && diaryEntry.length > 0; else noEntry">
+    <div *ngFor="let entry of diaryEntry">
+      <!-- Display existing entry -->
+      <h2>{{ entry.title }}</h2>
+      <p>{{ entry.content }}</p>
+      <ion-button expand="block" routerLink="/tabs/diary-entry" [queryParams]="{date: selectedDate}">Редагувати запис</ion-button>
+    </div>
+  </div>
+
+  <ng-template #noEntry>
+    <div class="no-entry-container">
+      <img src="assets/img/problem03.png" alt="No entry">
+      <h3>Ви ще не заповнили свій щоденник сьогодні.</h3>
+      <ion-button expand="block" routerLink="/tabs/diary-entry" [queryParams]="{date: selectedDate}">+ Написати в щоденник</ion-button>
+    </div>
+  </ng-template>
+</ion-content>
