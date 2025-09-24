@@ -72,6 +72,6 @@ export class DiaryEntryPage implements OnInit {
   }
 
   finish() {
-    this.router.navigate(['/tabs/diary']);
+    this.router.navigate(['/tabs/diary'], { queryParams: { refresh: new Date().getTime() } });
   }
 }

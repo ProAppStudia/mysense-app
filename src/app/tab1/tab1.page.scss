@@ -608,11 +608,10 @@ ion-content {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   padding: 15px;
   display: flex;
-  align-items: center;
+  flex-direction: column; /* Change to column for vertical layout */
   position: relative;
   width: 100%; /* Ensure card takes full width of its slide */
   box-sizing: border-box;
-
 }
 
 .session-type-indicator {
@@ -675,4 +674,18 @@ ion-content {
   position: absolute;
   top: 15px;
   right: 15px;
+}
+
+.session-actions {
+  display: flex;
+  justify-content: space-between; /* Distribute buttons evenly */
+  gap: 10px; /* Space between buttons */
+  margin-top: 15px; /* Add space above the buttons */
+  width: 100%; /* Make the container full-width */
+}
+
+.session-actions ion-button {
+  text-transform: none; /* Remove uppercase text */
+  font-size: 14px; /* Smaller font size */
+  height: 36px; /* Reduce button height */
 }

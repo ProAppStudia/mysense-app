@@ -29,18 +29,27 @@
       <div *ngFor="let date of dates"
            class="date-item"
            [class.selected]="isSelected(date)"
-           (click)="selectDate(date)">
+           [class.has-entry]="hasEntry(date)"
+           [class.disabled]="isFuture(date)"
+           (click)="!isFuture(date) && selectDate(date)">
         <div class="day-number">{{ date?.getDate() }}</div>
         <div class="day-name">{{ getDayName(date) }}</div>
       </div>
     </div>
   </div>
 
-  <div *ngIf="diaryEntry && diaryEntry.length > 0; else noEntry">
-    <div *ngFor="let entry of diaryEntry">
-      <!-- Display existing entry -->
-      <h2>{{ entry.title }}</h2>
-      <p>{{ entry.content }}</p>
+  <div *ngIf="diaryEntry && diaryEntry.mood; else noEntry">
+    <div class="entry-content">
+      <div class="moods">
+        <ion-chip>{{ diaryEntry.mood.name }}</ion-chip>
+        <ion-chip>{{ diaryEntry.body.name }}</ion-chip>
+      </div>
+      <p>{{ diaryEntry.thoughts }}</p>
+      <h3>Therapeutic questions from our psychologists.</h3>
+      <div *ngFor="let answer of diaryEntry.answers" class="question-answer">
+        <h4>{{ answer.question_title }}</h4>
+        <p>{{ answer.answer }}</p>
+      </div>
       <ion-button expand="block" routerLink="/tabs/diary-entry" [queryParams]="{date: selectedDate}">Редагувати запис</ion-button>
     </div>
   </div>

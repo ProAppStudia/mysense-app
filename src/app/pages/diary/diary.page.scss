@@ -72,4 +72,50 @@ ion-toolbar ion-button {
       color: #FFFFFF;
     }
   }
+
+  &.has-entry .day-number::after {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #7a5bda;
+    margin: 4px auto 0;
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+.entry-content {
+  padding: 16px;
+
+  .moods {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+
+    ion-chip {
+      background: #EAE2DC;
+      color: #2D2D2D;
+    }
+  }
+
+  h3 {
+    font-family: 'Manrope-Bold';
+    font-size: 16px;
+    margin-top: 24px;
+  }
+
+  .question-answer {
+    margin-bottom: 16px;
+
+    h4 {
+      font-family: 'Manrope-Medium';
+      font-size: 14px;
+      color: #9B9B9B;
+    }
+  }
 }

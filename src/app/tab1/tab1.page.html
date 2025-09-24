@@ -23,6 +23,10 @@
               </div>
             </div>
             <ion-icon [name]="session.icon" class="session-icon"></ion-icon>
+            <div class="session-actions">
+              <ion-button expand="block" fill="outline" class="reschedule-button" (click)="rescheduleSession(session.id)">Перенести</ion-button>
+              <ion-button expand="block" fill="outline" color="danger" class="cancel-button" (click)="cancelSession(session.id)">Відмінити</ion-button>
+            </div>
           </div>
         </swiper-slide>
       </swiper-container>
@@ -35,12 +39,16 @@
     <!-- New Navigation Block -->
     <div class="quick-actions-block">
       <div class="action-item">
+        <ion-icon name="add-circle-outline"></ion-icon>
+        <p>Забронювати сесію</p>
+      </div>
+      <div class="action-item">
         <ion-icon name="calendar-outline"></ion-icon>
         <p>Мої сесії</p>
       </div>
       <div class="action-item">
-        <ion-icon name="add-circle-outline"></ion-icon>
-        <p>Забронювати сесію</p>
+        <ion-icon name="document-text-outline"></ion-icon>
+        <p>Мої завдання</p>
       </div>
       <div class="action-item">
         <ion-icon name="chatbubbles-outline"></ion-icon>
@@ -53,10 +61,6 @@
       <div class="action-item">
         <ion-icon name="people-outline"></ion-icon>
         <p>Список психологів</p>
-      </div>
-      <div class="action-item">
-        <ion-icon name="person-outline"></ion-icon>
-        <p>Кабінет</p>
       </div>
     </div>
 

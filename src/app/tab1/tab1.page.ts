@@ -6,10 +6,10 @@ import { register } from 'swiper/element/bundle';
 import { AuthService } from '../services/auth.service'; // Import AuthService
 import { environment } from '../../environments/environment'; // Import environment for base URL
 import { addIcons } from 'ionicons';
-import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline } from 'ionicons/icons';
+import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline } from 'ionicons/icons';
 import { RouterLink } from '@angular/router';
 
-addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline });
+addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline });
 register();
 
 interface Doctor {
@@ -180,5 +180,15 @@ export class Tab1Page implements OnInit, AfterViewInit {
       console.log(this.homepageData);
       this.checkLoginStatus(); // Call checkLoginStatus after homepageData is loaded
     });
+  }
+
+  rescheduleSession(sessionId: number) {
+    console.log('Reschedule session:', sessionId);
+    // Add your reschedule logic here
+  }
+
+  cancelSession(sessionId: number) {
+    console.log('Cancel session:', sessionId);
+    // Add your cancel logic here
   }
 }
