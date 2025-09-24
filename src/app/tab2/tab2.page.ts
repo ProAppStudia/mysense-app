@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonIcon, IonButtons, ModalController } from '@ionic/angular/standalone';
+import { IonToolbar, IonContent, IonButton, IonIcon, IonButtons, ModalController, IonSearchbar, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { filterCircleOutline } from 'ionicons/icons';
+import { filterCircleOutline, swapVerticalOutline } from 'ionicons/icons';
 import { DoctorService } from '../services/doctor.service';
 import { DoctorCardView } from '../models/doctor-card-view.model';
 import { CommonModule } from '@angular/common';
@@ -12,12 +12,13 @@ import { FilterModalComponent } from '../components/filter-modal/filter-modal.co
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonIcon, IonButtons, CommonModule, FilterModalComponent]
+  imports: [IonToolbar, IonContent, IonButton, IonIcon, IonButtons, CommonModule, IonSearchbar, IonSelect, IonSelectOption]
 })
 export class Tab2Page implements OnInit {
   
   doctors: (DoctorCardView | { error: string })[] = [];
   private allDoctors: DoctorCardView[] = [];
+  public searchTerm: string = '';
 
   constructor(
     private doctorService: DoctorService,
@@ -26,7 +27,7 @@ export class Tab2Page implements OnInit {
     private route: ActivatedRoute,
     private modalController: ModalController
   ) {
-    addIcons({ filterCircleOutline });
+    addIcons({ filterCircleOutline, swapVerticalOutline });
   }
 
   ngOnInit() {
@@ -34,6 +35,32 @@ export class Tab2Page implements OnInit {
       this.allDoctors = psychologists.filter(p => this.isDoctorCardView(p)) as DoctorCardView[];
       this.doctors = [...this.allDoctors];
       this.cdr.detectChanges();
+    });
+  }
+
+  searchDoctors(event: any) {
+    this.searchTerm = event.target.value;
+    this.doctors = this.allDoctors.filter(doctor => {
+      if (this.isDoctorCardView(doctor)) {
+        return doctor.fullName.toLowerCase().includes(this.searchTerm.toLowerCase());
+      }
+      return false;
+    });
+  }
+
+  sortDoctorsByPrice(event: any) {
+    const sortBy = event.detail.value;
+    this.doctors.sort((a, b) => {
+      if (this.isDoctorCardView(a) && this.isDoctorCardView(b)) {
+        const priceA = Number(a.priceIndividual) || 0;
+        const priceB = Number(b.priceIndividual) || 0;
+        if (sortBy === 'price-asc') {
+          return priceA - priceB;
+        } else {
+          return priceB - priceA;
+        }
+      }
+      return 0;
     });
   }
 

@@ -9,7 +9,7 @@ import { HelpPopoverComponent } from '../components/help-popover/help-popover.co
   templateUrl: 'tabs.page.html',
   styleUrls: ['tabs.page.scss'],
   standalone: true,
-  imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonHeader, IonToolbar, IonButtons, IonButton, IonBadge, HelpPopoverComponent],
+  imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonHeader, IonToolbar, IonButtons, IonButton, IonBadge],
 })
 export class TabsPage {
   public environmentInjector = inject(EnvironmentInjector);

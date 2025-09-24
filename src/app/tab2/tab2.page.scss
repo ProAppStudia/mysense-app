@@ -1,5 +1,5 @@
 .psychologist-cards-container {
-  padding: 20px;
+  padding: 0 20px 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -189,7 +189,23 @@
   justify-content: center;
 }
 
-ion-header ion-toolbar ion-buttons ion-button ion-icon {
-  font-size: 2.0em; /* Match tab icon size */
-  color: var(--ion-color-primary); /* Apply primary color */
+ion-toolbar ion-buttons ion-button ion-icon {
+  font-size: 2.0em;
+  color: var(--ion-color-primary);
+}
+
+.sort-select {
+  --padding-start: 10px;
+  --padding-end: 10px;
+  --placeholder-opacity: 0;
+  width: 40px;
+  height: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23795bda' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-arrow-up-down'%3E%3Cpath d='m21 16-4 4-4-4'%3E%3C/path%3E%3Cpath d='M17 20V4'%3E%3C/path%3E%3Cpath d='m3 8 4-4 4 4'%3E%3C/path%3E%3Cpath d='M7 4v16'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  justify-content: center;
+}
+
+.sort-select::part(icon) {
+  display: none;
 }

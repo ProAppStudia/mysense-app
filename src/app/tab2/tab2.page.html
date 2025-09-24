@@ -1,12 +1,18 @@
-<ion-header [translucent]="true">
+
   <ion-toolbar>
+    <ion-searchbar placeholder="Пошук за ім'ям" (ionInput)="searchDoctors($event)"></ion-searchbar>
     <ion-buttons slot="end">
+      <ion-select class="sort-select" (ionChange)="sortDoctorsByPrice($event)" interface="popover">
+        <ion-select-option value="price-asc">За збільшенням ціни</ion-select-option>
+        <ion-select-option value="price-desc">За зменшенням ціни</ion-select-option>
+      </ion-select>
       <ion-button (click)="openFilterModal()">
         <ion-icon name="filter-circle-outline"></ion-icon>
+        Фільтр
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-</ion-header>
+
 
 <ion-content [fullscreen]="true">
 
