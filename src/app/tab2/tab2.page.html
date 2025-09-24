@@ -1,6 +1,5 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Команда наших психологів</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="openFilterModal()">
         <ion-icon name="filter-circle-outline"></ion-icon>
@@ -10,16 +9,6 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Команда наших психологів</ion-title>
-      <ion-buttons slot="end">
-        <ion-button (click)="openFilterModal()">
-          <ion-icon name="filter-circle-outline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
 
   <div class="psychologist-cards-container">
     <ng-container *ngFor="let doctor of doctors">

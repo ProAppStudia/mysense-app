@@ -9,7 +9,7 @@
 
 <ion-content class="ion-padding">
   <ion-list>
-    <ion-radio-group [(ngModel)]="filters.type">
+    <ion-radio-group [value]="filters.type" (ionChange)="filters.type = $event.detail.value">
       <ion-list-header>
         <ion-label>Індивідуальна</ion-label>
       </ion-list-header>
@@ -32,10 +32,10 @@
     </ion-list-header>
     <ion-item *ngFor="let direction of directions">
       <ion-label>{{ direction.name }}</ion-label>
-      <ion-checkbox slot="start" [(ngModel)]="direction.checked"></ion-checkbox>
+      <ion-checkbox slot="start" [checked]="direction.checked" (ionChange)="direction.checked = $event.detail.checked"></ion-checkbox>
     </ion-item>
 
-    <ion-radio-group [(ngModel)]="filters.format">
+    <ion-radio-group [value]="filters.format" (ionChange)="filters.format = $event.detail.value">
       <ion-list-header>
         <ion-label>Оберіть формат сесії</ion-label>
       </ion-list-header>
@@ -49,7 +49,7 @@
       </ion-item>
     </ion-radio-group>
 
-    <ion-radio-group [(ngModel)]="filters.gender">
+    <ion-radio-group [value]="filters.gender" (ionChange)="filters.gender = $event.detail.value">
       <ion-list-header>
         <ion-label>Оберіть стать психолога</ion-label>
       </ion-list-header>
@@ -67,7 +67,7 @@
       </ion-item>
     </ion-radio-group>
 
-    <ion-radio-group [(ngModel)]="filters.language">
+    <ion-radio-group [value]="filters.language" (ionChange)="filters.language = $event.detail.value">
       <ion-list-header>
         <ion-label>Оберіть мову спілкування</ion-label>
       </ion-list-header>
@@ -89,7 +89,7 @@
       <ion-label>Оберіть прийнятну ціну</ion-label>
     </ion-list-header>
     <ion-item>
-      <ion-range min="900" max="2700" dualKnobs="true" pin="true" [(ngModel)]="filters.priceRange">
+      <ion-range min="900" max="2700" dualKnobs="true" pin="true" [value]="filters.priceRange" (ionChange)="filters.priceRange = $event.detail.value">
         <ion-label slot="start">900</ion-label>
         <ion-label slot="end">2700</ion-label>
       </ion-range>
