@@ -89,7 +89,7 @@
       <ion-label>Оберіть прийнятну ціну</ion-label>
     </ion-list-header>
     <ion-item>
-      <ion-range min="900" max="2700" dualKnobs="true" pin="true" [value]="filters.priceRange" (ionChange)="filters.priceRange = $event.detail.value">
+      <ion-range min="900" max="2700" dualKnobs="true" pin="true" [value]="filters.priceRange" (ionChange)="filters.priceRange = $any($event.detail.value)">
         <ion-label slot="start">900</ion-label>
         <ion-label slot="end">2700</ion-label>
       </ion-range>
