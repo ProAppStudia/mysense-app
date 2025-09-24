@@ -1,18 +1,20 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonToolbar, IonContent, IonButton, IonIcon, IonButtons, ModalController, IonSearchbar, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+import { IonToolbar, IonContent, IonButton, IonIcon, IonButtons, ModalController, IonSearchbar, PopoverController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { filterCircleOutline, swapVerticalOutline } from 'ionicons/icons';
+import { filterCircleOutline, swapVerticalOutline, arrowUpOutline, arrowDownOutline, closeOutline } from 'ionicons/icons';
 import { DoctorService } from '../services/doctor.service';
 import { DoctorCardView } from '../models/doctor-card-view.model';
 import { CommonModule } from '@angular/common';
 import { FilterModalComponent } from '../components/filter-modal/filter-modal.component';
+import { SortPopoverComponent } from '../components/sort-popover/sort-popover.component';
 
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
-  imports: [IonToolbar, IonContent, IonButton, IonIcon, IonButtons, CommonModule, IonSearchbar, IonSelect, IonSelectOption]
+  imports: [IonToolbar, IonContent, IonButton, IonIcon, IonButtons, CommonModule, IonSearchbar],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class Tab2Page implements OnInit {
   
@@ -25,9 +27,10 @@ export class Tab2Page implements OnInit {
     private cdr: ChangeDetectorRef,
     private router: Router,
     private route: ActivatedRoute,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private popoverController: PopoverController
   ) {
-    addIcons({ filterCircleOutline, swapVerticalOutline });
+    addIcons({ filterCircleOutline, swapVerticalOutline, arrowUpOutline, arrowDownOutline, closeOutline });
   }
 
   ngOnInit() {
@@ -48,8 +51,25 @@ export class Tab2Page implements OnInit {
     });
   }
 
-  sortDoctorsByPrice(event: any) {
-    const sortBy = event.detail.value;
+  async openSortPopover(ev: any) {
+    const popover = await this.popoverController.create({
+      component: SortPopoverComponent,
+      event: ev,
+      translucent: true
+    });
+    await popover.present();
+
+    const { data } = await popover.onWillDismiss();
+    if (data) {
+      this.sortDoctorsByPrice(data);
+    }
+  }
+
+  sortDoctorsByPrice(sortBy: string) {
+    if (sortBy === 'none') {
+      this.doctors = [...this.allDoctors];
+      return;
+    }
     this.doctors.sort((a, b) => {
       if (this.isDoctorCardView(a) && this.isDoctorCardView(b)) {
         const priceA = Number(a.priceIndividual) || 0;

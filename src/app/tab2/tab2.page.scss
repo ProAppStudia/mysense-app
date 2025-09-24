@@ -194,6 +194,25 @@ ion-toolbar ion-buttons ion-button ion-icon {
   color: var(--ion-color-primary);
 }
 
+ion-searchbar {
+  --padding-start: 0;
+  --padding-end: 0;
+  --box-shadow: none;
+  --border-radius: 10px;
+  --background: #f0f0f0;
+  padding: 0 0 0 10px;
+}
+
+ion-searchbar::part(search-icon) {
+  color: var(--ion-color-primary);
+  order: 2;
+  padding-left: 10px;
+}
+
+:host ::ng-deep .searchbar-input.sc-ion-searchbar-md {
+  padding-inline-end: 0 !important;
+}
+
 .sort-select {
   --padding-start: 10px;
   --padding-end: 10px;
@@ -208,4 +227,8 @@ ion-toolbar ion-buttons ion-button ion-icon {
 
 .sort-select::part(icon) {
   display: none;
+}
+ion-searchbar.searchbar-input.sc-ion-searchbar-md {
+    -webkit-padding-end: 0 !important;
+    padding-inline-end: 0 !important;
 }
