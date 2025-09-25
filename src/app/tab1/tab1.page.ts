@@ -7,7 +7,7 @@ import { AuthService } from '../services/auth.service'; // Import AuthService
 import { environment } from '../../environments/environment'; // Import environment for base URL
 import { addIcons } from 'ionicons';
 import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline } from 'ionicons/icons';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink, NavigationExtras } from '@angular/router';
 
 addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline });
 register();
@@ -78,7 +78,7 @@ export class Tab1Page implements OnInit, AfterViewInit {
   isLoggedIn: boolean = false;
   userSessions: Session[] = [];
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient, private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
     this.getHomepageData(); // Fetch homepage data first
@@ -190,5 +190,14 @@ export class Tab1Page implements OnInit, AfterViewInit {
   cancelSession(sessionId: number) {
     console.log('Cancel session:', sessionId);
     // Add your cancel logic here
+  }
+
+  viewAllSessions() {
+    const navigationExtras: NavigationExtras = {
+      state: {
+        sessions: this.userSessions
+      }
+    };
+    this.router.navigate(['/sessions'], navigationExtras);
   }
 }

@@ -1,0 +1,125 @@
+/* My Sessions Block Styles */
+.my-sessions-block {
+  background-color: #f8f8f8;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 500px;
+  text-align: left;
+}
+
+.sessions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.sessions-header h2 {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.sessions-header a {
+  font-size: 14px;
+  color: var(--ion-color-primary);
+  text-decoration: none;
+}
+
+.session-card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 15px;
+  display: flex;
+  flex-direction: column; /* Change to column for vertical layout */
+  position: relative;
+  width: 100%; /* Ensure card takes full width of its slide */
+  box-sizing: border-box;
+  margin-bottom: 15px;
+}
+
+.session-type-indicator {
+  width: 4px;
+  height: 100%;
+  background-color: var(--ion-color-primary); /* Green indicator */
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.session-details {
+  margin-left: 15px;
+  flex-grow: 1;
+}
+
+.session-details h3 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 5px 0;
+}
+
+.session-status {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.doctor-info {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.doctor-info img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 8px;
+}
+
+.doctor-info span {
+  margin-right: 10px;
+}
+
+.doctor-info ion-icon {
+  font-size: 16px;
+  margin-right: 5px;
+  color: #999;
+}
+
+.session-icon {
+  font-size: 24px;
+  color: var(--ion-color-primary);
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.session-actions {
+  display: flex;
+  justify-content: space-between; /* Distribute buttons evenly */
+  gap: 10px; /* Space between buttons */
+  margin-top: 15px; /* Add space above the buttons */
+  width: 100%; /* Make the container full-width */
+}
+
+.session-actions ion-button {
+  text-transform: none; /* Remove uppercase text */
+  font-size: 14px; /* Smaller font size */
+  height: 36px; /* Reduce button height */
+}
+
+.no-sessions {
+  text-align: center;
+  margin-top: 50px;
+  color: var(--ion-color-medium);
+}

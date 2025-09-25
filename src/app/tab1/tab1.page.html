@@ -4,7 +4,7 @@
     <div *ngIf="isLoggedIn && userSessions.length > 0" class="my-sessions-block">
       <div class="sessions-header">
         <h2>Мої сесії</h2>
-        <a href="/tabs/tab2">Дивитись всі</a>
+        <a (click)="viewAllSessions()">Дивитись всі</a>
       </div>
       <swiper-container class="sessions-swiper" #sessionsSwiper slides-per-view="auto" free-mode="true">
         <swiper-slide *ngFor="let session of userSessions">

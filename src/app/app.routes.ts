@@ -13,4 +13,8 @@ export const routes: Routes = [
     path: 'therapist-profile/:id',
     loadComponent: () => import('./pages/therapist-profile/therapist-profile.page').then( m => m.TherapistProfilePage)
   },
+  {
+    path: 'sessions',
+    loadComponent: () => import('./pages/sessions/sessions.page').then( m => m.SessionsPage)
+  },
 ];

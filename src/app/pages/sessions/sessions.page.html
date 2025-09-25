@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab1"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Мої сесії</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="sessions.length > 0">
+    <div *ngFor="let session of sessions" class="session-card">
+      <div class="session-type-indicator"></div>
+      <div class="session-details">
+        <h3>{{ session.type }}</h3>
+        <p class="session-status">{{ session.status }}</p>
+        <div class="doctor-info">
+          <img [src]="'https://mysense.care' + session.doctor_image" alt="{{ session.doctor_name }}">
+          <span>{{ session.doctor_name }}</span>
+          <ion-icon name="time-outline"></ion-icon>
+          <span>{{ session.time_range }}</span>
+        </div>
+      </div>
+      <ion-icon [name]="session.icon" class="session-icon"></ion-icon>
+      <div class="session-actions">
+        <ion-button expand="block" fill="outline" class="reschedule-button">Перенести</ion-button>
+        <ion-button expand="block" fill="outline" color="danger" class="cancel-button">Відмінити</ion-button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="sessions.length === 0" class="no-sessions">
+    <p>У вас ще немає запланованих сесій.</p>
+  </div>
+</ion-content>
