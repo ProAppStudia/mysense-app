@@ -1,51 +1,32 @@
-/* My Sessions Block Styles */
-.my-sessions-block {
-  background-color: #f8f8f8;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 30px;
-  width: 100%;
-  max-width: 500px;
-  text-align: left;
-}
-
-.sessions-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.sessions-header h2 {
-  font-size: 22px;
-  font-weight: bold;
-  color: #333;
-  margin: 0;
-}
-
-.sessions-header a {
-  font-size: 14px;
-  color: var(--ion-color-primary);
-  text-decoration: none;
-}
-
 .session-card {
   background-color: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   padding: 15px;
   display: flex;
-  flex-direction: column; /* Change to column for vertical layout */
+  flex-direction: column;
   position: relative;
-  width: 100%; /* Ensure card takes full width of its slide */
+  width: 100%;
   box-sizing: border-box;
   margin-bottom: 15px;
+
+  &.status-заброньована .session-type-indicator {
+    background-color: orange;
+  }
+  &.status-оплачена .session-type-indicator {
+    background-color: green;
+  }
+  &.status-скасована .session-type-indicator {
+    background-color: red;
+  }
+  &.status-пройдена .session-type-indicator {
+    background-color: var(--ion-color-primary);
+  }
 }
 
 .session-type-indicator {
   width: 4px;
   height: 100%;
-  background-color: var(--ion-color-primary); /* Green indicator */
   position: absolute;
   left: 0;
   top: 0;
@@ -106,16 +87,21 @@
 
 .session-actions {
   display: flex;
-  justify-content: space-between; /* Distribute buttons evenly */
-  gap: 10px; /* Space between buttons */
-  margin-top: 15px; /* Add space above the buttons */
-  width: 100%; /* Make the container full-width */
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 15px;
+  width: 100%;
 }
 
 .session-actions ion-button {
-  text-transform: none; /* Remove uppercase text */
-  font-size: 14px; /* Smaller font size */
-  height: 36px; /* Reduce button height */
+  text-transform: none;
+  font-size: 14px;
+  height: 36px;
+}
+
+.pay-button {
+  --background: green;
+  --color: white;
 }
 
 .no-sessions {

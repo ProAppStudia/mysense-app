@@ -78,7 +78,8 @@ export class Tab1Page implements OnInit, AfterViewInit {
   isLoggedIn: boolean = false;
   userSessions: Session[] = [];
 
-  constructor(private http: HttpClient, private authService: AuthService, private router: Router) {}
+  constructor(private http: HttpClient, private authService: AuthService, private router: Router) {
+      addIcons({timeOutline,addCircleOutline,calendarOutline,documentTextOutline,chatbubblesOutline,checkboxOutline,peopleOutline,bookOutline});}
 
   ngOnInit() {
     this.getHomepageData(); // Fetch homepage data first
@@ -195,7 +196,8 @@ export class Tab1Page implements OnInit, AfterViewInit {
   viewAllSessions() {
     const navigationExtras: NavigationExtras = {
       state: {
-        sessions: this.userSessions
+        sessions: this.userSessions,
+        doctors: this.homepageData?.doctors
       }
     };
     this.router.navigate(['/sessions'], navigationExtras);

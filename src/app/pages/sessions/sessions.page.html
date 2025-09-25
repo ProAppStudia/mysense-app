@@ -9,7 +9,7 @@
 
 <ion-content class="ion-padding">
   <div *ngIf="sessions.length > 0">
-    <div *ngFor="let session of sessions" class="session-card">
+    <div *ngFor="let session of sessions" class="session-card" [ngClass]="'status-' + session.status.toLowerCase()">
       <div class="session-type-indicator"></div>
       <div class="session-details">
         <h3>{{ session.type }}</h3>
@@ -22,9 +22,10 @@
         </div>
       </div>
       <ion-icon [name]="session.icon" class="session-icon"></ion-icon>
-      <div class="session-actions">
-        <ion-button expand="block" fill="outline" class="reschedule-button">Перенести</ion-button>
-        <ion-button expand="block" fill="outline" color="danger" class="cancel-button">Відмінити</ion-button>
+      <div class="session-actions" *ngIf="session.status !== 'Скасована' && session.status !== 'Пройдена'">
+        <ion-button *ngIf="session.status === 'Заброньована' || session.status === 'Оплачена'" expand="block" fill="outline" class="reschedule-button">Перенести</ion-button>
+        <ion-button *ngIf="session.status === 'Заброньована'" expand="block" fill="solid" color="success" class="pay-button">Оплатити</ion-button>
+        <ion-button *ngIf="session.status === 'Оплачена'" expand="block" fill="outline" color="danger" class="cancel-button">Відмінити</ion-button>
       </div>
     </div>
   </div>

@@ -3,7 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { IonContent, IonCard, IonCardContent, IonButton, IonList, IonItem, IonIcon, IonLabel, IonHeader, IonToolbar, IonTitle, IonModal, IonInput, IonSpinner, IonText, IonButtons, IonCheckbox } from '@ionic/angular/standalone';
 import { AuthService } from '../services/auth.service';
+import { DoctorService } from '../services/doctor.service';
 import { Subscription, interval } from 'rxjs';
+import { Router, NavigationExtras } from '@angular/router';
+import { DoctorCardView } from '../models/doctor-card-view.model';
 
 @Component({
   selector: 'app-profile',
@@ -50,12 +53,42 @@ export class ProfilePage implements OnInit, OnDestroy {
     code: new FormControl('', []) // Code field initially not required
   });
 
+  userSessions: any[] = [];
+  doctors: DoctorCardView[] = [];
+
   constructor(
-    private authService: AuthService
+    private authService: AuthService,
+    private doctorService: DoctorService,
+    private router: Router
   ) { }
 
   ngOnInit() {
     this.isLoggedIn.set(this.authService.isAuthenticated());
+    if (this.isLoggedIn()) {
+      this.doctorService.getPsychologists().subscribe(psychologists => {
+        this.doctors = psychologists;
+        this.userSessions = [
+          {
+            id: 1,
+            type: 'Індивідуальна сесія',
+            status: 'Заброньована',
+            doctor_name: this.doctors[0].fullName,
+            doctor_image: this.doctors[0].avatarUrl,
+            time_range: '20 вересня о 14:00',
+            icon: 'videocam-outline'
+          },
+          {
+            id: 2,
+            type: 'Сімейна сесія',
+            status: 'Оплачена',
+            doctor_name: this.doctors[1].fullName,
+            doctor_image: this.doctors[1].avatarUrl,
+            time_range: '22 вересня о 18:00',
+            icon: 'videocam-outline'
+          }
+        ];
+      });
+    }
   }
 
   ngOnDestroy() {
@@ -263,5 +296,15 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   toggleRegisterPasswordVisibility() {
     this.registerPasswordVisible.update(value => !value);
+  }
+
+  viewAllSessions() {
+    const navigationExtras: NavigationExtras = {
+      state: {
+        sessions: this.userSessions,
+        doctors: this.doctors
+      }
+    };
+    this.router.navigate(['/sessions'], navigationExtras);
   }
 }
