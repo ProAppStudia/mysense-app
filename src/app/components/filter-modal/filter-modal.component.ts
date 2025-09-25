@@ -3,14 +3,12 @@ import { ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { IonRange, IonRadio, IonRadioGroup } from '@ionic/angular/standalone';
-
 @Component({
   selector: 'app-filter-modal',
   templateUrl: './filter-modal.component.html',
   styleUrls: ['./filter-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, IonRange, IonRadio, IonRadioGroup]
+  imports: [CommonModule, FormsModule, IonicModule]
 })
 export class FilterModalComponent implements OnInit {
 

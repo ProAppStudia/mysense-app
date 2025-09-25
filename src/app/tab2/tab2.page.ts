@@ -97,8 +97,14 @@ export class Tab2Page implements OnInit {
   }
 
   async openFilterModal() {
+    const activeElement = document.activeElement as HTMLElement;
+    if (activeElement) {
+      activeElement.blur();
+    }
+
     const modal = await this.modalController.create({
       component: FilterModalComponent,
+      presentingElement: document.querySelector('ion-router-outlet') || undefined
     });
     await modal.present();
 
