@@ -17,8 +17,8 @@ export class ChatService {
     return this.http.get(`${this.apiUrl}?action=get_my_chats&token=${token}`);
   }
 
-  getChatMessages(chatId: number): Observable<any> {
+  getChatMessages(userId: number): Observable<any> {
     const token = this.tokenStorage.getToken();
-    return this.http.get(`${this.apiUrl}?action=get_my_chat_messages&chat_id=${chatId}&token=${token}`);
+    return this.http.get(`${this.apiUrl}?action=get_my_chat_messages&to_user_id=${userId}&token=${token}`);
   }
 }

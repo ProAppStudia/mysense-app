@@ -10,7 +10,7 @@
       <ion-avatar>
         <img [src]="chat.photo || 'assets/icon/favicon.png'" />
       </ion-avatar>
-      <ion-label>{{ chat.name }}</ion-label>
+      <ion-label>{{ chat.fullname }}</ion-label>
     </div>
   </div>
 
@@ -21,10 +21,10 @@
   </div>
 
   <div class="message-list" *ngIf="selectedChat">
-    <div *ngFor="let message of messages" class="message-item" [class.my-message]="message.is_my">
+    <div *ngFor="let message of messages" class="message-item" [class.my-message]="message.side === 'right'">
       <div class="message-bubble">
-        <p>{{ message.message }}</p>
-        <span class="timestamp">{{ message.time }}</span>
+        <p>{{ message.text }}</p>
+        <span class="timestamp">{{ message.date }}</span>
       </div>
     </div>
   </div>

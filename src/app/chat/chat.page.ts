@@ -42,12 +42,12 @@ export class ChatPage implements OnInit {
 
   selectChat(chat: any) {
     this.selectedChat = chat;
-    this.chatService.getChatMessages(chat.chat_id).subscribe({
+    this.chatService.getChatMessages(chat.from_user_id).subscribe({
       next: (data: any) => {
-        if (Array.isArray(data)) {
-          this.messages = data;
-        } else if (data && data.messages) {
+        if (data && data.messages) {
           this.messages = data.messages;
+        } else {
+          this.messages = [];
         }
       },
       error: (error) => {
