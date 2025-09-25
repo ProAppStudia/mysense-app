@@ -1,22 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonIcon, IonList, IonItem, IonAvatar, IonLabel, IonFooter, IonInput } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, IonAvatar, IonLabel, IonFooter, IonInput, IonItem } from '@ionic/angular/standalone';
 import { ChatService } from '../services/chat.service';
+import { addIcons } from 'ionicons';
+import { send } from 'ionicons/icons';
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.page.html',
   styleUrls: ['./chat.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonButton, IonIcon, IonList, IonItem, IonAvatar, IonLabel, IonFooter, IonInput]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButton, IonIcon, IonAvatar, IonLabel, IonFooter, IonInput, IonItem]
 })
 export class ChatPage implements OnInit {
   chats: any[] = [];
   selectedChat: any = null;
   messages: any[] = [];
 
-  constructor(private chatService: ChatService) { }
+  constructor(private chatService: ChatService) {
+    addIcons({ send });
+  }
 
   ngOnInit() {
     this.chatService.getMyChats().subscribe({
@@ -51,5 +55,4 @@ export class ChatPage implements OnInit {
       }
     });
   }
-
 }
