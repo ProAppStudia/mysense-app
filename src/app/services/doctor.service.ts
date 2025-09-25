@@ -3,12 +3,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DoctorCardView } from '../models/doctor-card-view.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DoctorService {
-  private apiUrl = 'https://mysense.care/app/connector.php';
+  private apiUrl = `${environment.baseUrl}/connector.php`;
 
   constructor(private http: HttpClient) { }
 
