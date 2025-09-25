@@ -1,42 +1,30 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button (click)="goBack()" *ngIf="selectedChat">
-        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>{{ selectedChat ? selectedChat.name : 'Чати' }}</ion-title>
+    <ion-title>Чат</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div *ngIf="!selectedChat">
-    <ion-header collapse="condense">
-      <ion-toolbar>
-        <ion-title size="large">Чати</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-list>
-      <ion-item *ngFor="let chat of chats" (click)="selectChat(chat)">
-        <ion-avatar slot="start">
-          <img [src]="chat.photo" />
-        </ion-avatar>
-        <ion-label>
-          <h2>{{ chat.name }}</h2>
-          <p>{{ chat.last_message }}</p>
-        </ion-label>
-      </ion-item>
-    </ion-list>
+  <div class="psychologists-container">
+    <div class="psychologist-card" *ngFor="let chat of chats" (click)="selectChat(chat)" [class.active]="chat === selectedChat">
+      <ion-avatar>
+        <img [src]="chat.photo || 'assets/icon/favicon.png'" />
+      </ion-avatar>
+      <ion-label>{{ chat.name }}</ion-label>
+    </div>
   </div>
 
-  <div *ngIf="selectedChat">
-    <div class="message-list">
-      <div *ngFor="let message of messages" class="message-item" [class.my-message]="message.is_my">
-        <div class="message-bubble">
-          <p>{{ message.message }}</p>
-          <span class="timestamp">{{ message.time }}</span>
-        </div>
+  <div class="chat-actions">
+    <ion-button class="active-action">Чат</ion-button>
+    <ion-button fill="clear">Завдання</ion-button>
+    <ion-button fill="clear">Забронювати сесію</ion-button>
+  </div>
+
+  <div class="message-list" *ngIf="selectedChat">
+    <div *ngFor="let message of messages" class="message-item" [class.my-message]="message.is_my">
+      <div class="message-bubble">
+        <p>{{ message.message }}</p>
+        <span class="timestamp">{{ message.time }}</span>
       </div>
     </div>
   </div>
@@ -44,8 +32,8 @@
 
 <ion-footer *ngIf="selectedChat">
   <ion-toolbar>
-    <ion-item>
-      <ion-input placeholder="Написати повідомлення..."></ion-input>
+    <ion-item lines="none">
+      <ion-input placeholder="Напишіть ваше повідомлення"></ion-input>
       <ion-button fill="clear" slot="end">
         <ion-icon slot="icon-only" name="send"></ion-icon>
       </ion-button>

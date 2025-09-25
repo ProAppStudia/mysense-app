@@ -26,6 +26,9 @@ export class ChatPage implements OnInit {
         } else if (data && data.chats) {
           this.chats = data.chats;
         }
+        if (this.chats && this.chats.length > 0) {
+          this.selectChat(this.chats[0]);
+        }
       },
       error: (error) => {
         // Handle error appropriately in a real app
@@ -49,8 +52,4 @@ export class ChatPage implements OnInit {
     });
   }
 
-  goBack() {
-    this.selectedChat = null;
-    this.messages = [];
-  }
 }

@@ -1,3 +1,38 @@
+.psychologists-container {
+  display: flex;
+  overflow-x: auto;
+  padding: 10px;
+  gap: 10px;
+}
+
+.psychologist-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #f1f1f1;
+  cursor: pointer;
+  min-width: 100px;
+}
+
+.psychologist-card.active {
+  background-color: #e0e0e0;
+  border: 1px solid var(--ion-color-primary);
+}
+
+.chat-actions {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  gap: 10px;
+}
+
+.active-action {
+  --background: var(--ion-color-primary);
+  --color: white;
+}
+
 .message-list {
   padding: 10px;
   display: flex;
@@ -22,7 +57,8 @@
 }
 
 .my-message .message-bubble {
-  background-color: #dcf8c6;
+  background-color: var(--ion-color-primary);
+  color: white;
 }
 
 .timestamp {
@@ -31,4 +67,10 @@
   display: block;
   text-align: right;
   margin-top: 5px;
+}
+
+ion-footer ion-item {
+  --background: #f1f1f1;
+  border-radius: 20px;
+  margin: 5px;
 }
