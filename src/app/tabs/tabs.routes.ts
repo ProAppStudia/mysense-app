@@ -48,6 +48,13 @@ export const routes: Routes = [
             (m) => m.DiaryEntryPage
           ),
       },
+      {
+        path: 'how-to-use',
+        loadComponent: () =>
+          import('../pages/how-to-use/how-to-use.page').then(
+            (m) => m.HowToUsePage
+          ),
+      },
     ],
   },
   {

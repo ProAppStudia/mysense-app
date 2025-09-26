@@ -11,6 +11,32 @@ interface AuthResponse {
   message?: string;
 }
 
+export interface UserProfile {
+  avatar: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  phone: string;
+  success: boolean;
+  user_id: number;
+  error?: string;
+}
+
+export interface UpdateProfilePayload {
+  name: string;
+  surname: string;
+  phone: string;
+  email: string;
+  password?: string;
+  confirm?: string;
+  photo?: string;
+}
+
+export interface UpdateProfileResponse {
+    success?: string;
+    error?: string;
+}
+
 type RegisterPayload = {
   name: string;
   surname: string;
@@ -31,6 +57,8 @@ type RegisterResult =
 export class AuthService {
   private readonly LOGIN_URL = `${environment.baseUrl}/connector.php?action=login`;
   private readonly REGISTER_URL = `${environment.baseUrl}/connector.php?action=register`;
+  private readonly PROFILE_URL = `${environment.baseUrl}/connector.php?action=get_my_profile`;
+  private readonly UPDATE_PROFILE_URL = `${environment.baseUrl}/connector.php?action=set_my_profile`;
 
   constructor(
     private http: HttpClient,
@@ -156,5 +184,31 @@ export class AuthService {
 
   getToken(): string | null {
     return this.tokenStorage.getToken();
+  }
+
+  getProfile(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(this.PROFILE_URL);
+  }
+
+  updateProfile(payload: UpdateProfilePayload): Observable<UpdateProfileResponse> {
+    let body = new HttpParams()
+      .set('name', payload.name)
+      .set('surname', payload.surname)
+      .set('email', payload.email)
+      .set('phone', payload.phone);
+
+    if (payload.password && payload.confirm) {
+      body = body.set('password', payload.password);
+      body = body.set('confirm', payload.confirm);
+    }
+    if (payload.photo) {
+      body = body.set('photo', payload.photo);
+    }
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded'
+    });
+
+    return this.http.post<UpdateProfileResponse>(this.UPDATE_PROFILE_URL, body.toString(), { headers });
   }
 }

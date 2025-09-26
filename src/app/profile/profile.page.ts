@@ -2,11 +2,17 @@ import { Component, OnInit, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { IonContent, IonCard, IonCardContent, IonButton, IonList, IonItem, IonIcon, IonLabel, IonHeader, IonToolbar, IonTitle, IonModal, IonInput, IonSpinner, IonText, IonButtons, IonCheckbox } from '@ionic/angular/standalone';
-import { AuthService } from '../services/auth.service';
+import { AuthService, UserProfile, UpdateProfilePayload } from '../services/auth.service';
 import { DoctorService } from '../services/doctor.service';
 import { Subscription, interval } from 'rxjs';
 import { Router, NavigationExtras } from '@angular/router';
 import { DoctorCardView } from '../models/doctor-card-view.model';
+import { addIcons } from 'ionicons';
+import {
+  personCircleOutline, createOutline, calendarOutline, addCircleOutline, bookOutline, libraryOutline,
+  informationCircleOutline, helpCircleOutline, notificationsOutline, headsetOutline, documentTextOutline,
+  logOutOutline, warningOutline, closeOutline, eyeOffOutline, eyeOutline, personOutline
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-profile',
@@ -55,16 +61,36 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   userSessions: any[] = [];
   doctors: DoctorCardView[] = [];
+  userProfile = signal<UserProfile | null>(null);
+  profileForm = new FormGroup({
+    name: new FormControl('', [Validators.required, Validators.minLength(2)]),
+    surname: new FormControl('', [Validators.required, Validators.minLength(2)]),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    phone: new FormControl('', [Validators.required, Validators.pattern(/^\+?[0-9\s\-()]{7,25}$/)]),
+    password: new FormControl('', [Validators.minLength(6)]),
+    confirm: new FormControl(''),
+  });
+  profileLoading = signal(false);
+  profileErrorMsg = signal<string | null>(null);
+  profileSuccessMsg = signal<string | null>(null);
+  isEditing = signal(false);
 
   constructor(
     private authService: AuthService,
     private doctorService: DoctorService,
     private router: Router
-  ) { }
+  ) {
+    addIcons({
+      personCircleOutline, createOutline, calendarOutline, addCircleOutline, bookOutline, libraryOutline,
+      informationCircleOutline, helpCircleOutline, notificationsOutline, headsetOutline, documentTextOutline,
+      logOutOutline, warningOutline, closeOutline, eyeOffOutline, eyeOutline, personOutline
+    });
+  }
 
   ngOnInit() {
     this.isLoggedIn.set(this.authService.isAuthenticated());
     if (this.isLoggedIn()) {
+      this.loadProfile();
       this.doctorService.getPsychologists().subscribe(psychologists => {
         this.doctors = psychologists;
         this.userSessions = [
@@ -306,5 +332,101 @@ export class ProfilePage implements OnInit, OnDestroy {
       }
     };
     this.router.navigate(['/sessions'], navigationExtras);
+  }
+
+  loadProfile() {
+    this.profileLoading.set(true);
+    this.authService.getProfile().subscribe({
+      next: (profile) => {
+        if (profile.success) {
+          this.userProfile.set(profile);
+          this.profileForm.patchValue({
+            name: profile.firstname,
+            surname: profile.lastname,
+            email: profile.email,
+            phone: profile.phone
+          });
+        } else {
+          this.profileErrorMsg.set(profile.error || 'Failed to load profile.');
+        }
+        this.profileLoading.set(false);
+      },
+      error: (err) => {
+        this.profileErrorMsg.set('An error occurred while loading the profile.');
+        this.profileLoading.set(false);
+        console.error('Load profile error:', err);
+      }
+    });
+  }
+
+  onSubmitProfile() {
+    if (this.profileForm.invalid) {
+      this.profileForm.markAllAsTouched();
+      return;
+    }
+
+    this.profileLoading.set(true);
+    this.profileErrorMsg.set(null);
+    this.profileSuccessMsg.set(null);
+
+    const { name, surname, email, phone, password, confirm } = this.profileForm.value;
+
+    const payload: UpdateProfilePayload = {
+      name: name || '',
+      surname: surname || '',
+      email: email || '',
+      phone: phone || '',
+    };
+
+    if (password && confirm) {
+      if (password !== confirm) {
+        this.profileErrorMsg.set('Passwords do not match.');
+        this.profileLoading.set(false);
+        return;
+      }
+      payload.password = password;
+      payload.confirm = confirm;
+    }
+
+    this.authService.updateProfile(payload).subscribe({
+      next: (response) => {
+        this.profileLoading.set(false);
+        if (response.success) {
+          this.profileSuccessMsg.set(response.success);
+          this.loadProfile(); // Reload profile to get updated data
+        } else {
+          this.profileErrorMsg.set(response.error || 'Failed to update profile.');
+        }
+      },
+      error: (err) => {
+        this.profileLoading.set(false);
+        this.profileErrorMsg.set('An unexpected error occurred. Please try again later.');
+        console.error('Update profile error:', err);
+      }
+    });
+  }
+
+  toggleEditMode(save: boolean = false) {
+    if (this.isEditing() && save) {
+      this.onSubmitProfile();
+    } else if (this.isEditing() && !save) {
+      // Reset form to original values if canceling
+      const profile = this.userProfile();
+      if (profile) {
+        this.profileForm.patchValue({
+          name: profile.firstname,
+          surname: profile.lastname,
+          email: profile.email,
+          phone: profile.phone,
+          password: '',
+          confirm: ''
+        });
+      }
+    }
+    this.isEditing.update(value => !value);
+  }
+
+  goToHowToUse() {
+    this.router.navigate(['/how-to-use']);
   }
 }

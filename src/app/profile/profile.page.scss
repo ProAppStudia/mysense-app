@@ -97,6 +97,11 @@ ion-content {
   color: #2f264d;
 }
 
+.profile-name-label {
+  font-size: 1em;
+  font-weight: 500;
+}
+
 .profile-menu-group ion-item.item-button {
   --background-activated: #f0f0f0;
   --background-focused: #f0f0f0;
@@ -106,4 +111,14 @@ ion-content {
 .close-icon {
   color: #795bda; /* Purple color */
   font-size: 24px; /* Adjust size as needed */
+}
+
+.edit-icon {
+  color: var(--ion-color-step-600, #666666);
+  align-self: center;
+  margin: 0;
+}
+
+.ion-item-link {
+  text-decoration: none;
 }

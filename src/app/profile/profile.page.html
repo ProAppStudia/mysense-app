@@ -20,20 +20,93 @@
       <ion-button expand="block" class="login-button" (click)="openRegisterModal()">Реєстрація</ion-button>
     </div>
 
-    <ion-list class="profile-menu-group" *ngIf="isLoggedIn()">
-      <ion-item detail routerLink="/profile-details">
-        <ion-icon slot="start" name="person-outline"></ion-icon>
-        <ion-label>Мій профіль</ion-label>
-      </ion-item>
-      <ion-item detail (click)="viewAllSessions()">
-        <ion-icon slot="start" name="calendar-outline"></ion-icon>
-        <ion-label>Мої сесії</ion-label>
-      </ion-item>
-      <ion-item detail routerLink="/book-session">
-        <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-        <ion-label>Забронювати сесію</ion-label>
-      </ion-item>
-    </ion-list>
+    <div *ngIf="isLoggedIn()">
+      <div *ngIf="profileLoading()" class="ion-text-center">
+        <ion-spinner></ion-spinner>
+      </div>
+
+      <div *ngIf="userProfile() as profile">
+        <!-- View Mode -->
+        <div *ngIf="!isEditing()">
+          <ion-list class="profile-menu-group">
+            <ion-item button="true" (click)="toggleEditMode()">
+              <ion-icon slot="start" name="person-circle-outline" style="font-size: 2em;"></ion-icon>
+              <ion-label class="profile-name-label">
+                {{ profile.firstname }} {{ profile.lastname }}
+              </ion-label>
+              <ion-icon slot="end" name="create-outline" class="edit-icon"></ion-icon>
+            </ion-item>
+          </ion-list>
+        </div>
+
+        <!-- Edit Mode -->
+        <div *ngIf="isEditing()">
+          <form [formGroup]="profileForm" (ngSubmit)="onSubmitProfile()">
+            <ion-list>
+              <ion-item>
+                <ion-input label="Ім'я" labelPlacement="floating" formControlName="name" type="text"></ion-input>
+              </ion-item>
+              <ion-text color="danger" *ngIf="profileForm.get('name')?.invalid && profileForm.get('name')?.touched">
+                <p class="ion-padding-start">Ім'я обов'язкове.</p>
+              </ion-text>
+
+              <ion-item>
+                <ion-input label="Прізвище" labelPlacement="floating" formControlName="surname" type="text"></ion-input>
+              </ion-item>
+              <ion-text color="danger" *ngIf="profileForm.get('surname')?.invalid && profileForm.get('surname')?.touched">
+                <p class="ion-padding-start">Прізвище обов'язкове.</p>
+              </ion-text>
+
+              <ion-item>
+                <ion-input label="Ел. адреса" labelPlacement="floating" formControlName="email" type="email"></ion-input>
+              </ion-item>
+              <ion-text color="danger" *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
+                <p class="ion-padding-start">Будь ласка, введіть дійсну ел. адресу.</p>
+              </ion-text>
+
+              <ion-item>
+                <ion-input label="Телефон" labelPlacement="floating" formControlName="phone" type="tel"></ion-input>
+              </ion-item>
+              <ion-text color="danger" *ngIf="profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched">
+                <p class="ion-padding-start">Будь ласка, введіть дійсний номер телефону.</p>
+              </ion-text>
+
+              <ion-item>
+                <ion-input label="Новий пароль" labelPlacement="floating" formControlName="password" type="password"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-input label="Підтвердіть новий пароль" labelPlacement="floating" formControlName="confirm" type="password"></ion-input>
+              </ion-item>
+            </ion-list>
+
+            <ion-text color="danger" *ngIf="profileErrorMsg()">
+              <p class="ion-padding-start">{{ profileErrorMsg() }}</p>
+            </ion-text>
+            <ion-text color="success" *ngIf="profileSuccessMsg()">
+              <p class="ion-padding-start">{{ profileSuccessMsg() }}</p>
+            </ion-text>
+
+            <ion-button expand="block" type="submit" [disabled]="profileForm.invalid || profileLoading()">
+              <ion-spinner *ngIf="profileLoading()" name="lines-small"></ion-spinner>
+              <span *ngIf="!profileLoading()">Зберегти зміни</span>
+            </ion-button>
+            <ion-button expand="block" fill="clear" (click)="toggleEditMode(false)">Скасувати</ion-button>
+          </form>
+        </div>
+      </div>
+
+      <ion-list class="profile-menu-group">
+        <ion-item detail (click)="viewAllSessions()">
+          <ion-icon slot="start" name="calendar-outline"></ion-icon>
+          <ion-label>Мої сесії</ion-label>
+        </ion-item>
+        <ion-item detail routerLink="/book-session">
+          <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+          <ion-label>Забронювати сесію</ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
 
     <ion-list class="profile-menu-group">
       <ion-item detail routerLink="/my-diary">
@@ -47,10 +120,12 @@
     </ion-list>
 
     <ion-list class="profile-menu-group">
-      <ion-item detail routerLink="/how-to-use">
-        <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-        <ion-label>Як користуватись додатком</ion-label>
-      </ion-item>
+      <a href="/tabs/how-to-use" class="ion-item-link">
+        <ion-item detail="true">
+          <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+          <ion-label>Як користуватись додатком</ion-label>
+        </ion-item>
+      </a>
       <ion-item detail routerLink="/faq">
         <ion-icon slot="start" name="help-circle-outline"></ion-icon>
         <ion-label>Питання/Відповіді</ion-label>
