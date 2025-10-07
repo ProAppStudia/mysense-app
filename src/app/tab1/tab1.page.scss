@@ -684,6 +684,29 @@ ion-content {
   width: 100%; /* Make the container full-width */
 }
 
+.login-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 400px; /* Adjust as needed */
+  margin-bottom: 20px;
+}
+
+.login-buttons ion-button {
+  flex: 1;
+  margin: 0 5px; /* Add some spacing between buttons */
+  --border-radius: 10px;
+  height: 50px;
+  font-size: 16px;
+   text-transform: none;
+ border-radius: 8px;
+  --background: #ffffff; 
+   --color: #2f264d;
+   border: 1px solid var(--ion-color-primary); 
+}
+
+
+
 .session-actions ion-button {
   text-transform: none; /* Remove uppercase text */
   font-size: 14px; /* Smaller font size */
