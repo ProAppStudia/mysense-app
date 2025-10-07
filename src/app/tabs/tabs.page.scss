@@ -53,6 +53,18 @@ ion-tabs ion-tab-bar {
   z-index: 2; /* Ensure tab bar is above content but below any potential modals */
 }
 
+.support-button {
+  background: var(--ion-color-primary);
+  color: #ffffff;
+  border-radius: 8px;
+  height: 32px; /* Smaller height */
+  font-size: 12px; /* Smaller font size */
+  text-transform: none; /* Prevent uppercase */
+  padding: 0 10px; /* Adjust padding as needed */
+  border: none; /* Remove default button border */
+  cursor: pointer; /* Indicate it's clickable */
+}
+
 ion-header ion-toolbar ion-buttons ion-button ion-icon {
   font-size: 2.0em; /* Match tab icon size */
   color: var(--ion-color-primary); /* Apply primary color */

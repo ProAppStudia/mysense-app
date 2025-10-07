@@ -1,5 +1,5 @@
 ion-content {
-  --background: #fff; /* White background */
+  --background:var(--ion-color-mysense-light-purple); /* White background */
   text-align: center;
 }
 
@@ -480,7 +480,7 @@ ion-content {
 }
 
 .diary-card {
-  background-color: #f8f8f8;
+  background-color: white;
   border-radius: 16px;
   padding: 20px;
   display: flex;
@@ -491,7 +491,7 @@ ion-content {
 }
 
 .diary-card ion-icon {
-  background-color: #e0e0e0; /* Light grey background for icon */
+      background-color: white;
   border-radius: 50%;
   padding: 15px;
   font-size: 30px;
@@ -697,12 +697,13 @@ ion-content {
   margin: 0 5px; /* Add some spacing between buttons */
   --border-radius: 10px;
   height: 50px;
-  font-size: 16px;
+  font-size: 14px;
    text-transform: none;
  border-radius: 8px;
   --background: #ffffff; 
    --color: #2f264d;
-   border: 1px solid var(--ion-color-primary); 
+   border: 0px solid var(--ion-color-primary); 
+   --box-shadow: none;
 }
 
 
