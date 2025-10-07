@@ -1,10 +1,10 @@
 <ion-content class="ion-padding">
   <div class="login-buttons" *ngIf="!isLoggedIn()">
-    <ion-button expand="block" class="login-button" (click)="openLoginModal()">
+    <button class="login-button" (click)="openLoginModal()">
       <ion-icon slot="start" src="assets/icon/sing-in.svg"></ion-icon>
       Вхід
-    </ion-button>
-    <ion-button expand="block" class="register-button" (click)="openRegisterModal()">Реєстрація</ion-button>
+    </button>
+    <button class="register-button" (click)="openRegisterModal()">Реєстрація</button>
   </div>
 
   <div class="main-content" *ngIf="homepageData">
