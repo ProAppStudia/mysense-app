@@ -126,8 +126,8 @@
     <div class="section-10">
       <h2>{{ homepageData.section_10.heading }}</h2>
       <ion-accordion-group>
-        <ion-accordion *ngFor="let item of homepageData.section_10.items" value="{{ item.heading }}">
-          <ion-item slot="header" color="light">
+        <ion-accordion *ngFor="let item of homepageData.section_10.items" value="{{ item.heading }}" toggleIcon="add-circle-outline" toggleIconSlot="end">
+          <ion-item slot="header">
             <ion-label>{{ item.heading }}</ion-label>
           </ion-item>
           <div class="ion-padding" slot="content">
@@ -135,7 +135,7 @@
           </div>
         </ion-accordion>
       </ion-accordion-group>
-      <ion-button expand="block">{{ homepageData.section_10.text_button }}</ion-button>
+     <!-- <ion-button expand="block">{{ homepageData.section_10.text_button }}</ion-button>-->
     </div>
 
     <!-- Section 11 -->

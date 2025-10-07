@@ -4,7 +4,10 @@
   flex-direction: column;
   gap: 20px;
 }
-
+ion-content {
+  --background:var(--ion-color-mysense-light-purple); /* White background */
+  text-align: center;
+}
 .psychologist-card {
   background-color: #fff;
   border-radius: 16px;

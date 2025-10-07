@@ -8,10 +8,10 @@ import { AuthService } from '../services/auth.service'; // Import AuthService
 import { environment } from '../../environments/environment'; // Import environment for base URL
 import { Subscription, interval } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline } from 'ionicons/icons';
+import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline } from 'ionicons/icons';
 import { Router, RouterLink, NavigationExtras } from '@angular/router';
 
-addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline });
+addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline });
 register();
 
 interface Doctor {

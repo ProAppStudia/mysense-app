@@ -199,15 +199,14 @@ ion-content {
 .doctors-section, .section-9, .section-11 {
   margin-top: 40px;
   padding: 20px;
-  background-color: #f8f8f8;
+
   border-radius: 8px;
   text-align: center;
 }
 
 .section-10 {
   margin-top: 40px;
-  padding: 20px;
-  background-color: #f8f8f8;
+
   border-radius: 8px;
   text-align: center;
   width: 100%;
@@ -431,7 +430,7 @@ ion-content {
   margin-bottom: 10px;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
   width: 100%; /* Ensure accordion takes full width of its group */
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
@@ -442,16 +441,26 @@ ion-content {
   font-weight: bold;
   --padding-start: 16px; /* Default Ionic padding */
   --padding-end: 16px;
+  --box-shadow: none;
+  --border-bottom: 0;
 }
 
 .section-10 .ion-padding[slot="content"] {
-  background-color: #f0f0f0;
+  background-color: #fff;
   text-align: left;
   color: #666;
   padding: 16px; /* Consistent padding */
   box-sizing: border-box;
+  --box-shadow: none;
+  --border-bottom: 0;
 }
 
+
+ion-accordion.accordion-animated > [slot=header] .ion-accordion-toggle-icon {
+    transition: 300ms transform 
+cubic-bezier(0.25, 0.8, 0.5, 1);
+    color: var(--ion-color-primary);
+}
 /* My Sessions Block Styles */
 .my-sessions-block {
   background-color: #f8f8f8;
