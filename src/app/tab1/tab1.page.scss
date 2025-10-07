@@ -85,31 +85,35 @@ ion-content {
   line-height: 1.5;
 }
 
-.free-consultation-banner .select-psychologist-button {
-  --background: #fff;
-  --background-activated: #f0f0f0;
-  --background-focused: #f0f0f0;
-  --background-hover: #f0f0f0;
-  --color: var(--ion-color-primary); /* Use primary color for text */
-  width: 100%;
-  max-width: 250px;
-}
 
-.select-psychologist-button {
+
+.select-psychologist-button, .free-psychologists-button, .add-diary-button {
   --background: var(--ion-color-primary);
   --background-activated: var(--ion-color-primary-shade);
   --background-focused: var(--ion-color-primary-shade);
   --background-hover: var(--ion-color-primary-shade);
   --color: #fff; /* White text */
   font-size: 18px;
-  height: 50px;
-  border-radius: 8px;
+  height: 60px;
+  --border-radius: 8px;
   text-transform: none; /* Keep text as is */
   width: 100%;
   max-width: 300px; /* Limit button width */
-  box-shadow: none;
+  --box-shadow: none;
 }
 
+.select-psychologist-button-white {
+  --background: white;
+
+  --color: #423f4d; /* White text */
+  font-size: 18px;
+  height: 60px;
+  --border-radius: 8px;
+  text-transform: none; /* Keep text as is */
+  width: 100%;
+  max-width: 300px; /* Limit button width */
+  --box-shadow: none;
+}
 .how-it-works {
   margin-top: 60px;
   width: 100%;
@@ -148,20 +152,7 @@ ion-content {
   margin-bottom: 10px;
 }
 
-.free-psychologists-button {
-  --background: var(--ion-color-primary);
-  --background-activated: var(--ion-color-primary-shade);
-  --background-focused: var(--ion-color-primary-shade);
-  --background-hover: var(--ion-color-primary-shade);
-  --color: #fff; /* White text */
-  font-size: 18px;
-  height: 50px;
-  border-radius: 8px;
-  text-transform: none; /* Keep text as is */
-  width: 100%;
-  max-width: 300px; /* Limit button width */
-  box-shadow: none;
-}
+
 
 .how-it-works-section {
 
