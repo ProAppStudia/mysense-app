@@ -11,6 +11,27 @@ ion-content {
 
 }
 
+.section-1-block {
+  background-color: #ffffff; /* White background */
+  border-radius: 16px;
+  padding: 30px 20px;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.section-1-block .main-title {
+  margin-bottom: 10px; /* Adjust margin for consistency */
+}
+
+.section-1-block .or-text {
+  margin-top: 30px; /* Add margin above "or-text" */
+}
+
 .main-title {
   font-size: 28px;
   font-weight: bold;
@@ -118,6 +139,7 @@ ion-content {
   color: #666;
   line-height: 1.5;
 }
+
 
 .or-text {
   font-size: 16px;
@@ -464,7 +486,6 @@ ion-content {
 
 /* Diary Block Styles */
 .diary-block {
-  margin-top: 30px;
   margin-bottom: 30px;
   width: 100%;
   max-width: 500px;
@@ -480,8 +501,9 @@ ion-content {
 }
 
 .diary-card {
-  background-color: white;
+  background-color: #fff;
   border-radius: 16px;
+  margin-top: 30px;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -491,7 +513,7 @@ ion-content {
 }
 
 .diary-card ion-icon {
-      background-color: white;
+      background-color: var(--ion-color-mysense-light-purple);
   border-radius: 50%;
   padding: 15px;
   font-size: 30px;
