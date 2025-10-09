@@ -15,59 +15,30 @@
         <a (click)="viewAllSessions()">Дивитись всі</a>
       </div>
 
-      <div class="next-session-outer">
-        <div class="next-session">
-                <div class="next-session-text">
-                    Наступна сесія запланована на
-                </div>
-                <div class="next-session-edit ">
-                    <div class="meet-item">
-<div class="session-date" data-session-date="2025-10-16">16 Жовтня 2025 о 14:00</div>
-
-<div class="edit-session">
-    
-    <button class="btn-link">
-        Перенести
-    <svg width="16" height="10" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M1.01001 9V8C1.01001 6.3431 2.35315 5 4.01001 5H14.9903M14.9903 5C13.6867 6.3557 12.3398 7.6702 11.01 9M14.9903 5C13.6867 3.6443 12.3398 2.32982 11.01 1" stroke="#2F264D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-    </svg>
-    </button>
-    
-    <button class="btn-link">
-        Скасувати
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M1 1L6 6M6 6L1 11M6 6L11 11M6 6L11 1" stroke="#2F264D" stroke-width="1.5" stroke-linecap="round"></path>
-    </svg>
-    </button>
-    </div>    
-</div>
-                </div>
+      <div class="sessions-list">
+        <div class="session-card" *ngFor="let session of userSessions">
+          <div class="session-info">
+            <div class="session-date-time">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>{{ formatSessionTime(session.time_range).date }} о {{ formatSessionTime(session.time_range).time }}</span>
             </div>
-            </div>
-      <!--<swiper-container class="sessions-swiper" #sessionsSwiper slides-per-view="auto" free-mode="true">
-        <swiper-slide *ngFor="let session of userSessions">
-          <div class="session-card">
-            <div class="session-type-indicator"></div>
-            <div class="session-details">
-             
-              
-              <div class="doctor-info">
-                <img [src]="'https://mysense.care' + session.doctor_image" alt="{{ session.doctor_name }}">
-                <span>{{ session.doctor_name }}</span>
-                <ion-icon name="time-outline"></ion-icon>
-                <span>{{ formatSessionTime(session.time_range).date }}
-                
-                {{ formatSessionTime(session.time_range).time }}</span>
-              </div>
-            </div>
-            <ion-icon [name]="session.icon" class="session-icon"></ion-icon>
-            <div class="session-actions">
-              <ion-button expand="block" fill="outline" class="reschedule-button" (click)="rescheduleSession(session.id)">Перенести</ion-button>
-              <ion-button expand="block" fill="outline" color="danger" class="cancel-button" (click)="cancelSession(session.id)">Відмінити</ion-button>
+            <div class="doctor-info">
+              <img [src]="'https://mysense.care' + session.doctor_image" alt="{{ session.doctor_name }}">
+              <span>{{ session.doctor_name }}</span>
             </div>
           </div>
-        </swiper-slide>
-      </swiper-container>-->
+          <div class="session-actions">
+            <ion-button fill="clear" class="reschedule-button" (click)="rescheduleSession(session.id)">
+              Перенести
+              <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" class="cancel-button" (click)="cancelSession(session.id)">
+              Скасувати
+              <ion-icon slot="end" name="close-outline"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+      </div>
       <ion-button expand="block" class="book-session-button">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
         Забронювати сесію

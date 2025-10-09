@@ -618,106 +618,88 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
   height: 50px;
   border-radius: 8px;
   text-transform: none;
-  width: calc(100% - 40px); /* Adjust width to account for padding */
+
   max-width: 460px; /* Max width to match other content */
   margin-top: 20px;
   box-shadow: none;
 }
 
-.sessions-swiper {
-  width: 100%;
-  height: auto;
-  padding: 0; /* Removed horizontal padding */
-  box-sizing: border-box;
-}
 
-.sessions-swiper swiper-slide {
-  width: 85%; /* Adjust slide width to show part of the next card */
-  margin-right: 15px; /* Space between cards */
+.sessions-list {
   display: flex;
-  height: auto; /* Allow height to adjust to content */
+  flex-direction: column;
+  gap: 15px; /* Space between session cards */
+  width: 100%;
+  max-width: 500px;
+  margin-top: 20px;
 }
 
 .session-card {
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  padding: 15px;
+  background-color: #a498d9; /* Purple background from the image */
+  color: #fff;
+  border-radius: 16px;
+      padding: 20px 20px 5px;
   display: flex;
-  flex-direction: column; /* Change to column for vertical layout */
-  position: relative;
-  width: 100%; /* Ensure card takes full width of its slide */
-  box-sizing: border-box;
+  flex-direction: column;
+
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: left;
 }
 
-.session-type-indicator {
-  width: 4px;
-  height: 100%;
-  background-color: var(--ion-color-primary); /* Green indicator */
-  position: absolute;
-  left: 0;
-  top: 0;
-  border-top-left-radius: 12px;
-  border-bottom-left-radius: 12px;
+.session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+      align-items: center;
 }
 
-.session-details {
-  margin-left: 15px;
-  flex-grow: 1;
-}
-
-.session-details h3 {
+.session-date-time {
+  display: flex;
+  align-items: center;
   font-size: 18px;
   font-weight: bold;
-  color: #333;
-  margin: 0 0 5px 0;
 }
 
-.session-status {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 10px;
+.session-date-time ion-icon {
+  font-size: 20px;
+  margin-right: 8px;
+  color: #fff;
 }
 
 .doctor-info {
   display: flex;
   align-items: center;
-  font-size: 14px;
-  color: #666;
+  font-size: 16px;
 }
 
 .doctor-info img {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  margin-right: 8px;
-}
-
-.doctor-info span {
   margin-right: 10px;
-}
-
-.doctor-info ion-icon {
-  font-size: 16px;
-  margin-right: 5px;
-  color: #999;
-}
-
-.session-icon {
-  font-size: 24px;
-  color: var(--ion-color-primary);
-  position: absolute;
-  top: 15px;
-  right: 15px;
 }
 
 .session-actions {
   display: flex;
-  justify-content: space-between; /* Distribute buttons evenly */
-  gap: 10px; /* Space between buttons */
-  margin-top: 15px; /* Add space above the buttons */
-  width: 100%; /* Make the container full-width */
+  justify-content: space-around;
+ 
+}
+
+.session-actions ion-button {
+  --background: transparent;
+  --color: #222b40; /* Apply the requested color to both buttons */
+  font-size: 16px;
+  text-transform: none;
+  --padding-start: 0;
+  --padding-end: 0;
+  --box-shadow: none;
+  margin: 0;
+}
+
+.session-actions ion-button ion-icon {
+  font-size: 18px;
+  margin-left: 5px;
 }
 
 .login-buttons {
@@ -757,31 +739,3 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
   font-size: 14px; /* Smaller font size */
   height: 36px; /* Reduce button height */
 }
-
-
-.next-session-outer {
-    background: rgba(164, 152, 217, 1);
-    color: #fff;
-    padding: 12px 24px;
-    display: flex;
-    align-items: center;
-    border-radius: 8px;
-    text-align: center;
-    justify-content: center;
-}
-.next-session-outer .next-session {
-        font-size: 18px;
-}
-.next-session-outer .next-session .next-session-edit .edit-session {
-    display: flex;   
-     justify-content: space-evenly;
-}
-.next-session-outer .next-session .next-session-edit .session-date {
-        margin-bottom: 5px;
-    }
-
-    button.btn-link {
-    background: transparent;
-    color: #242424;
-}
-    

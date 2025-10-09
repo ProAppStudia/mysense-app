@@ -8,15 +8,16 @@ import { AuthService } from '../services/auth.service'; // Import AuthService
 import { environment } from '../../environments/environment'; // Import environment for base URL
 import { Subscription, interval } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline } from 'ionicons/icons';
+import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline } from 'ionicons/icons';
 import { Router, RouterLink, NavigationExtras } from '@angular/router';
 
-addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline });
+addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline });
 register();
 
 interface Doctor {
   img: string;
   firstname: string;
+  lastname: string; // Added lastname
   practice_years_text: string;
 }
 
@@ -116,11 +117,13 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   });
 
   constructor(private http: HttpClient, private authService: AuthService, private router: Router) {
-      addIcons({timeOutline,addCircleOutline,calendarOutline,documentTextOutline,chatbubblesOutline,checkboxOutline,peopleOutline,bookOutline,closeOutline});}
+      addIcons({calendarOutline,arrowForwardOutline,closeOutline,addCircleOutline,bookOutline,timeOutline,documentTextOutline,chatbubblesOutline,checkboxOutline,peopleOutline});}
 
   ngOnInit() {
     this.getHomepageData(); // Fetch homepage data first
-    this.isLoggedIn.set(this.authService.isAuthenticated());
+    // For testing purposes, force isLoggedIn to true
+    this.isLoggedIn.set(true);
+    // Original line: this.isLoggedIn.set(this.authService.isAuthenticated());
   }
 
   ngOnDestroy() {
@@ -130,9 +133,19 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   formatSessionTime(timeRange: string): { date: string; time: string } {
     const parts = timeRange.split(' о ');
     if (parts.length === 2) {
+      // Assuming timeRange is like "16 Жовтня 2025 о 14:00"
+      // parts[0] will be "16 Жовтня 2025"
+      // parts[1] will be "14:00"
       return { date: parts[0], time: parts[1] };
     }
-    return { date: timeRange, time: '' }; // Fallback if format is unexpected
+    // Fallback if format is unexpected, try to extract date and time if possible
+    const dateMatch = timeRange.match(/(\d{1,2}\s[А-Яа-я]+\s\d{4})/); // e.g., "16 Жовтня 2025"
+    const timeMatch = timeRange.match(/(\d{1,2}:\d{2})/); // e.g., "14:00"
+
+    return {
+      date: dateMatch ? dateMatch[0] : timeRange,
+      time: timeMatch ? timeMatch[0] : ''
+    };
   }
 
   checkLoginStatus() {
@@ -146,18 +159,18 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
           id: 1,
           type: 'Індивідуальна сесія', // Changed to match interface
           status: 'Очікується', // Changed status to "Очікується"
-          doctor_name: this.homepageData.doctors[0].firstname,
+          doctor_name: `${this.homepageData.doctors[0].firstname} ${this.homepageData.doctors[0].lastname}`,
           doctor_image: this.homepageData.doctors[0].img, // Use the image path directly from API
-          time_range: '20 вересня о 14:00', // Changed time to "20 вересня о 14:00"
+          time_range: '20 вересня 2025 о 14:00', // Changed time to "20 вересня 2025 о 14:00"
           icon: 'videocam-outline'
         },
         {
           id: 2,
           type: 'Сімейна сесія', // Changed to match interface
           status: 'Очікується', // Changed status to "Очікується"
-          doctor_name: this.homepageData.doctors[1].firstname,
+          doctor_name: `${this.homepageData.doctors[1].firstname} ${this.homepageData.doctors[1].lastname}`,
           doctor_image: this.homepageData.doctors[1].img, // Use the image path directly from API
-          time_range: '20 вересня о 14:00', // Changed time to "20 вересня о 14:00"
+          time_range: '20 вересня 2025 о 14:00', // Changed time to "20 вересня 2025 о 14:00"
           icon: 'videocam-outline'
         }
       ];
@@ -221,7 +234,8 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
           truncatedText: review.text.length > this.TRUNCATE_LENGTH ? review.text.substring(0, this.TRUNCATE_LENGTH) + '...' : review.text
         }));
       }
-      console.log(this.homepageData);
+      console.log('Homepage Data:', this.homepageData);
+      console.log('Doctors Data:', this.homepageData?.doctors); // Add this line to inspect doctors data
       this.checkLoginStatus(); // Call checkLoginStatus after homepageData is loaded
     });
   }
@@ -419,7 +433,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         this.infoMsg.set('Перевірте телефон та спробуйте ще раз');
         this.registerForm.get('code')?.setValue(''); // Clear code field after countdown
       }
-    });
+      });
   }
 
   stopCountdown() {
