@@ -2,9 +2,11 @@
   box-shadow: none;
  
 }
-
+ion-content {
+  --background: var(--ion-color-mysense-light-purple);
+}
 .video-container {
-  margin-top: 20px;
+  
   border-radius: 16px;
   overflow: hidden;
 }
@@ -15,7 +17,7 @@
   --border-radius: 12px;
   height: 50px;
   font-size: 14px;
-  margin-top: 20px;
+  
   text-transform: none;
 }
 
@@ -45,7 +47,7 @@
     font-weight: 500;
     padding: 10px 0;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     text-align: left;
     display: block;
     width: 100%;
@@ -285,7 +287,7 @@
 }
 
 .info-block {
-  margin-top: 20px;
+
   text-align: left;
 
   .info-title {
@@ -293,6 +295,15 @@
     font-weight: 500;
     color: #9895a6;
     margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .info-title-about {
+    font-size: 20px;
+    font-weight: 500;
+    color: #423f4d;
+    margin-top: 0px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -336,7 +347,7 @@
 
 /* Copied from tab2.page.scss */
 .psychologist-cards-container {
-  padding: 20px;
+  
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -345,9 +356,8 @@
 .psychologist-card {
   background-color: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
   padding: 20px;
- 
   display: flex;
   flex-direction: column;
   gap: 15px;

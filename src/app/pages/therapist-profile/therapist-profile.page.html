@@ -9,7 +9,8 @@
 
 <ion-content class="ion-padding">
   <div *ngIf="doctor">
-    <div *ngIf="isDoctorCardView(doctor); else errorView" class="psychologist-card profile-page">
+    <div *ngIf="isDoctorCardView(doctor); else errorView" class="psychologist-cards-container profile-page">
+      <div class="psychologist-card">
       <div class="card-header">
         <img [src]="doctor.avatarUrl || 'assets/img/IMG_1743.jpeg'" alt="Psychologist" class="psychologist-avatar">
         <div class="header-info">
@@ -62,7 +63,8 @@
           <p class="price-value" style="color: #2f264d; font-size: 20px; font-weight: 500;">{{ doctor.priceFamily }} <span class="currency" style="font-size: 14px; color: #9895a6; font-weight: 400;">грн.</span></p>
         </div>
       </div>
-
+      </div>
+      <div class="psychologist-card">
       <div *ngIf="doctor.videoAppealUrl" class="video-container">
         <video controls [src]="doctor.videoAppealUrl" width="100%"></video>
       </div>
@@ -71,7 +73,8 @@
         <ion-icon src="assets/icon/hello.svg" slot="start"></ion-icon>
         Домовитись про знайомство {{ doctor.introMinutes }} хв
       </ion-button>
-
+      </div>
+      <div class="psychologist-card">
       <div class="info-block">
         <h4 class="info-title">
           <ion-icon src="assets/icon/zkem.svg"></ion-icon>
@@ -98,9 +101,10 @@
           <li *ngFor="let lang of doctor.languages">{{ lang }}</li>
         </ul>
       </div>
-
+      </div>
+      <div class="psychologist-card">
       <div class="info-block about-me">
-        <h4 class="info-title">Про мене</h4>
+        <h4 class="info-title-about">Про мене</h4>
         <div class="description" [class.expanded]="isDescriptionExpanded">
           <p>{{ doctor.description }}</p>
         </div>
@@ -108,7 +112,8 @@
           {{ isDescriptionExpanded ? 'Згорнути' : 'Показати більше' }}
         </button>
       </div>
-
+      </div>
+      <div class="psychologist-card">
       <div class="info-block education-block">
         <h4 class="info-title">Освіта</h4>
         <div class="list-container education-list" [class.expanded]="isEducationExpanded">
@@ -136,7 +141,7 @@
           </swiper-slide>
         </swiper-container>
       </div>
-
+</div>
       <div class="info-block">
         <h4 class="info-title">Я працюю з:</h4>
         <ul>
