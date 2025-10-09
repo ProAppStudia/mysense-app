@@ -43,27 +43,36 @@
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
         Забронювати сесію
       </ion-button>
-      <ion-button expand="block" class="chat-session-button">
+      <ion-button expand="block" class="chat-session-button" routerLink="/tabs/chat">
         <ion-icon name="chatbubbles-outline" slot="start"></ion-icon>
         Написати в чат
       </ion-button>
     </div>
 
-    
+    <!-- Tasks Block -->
+    <div class="diary-block">
+      
+      <div class="diary-card">
+       <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <h3>Мої завдання</h3>
+        <p>Переглядайте та керуйте своїми завданнями, щоб залишатися організованими.</p>
+        <ion-button expand="block" class="add-diary-button">Дивитись завдання</ion-button>
+      </div>
+    </div>
 
    
 
     <div class="section-1-block">
       <h1 class="main-title">{{ homepageData.section_1.heading }}</h1>
       <p class="description-text">{{ homepageData.section_1.sub_heading }}</p>
-      <ion-button expand="block" class="select-psychologist-button">{{ homepageData.section_1.button_test_text }}</ion-button>
+      <ion-button expand="block" class="select-psychologist-button" routerLink="/tabs/tests">{{ homepageData.section_1.button_test_text }}</ion-button>
       <p class="or-text">{{ homepageData.section_1.text_choise_psyhologist }}</p>
       <div class="doctor-list">
           <div *ngFor="let doctor of homepageData.doctors | slice:0:6" class="doctor-card">
             <img [src]="'https://mysense.care' + doctor.img" alt="{{ doctor.firstname }}">
           </div>
         </div>
-      <ion-button expand="block" class="free-psychologists-button">Вільні психологи</ion-button>
+      <ion-button expand="block" class="free-psychologists-button" routerLink="/tabs/filter">Вільні психологи</ion-button>
     </div>
  <!-- Diary Block -->
     <div class="diary-block">
@@ -75,6 +84,7 @@
         <ion-button expand="block" class="add-diary-button" routerLink="/tabs/diary">Додати запис</ion-button>
       </div>
     </div>
+
     <!-- How It Works Section -->
     <div class="how-it-works-section">
       <h2>Як це працює?</h2>

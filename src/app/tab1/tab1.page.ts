@@ -8,7 +8,7 @@ import { AuthService } from '../services/auth.service'; // Import AuthService
 import { environment } from '../../environments/environment'; // Import environment for base URL
 import { Subscription, interval } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline } from 'ionicons/icons';
+import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, checkmarkDoneOutline, heart, checkmarkCircleOutline } from 'ionicons/icons';
 import { Router, RouterLink, NavigationExtras } from '@angular/router';
 
 addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline });
@@ -117,7 +117,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   });
 
   constructor(private http: HttpClient, private authService: AuthService, private router: Router) {
-      addIcons({calendarOutline,arrowForwardOutline,closeOutline,addCircleOutline,bookOutline,timeOutline,documentTextOutline,chatbubblesOutline,checkboxOutline,peopleOutline});}
+      addIcons({calendarOutline,arrowForwardOutline,closeOutline,addCircleOutline,chatbubblesOutline,checkmarkCircleOutline,bookOutline});}
 
   ngOnInit() {
     this.getHomepageData(); // Fetch homepage data first
