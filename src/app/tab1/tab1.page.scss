@@ -478,7 +478,7 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
 }
 /* My Sessions Block Styles */
 .my-sessions-block {
-  background-color: #f8f8f8;
+  background-color: white;
   border-radius: 16px;
   padding: 10px;
   margin-bottom: 30px;
@@ -618,10 +618,25 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
   height: 50px;
   border-radius: 8px;
   text-transform: none;
-
   max-width: 460px; /* Max width to match other content */
   margin-top: 20px;
-  box-shadow: none;
+  --box-shadow: none;
+  border:2px solid var(--ion-color-primary);
+}
+.chat-session-button {
+  --background: transparent;
+  --background-activated: var(--ion-color-primary-shade);
+  --background-focused: var(--ion-color-primary-shade);
+  --background-hover: var(--ion-color-primary-shade);
+  --color: var(--ion-color-primary);
+  font-size: 18px;
+  height: 50px;
+  border-radius: 8px;
+  text-transform: none;
+  max-width: 460px; /* Max width to match other content */
+  margin-top: 10px;
+  --box-shadow: none;
+  border:2px solid var(--ion-color-primary);
 }
 
 
