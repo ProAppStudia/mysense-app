@@ -67,3 +67,9 @@ ion-content {
   --ion-color-shade: var(--ion-color-mysense-badge-shade);
   --ion-color-tint: var(--ion-color-mysense-badge-tint);
 }
+ion-accordion .ion-accordion-toggle-icon {
+  color: #6c47ff;
+}
+ion-accordion[expanded] .ion-accordion-toggle-icon {
+  color: #22c55e;
+}

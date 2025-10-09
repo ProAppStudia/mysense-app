@@ -87,7 +87,7 @@ ion-content {
 
 
 
-.select-psychologist-button, .free-psychologists-button, .add-diary-button {
+.select-psychologist-button, .add-diary-button {
   --background: var(--ion-color-primary);
   --background-activated: var(--ion-color-primary-shade);
   --background-focused: var(--ion-color-primary-shade);
@@ -102,6 +102,21 @@ ion-content {
   --box-shadow: none;
 }
 
+.free-psychologists-button {
+  --background: rgba(255, 255, 255, 0);
+  --background-activated: var(--ion-color-primary-shade);
+  --background-focused: var(--ion-color-primary-shade);
+  --background-hover: var(--ion-color-primary-shade);
+  border:var(--ion-color-primary) 2px solid;
+  --color: var(--ion-color-primary); /* White text */
+  font-size: 18px;
+  height: 60px;
+  border-radius: 8px;
+  text-transform: none; /* Keep text as is */
+  width: 100%;
+  max-width: 300px; /* Limit button width */
+  --box-shadow: none;
+}
 .select-psychologist-button-white {
   --background: white;
 
@@ -391,7 +406,7 @@ ion-content {
 .article-card {
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+ 
   padding: 15px;
   text-align: center;
   width: 100%; /* Card takes full width of its slide */
@@ -742,3 +757,31 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
   font-size: 14px; /* Smaller font size */
   height: 36px; /* Reduce button height */
 }
+
+
+.next-session-outer {
+    background: rgba(164, 152, 217, 1);
+    color: #fff;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    text-align: center;
+    justify-content: center;
+}
+.next-session-outer .next-session {
+        font-size: 18px;
+}
+.next-session-outer .next-session .next-session-edit .edit-session {
+    display: flex;   
+     justify-content: space-evenly;
+}
+.next-session-outer .next-session .next-session-edit .session-date {
+        margin-bottom: 5px;
+    }
+
+    button.btn-link {
+    background: transparent;
+    color: #242424;
+}
+    

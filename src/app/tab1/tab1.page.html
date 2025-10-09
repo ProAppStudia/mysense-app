@@ -14,13 +14,43 @@
         <h2>Мої сесії</h2>
         <a (click)="viewAllSessions()">Дивитись всі</a>
       </div>
-      <swiper-container class="sessions-swiper" #sessionsSwiper slides-per-view="auto" free-mode="true">
+
+      <div class="next-session-outer">
+        <div class="next-session">
+                <div class="next-session-text">
+                    Наступна сесія запланована на
+                </div>
+                <div class="next-session-edit ">
+                    <div class="meet-item">
+<div class="session-date" data-session-date="2025-10-16">16 Жовтня 2025 о 14:00</div>
+
+<div class="edit-session">
+    
+    <button class="btn-link">
+        Перенести
+    <svg width="16" height="10" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M1.01001 9V8C1.01001 6.3431 2.35315 5 4.01001 5H14.9903M14.9903 5C13.6867 6.3557 12.3398 7.6702 11.01 9M14.9903 5C13.6867 3.6443 12.3398 2.32982 11.01 1" stroke="#2F264D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+    </button>
+    
+    <button class="btn-link">
+        Скасувати
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M1 1L6 6M6 6L1 11M6 6L11 11M6 6L11 1" stroke="#2F264D" stroke-width="1.5" stroke-linecap="round"></path>
+    </svg>
+    </button>
+    </div>    
+</div>
+                </div>
+            </div>
+            </div>
+      <!--<swiper-container class="sessions-swiper" #sessionsSwiper slides-per-view="auto" free-mode="true">
         <swiper-slide *ngFor="let session of userSessions">
           <div class="session-card">
             <div class="session-type-indicator"></div>
             <div class="session-details">
-              <h3>{{ session.type }}</h3>
-              <p class="session-status">{{ session.status }}</p>
+             
+              
               <div class="doctor-info">
                 <img [src]="'https://mysense.care' + session.doctor_image" alt="{{ session.doctor_name }}">
                 <span>{{ session.doctor_name }}</span>
@@ -37,7 +67,7 @@
             </div>
           </div>
         </swiper-slide>
-      </swiper-container>
+      </swiper-container>-->
       <ion-button expand="block" class="book-session-button">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
         Забронювати сесію
@@ -126,7 +156,7 @@
     <div class="section-10">
       <h2>{{ homepageData.section_10.heading }}</h2>
       <ion-accordion-group>
-        <ion-accordion *ngFor="let item of homepageData.section_10.items" value="{{ item.heading }}" toggleIcon="add-circle-outline" toggleIconSlot="end">
+        <ion-accordion *ngFor="let item of homepageData.section_10.items" value="{{ item.heading }}" toggleIcon="add-outline" toggleIconSlot="end">
           <ion-item slot="header">
             <ion-label>{{ item.heading }}</ion-label>
           </ion-item>
