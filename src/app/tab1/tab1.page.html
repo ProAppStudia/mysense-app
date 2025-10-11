@@ -50,7 +50,7 @@
     </div>
 
     <!-- Tasks Block -->
-    <div class="diary-block">
+    <div *ngIf="isLoggedIn()" class="diary-block">
       
       <div class="diary-card">
        <ion-icon name="checkmark-circle-outline"></ion-icon>

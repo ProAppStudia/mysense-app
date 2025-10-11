@@ -121,9 +121,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.getHomepageData(); // Fetch homepage data first
-    // For testing purposes, force isLoggedIn to true
-    this.isLoggedIn.set(true);
-    // Original line: this.isLoggedIn.set(this.authService.isAuthenticated());
+    this.isLoggedIn.set(this.authService.isAuthenticated());
   }
 
   ngOnDestroy() {
@@ -149,10 +147,6 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   }
 
   checkLoginStatus() {
-    // For demonstration purposes, force isLoggedIn to true to display example sessions.
-    // In a real application, this would be: this.isLoggedIn = this.authService.isAuthenticated();
-    // This method is now redundant as isLoggedIn is a signal and updated in ngOnInit
-    // this.isLoggedIn = true;
     if (this.isLoggedIn() && this.homepageData && this.homepageData.doctors && this.homepageData.doctors.length >= 2) {
       this.userSessions = [
         {

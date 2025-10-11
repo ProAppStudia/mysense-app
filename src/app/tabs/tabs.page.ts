@@ -1,7 +1,7 @@
 import { Component, EnvironmentInjector, inject } from '@angular/core';
 import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonHeader, IonToolbar, IonButtons, IonButton, IonBadge, PopoverController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { notificationsOutline, helpCircleOutline, peopleOutline, homeOutline, checkboxOutline, headsetOutline, chatbubblesOutline, personOutline } from 'ionicons/icons';
+import { notificationsOutline, helpCircleOutline, peopleOutline, homeOutline, checkboxOutline, headsetOutline, chatbubblesOutline, personOutline, menuOutline } from 'ionicons/icons';
 import { HelpPopoverComponent } from '../components/help-popover/help-popover.component';
 
 @Component({
@@ -15,7 +15,7 @@ export class TabsPage {
   public environmentInjector = inject(EnvironmentInjector);
 
   constructor(private popoverController: PopoverController) {
-    addIcons({ notificationsOutline, helpCircleOutline, peopleOutline, homeOutline, checkboxOutline, headsetOutline, chatbubblesOutline, personOutline });
+    addIcons({notificationsOutline,homeOutline,peopleOutline,checkboxOutline,chatbubblesOutline,menuOutline,helpCircleOutline,headsetOutline,personOutline});
   }
 
   async presentPopover(e: Event) {
