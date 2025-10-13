@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -37,7 +37,7 @@ interface TestData {
   imports: [IonicModule, CommonModule, FormsModule]
 })
 export class SelectionTestPage implements OnInit {
-  currentStep: number = 0;
+  currentStep = signal(0);
   testQuestions: TestData | null = null;
   selectedConsultationType: number | null = null; // 1: individual, 2: family, 3: child
   selectedConsultationFormat: string | null = null; // 'online', 'in-person', 'any'
@@ -73,42 +73,41 @@ export class SelectionTestPage implements OnInit {
 
   selectConsultationType(type: number) {
     this.selectedConsultationType = type;
-    this.nextStep();
+    this.currentStep.update(value => value + 1);
   }
 
   selectConsultationFormat(format: string) {
     this.selectedConsultationFormat = format;
-    this.nextStep();
   }
 
   selectGender(gender: string) {
     this.selectedGender = gender;
-    this.nextStep();
+    this.currentStep.update(value => value + 1);
   }
 
   answerQuestion(questionId: string, answer: any) {
     this.answers[questionId] = answer;
-    this.nextStep();
+    this.currentStep.update(value => value + 1);
   }
 
   nextStep() {
-    this.currentStep++;
+    this.currentStep.update(value => value + 1);
     // Logic to determine if test is complete and navigate to results
     // For now, just incrementing step
-    if (this.currentStep > 3 && this.testQuestions && this.selectedConsultationType !== null) {
-      const stepKey = (this.currentStep - 3).toString();
+    if (this.currentStep() > 3 && this.testQuestions && this.selectedConsultationType !== null) {
+      const stepKey = (this.currentStep() - 3).toString();
       const currentTypeQuestions = this.testQuestions.step[stepKey]?.[this.selectedConsultationType];
 
       if (!currentTypeQuestions || Object.keys(currentTypeQuestions).length === 0) {
         this.submitTest();
       }
-    } else if (this.currentStep > 3 && (!this.testQuestions || this.selectedConsultationType === null)) {
+    } else if (this.currentStep() > 3 && (!this.testQuestions || this.selectedConsultationType === null)) {
       this.submitTest();
     }
   }
 
   prevStep() {
-    this.currentStep--;
+    this.currentStep.update(value => value - 1);
   }
 
   submitTest() {
@@ -136,10 +135,10 @@ export class SelectionTestPage implements OnInit {
   }
 
   get currentQuestions() {
-    if (this.currentStep <= 3 || !this.testQuestions || this.selectedConsultationType === null) {
+    if (this.currentStep() <= 3 || !this.testQuestions || this.selectedConsultationType === null) {
       return null;
     }
-    const stepKey = (this.currentStep - 3).toString();
+    const stepKey = (this.currentStep() - 3).toString();
     const questionsForType = this.testQuestions.step[stepKey]?.[this.selectedConsultationType];
     if (questionsForType) {
       return Object.values(questionsForType);

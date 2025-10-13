@@ -40,6 +40,23 @@ ion-content {
   background-color: #fff5e3;
 }
 
+.selection-card.selected {
+  background: #a498d9;
+  color: #fff;
+}
+
+.selection-card.selected .card-text {
+  color: #fff;
+}
+
+.selection-card.selected .card-image {
+  filter: brightness(0) invert(1);
+}
+
+.selection-card.selected .card-icon {
+  color: #fff;
+}
+
 .card-content-wrapper {
     display: flex;
     align-items: center;
@@ -128,7 +145,46 @@ ion-content {
 .selection-card-content svg path {
 fill: #A498D9;
 }
-
+.selection.selected {
+       background: #a498d9;
+}
+.selection.selected .selection-card-text {
+    color: #fff;
+}
+.selection.selected .selection-card-content svg path {
+    fill: #fff;
+}
+button.btn-next {
+    padding: 15px 24px 15px 24px;
+    border-radius: 8px;
+    background: #795bda;
+    color: #fff;
+    font-weight: 500;
+    font-size: 14px;
+    border: none;
+    min-width: 232px;
+    display: flex
+;
+    justify-content: center;
+}
+button.btn-prev {
+   width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    border: 1.5px solid #795bda;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 40px;
+    background: none;
+}
+.buttons-next-prev {
+    display: flex;
+    justify-content: space-between;
+}
+button.btn-next svg {
+    margin-left: 10px;
+}
 ion-button {
   --border-radius: 10px;
   --box-shadow: none;
