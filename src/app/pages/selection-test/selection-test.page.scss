@@ -1,0 +1,160 @@
+ion-content {
+  --background: white;
+}
+
+.progress-dots {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ccc;
+  margin: 0 5px;
+}
+
+.dot.active {
+  background-color: var(--ion-color-primary);
+}
+
+.selection-card {
+  margin-bottom: 15px;
+  border-radius: 10px;
+  box-shadow: none;
+  background-color: var(--ion-color-white);
+  cursor: pointer;
+}
+
+.selection-card:nth-child(1) {
+  background-color: #f0f3ff;
+}
+
+.selection-card:nth-child(2) {
+  background-color: #eeffe8;
+}
+
+.selection-card:nth-child(3) {
+  background-color: #fff5e3;
+}
+
+.card-content-wrapper {
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    justify-content: space-between;
+    padding: 0 20px;
+  
+}
+
+.card-text {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: var(--ion-color-dark);
+}
+
+.card-image {
+      padding-top: 11px;
+  object-fit: contain;
+}
+.card-content-wrapper.individual {
+    background: #f0f3ff;
+}
+.card-content-wrapper.family {
+    background: #eeffe8;
+}
+.card-content-wrapper.child {
+    background: #fff5e3;
+}
+.card-icon {
+  font-size: 2em;
+  color: var(--ion-color-primary);
+}
+
+.intro-image {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+}
+.privacy-guarantee svg {
+    width: 90px;
+    height: 30px;
+    padding-right: 6px;
+}
+.intro-p {
+    font-size: 17px;
+    color: rgba(47, 38, 77, 1);
+}
+.privacy-guarantee {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.9em;
+  color: var(--ion-color-medium);
+}
+
+.privacy-guarantee ion-icon {
+  font-size: 1.5em;
+  margin-right: 10px;
+  color: var(--ion-color-success);
+}
+.selection {
+  background: rgba(241, 237, 255, 1);
+    margin-bottom: 16px;
+    position: relative;
+    font-size: 17px;
+    color: rgba(66, 63, 77, 1);
+    font-weight: 500;
+    border-radius: 8px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 18px 24px;
+    justify-content: flex-start;
+}
+.selection-card-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.selection-card-text {
+    font-size: 17px;
+    color: rgba(66, 63, 77, 1);
+    font-weight: 500;
+}
+.selection-card-content svg path {
+fill: #A498D9;
+}
+
+ion-button {
+  --border-radius: 10px;
+  --box-shadow: none;
+  text-transform: none;
+  font-weight: bold;
+}
+
+ion-button[fill="clear"] {
+  --color: var(--ion-color-medium);
+}
+
+ion-radio-group {
+  padding: 10px 0;
+}
+
+ion-item {
+  --background: var(--ion-color-white);
+  margin-bottom: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+ion-radio {
+  --color-checked: var(--ion-color-primary);
+}
+
+ion-checkbox {
+  --checkbox-background-checked: var(--ion-color-primary);
+}

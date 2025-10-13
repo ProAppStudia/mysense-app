@@ -13,6 +13,17 @@ export class DoctorService {
 
   constructor(private http: HttpClient) { }
 
+  getTestQuestions(): Observable<any> {
+    const params = new HttpParams().set('action', 'get_test_questions');
+    return this.http.get(this.apiUrl, { params }).pipe(
+      map(response => response),
+      catchError(error => {
+        console.error('Error fetching test questions:', error);
+        return of(null);
+      })
+    );
+  }
+
   getPsychologists(filters?: any): Observable<DoctorCardView[]> {
     let params = new HttpParams().set('action', 'get_psychologists');
     if (filters) {
