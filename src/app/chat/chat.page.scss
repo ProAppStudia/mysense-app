@@ -6,19 +6,28 @@
 }
 
 .psychologist-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px;
-  border-radius: 10px;
-  background-color: #f1f1f1;
-  cursor: pointer;
-  min-width: 100px;
+     display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 8px;
+    border-radius: 10px;
+    background-color: #f1f1f1;
+    cursor: pointer;
+    min-width: 180px;
 }
-
+.psychologist-avatar {
+    width: 43px;
+    height: 40px;
+    margin-right: 10px;
+}
 .psychologist-card.active {
-  background-color: #e0e0e0;
-  border: 1px solid var(--ion-color-primary);
+  border: 2px solid #795bda;
+    background: #795bda1a;
+}
+.psychologist-avatar img {
+   width: 43px;
+    border-radius: 4px;
+    height: 43px;
 }
 
 .chat-actions {
@@ -68,7 +77,9 @@
   text-align: right;
   margin-top: 5px;
 }
-
+.psychologist-text {
+    font-size: 12px;
+}
 ion-footer ion-item {
   --background: #f1f1f1;
   border-radius: 20px;

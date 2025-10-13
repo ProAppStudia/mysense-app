@@ -1,16 +1,12 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Чат</ion-title>
-  </ion-toolbar>
-</ion-header>
+
 
 <ion-content [fullscreen]="true">
   <div class="psychologists-container">
     <div class="psychologist-card" *ngFor="let chat of chats" (click)="selectChat(chat)" [class.active]="chat === selectedChat">
-      <ion-avatar>
+      <div class="psychologist-avatar">
         <img [src]="chat.photo || 'assets/icon/favicon.png'" />
-      </ion-avatar>
-      <ion-label>{{ chat.fullname }}</ion-label>
+      </div>
+      <div class="psychologist-text">{{ chat.fullname }}</div>
     </div>
   </div>
 
