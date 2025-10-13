@@ -26,9 +26,15 @@ export class ChatPage implements OnInit {
     this.chatService.getMyChats().subscribe({
       next: (data: any) => {
         if (Array.isArray(data)) {
-          this.chats = data;
+          this.chats = data.map((chat: any) => ({
+            ...chat,
+            photo: chat.img || chat.photo // Use img if available, otherwise use existing photo
+          }));
         } else if (data && data.chats) {
-          this.chats = data.chats;
+          this.chats = data.chats.map((chat: any) => ({
+            ...chat,
+            photo: chat.img || chat.photo // Use img if available, otherwise use existing photo
+          }));
         }
         if (this.chats && this.chats.length > 0) {
           this.selectChat(this.chats[0]);

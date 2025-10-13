@@ -11,13 +11,13 @@
     align-items: center;
     padding: 8px 8px;
     border-radius: 10px;
-    background-color: #f1f1f1;
+        background-color: white;
     cursor: pointer;
     min-width: 180px;
 }
 .psychologist-avatar {
-    width: 43px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     margin-right: 10px;
 }
 .psychologist-card.active {
@@ -25,9 +25,9 @@
     background: #795bda1a;
 }
 .psychologist-avatar img {
-   width: 43px;
+   
     border-radius: 4px;
-    height: 43px;
+  
 }
 
 .chat-actions {
