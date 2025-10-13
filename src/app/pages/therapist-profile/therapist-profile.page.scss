@@ -55,12 +55,13 @@ ion-content {
 }
 
 .booking-block {
-  margin-top: 20px;
+  
 
   h3 {
     font-size: 20px;
     font-weight: 500;
     color: #423f4d;
+    margin-top: 0;
   }
 
   .timezone-info {
@@ -87,6 +88,34 @@ ion-content {
         --border-color: #795bda;
       }
     }
+    
+button.sessionbutton {
+    background: #ffffff;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #423f4d;
+   
+    border: 1px solid #795bda;
+    border-radius: 8px;
+}
+button.sessionbutton.active {
+    background: #7a5bda;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #ffffff;
+     border: 1px solid #e3e1e5;
+    border-radius: 8px;
+}
   }
 
   .week-navigator {
@@ -96,26 +125,30 @@ ion-content {
     margin-bottom: 15px;
 
     button {
-      background: #f0f0f0;
+      background: #ffffff;
       border: none;
       border-radius: 50%;
       width: 30px;
       height: 30px;
       font-size: 20px;
       cursor: pointer;
+          color: #7a5bda;
+    border: 1px solid;
     }
   }
 
   .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
+        gap: 2px;
   }
 
   .day-column {
     text-align: center;
   }
-
+p.calendar-name {
+    margin: 0;
+}
   .day-header {
     margin-bottom: 10px;
   }
@@ -206,21 +239,35 @@ ion-content {
   }
 
   .author {
+        font-size: 14px;
     font-weight: 500;
+    color: #423f4d;
   }
 
   .date {
     color: #9895a6;
+        display: block;
+    font-size: 14px;
   }
 
   .text {
     line-height: 1.6;
+        font-size: 14px;
+    font-weight: 400;
+    color: #423f4d;
   }
 
   .leave-review-button {
-    margin-top: 20px;
-    --border-color: #795bda;
-    --color: #795bda;
+       border: 1px solid #795bda;
+    color: #2f264d;
+    box-shadow: 0 0 1px 0 #795bda;
+    background: 0;
+    border-radius: 8px;
+    padding: 20px;
+    padding: 17px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
   }
 }
 
@@ -291,13 +338,15 @@ ion-content {
   text-align: left;
 
   .info-title {
-    font-size: 16px;
-    font-weight: 500;
-    color: #9895a6;
-    margin-bottom: 10px;
-    display: flex;
+        margin-bottom: 10px;
+    display: flex
+;
     align-items: center;
     gap: 8px;
+    font-size: 20px;
+    font-weight: 400;
+    color: #2f264d;
+    margin-top: 0;
   }
   .info-title-about {
     font-size: 20px;
@@ -505,6 +554,7 @@ ion-footer {
     display: flex;
     gap: 10px;
     width: 100%;
+        flex-direction: column;
 
     ion-button {
       flex: 1;
@@ -518,11 +568,13 @@ ion-footer {
     .book-button {
       --background: #795bda;
       --color: #fff;
+          --box-shadow: none;
     }
 
     .message-button {
       --border-color: #795bda;
       --color: #795bda;
+          --box-shadow: none;
     }
   }
 }

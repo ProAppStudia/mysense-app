@@ -142,6 +142,7 @@
         </swiper-container>
       </div>
 </div>
+    <div class="psychologist-card">
       <div class="info-block">
         <h4 class="info-title">Я працюю з:</h4>
         <ul>
@@ -155,20 +156,21 @@
           <li *ngFor="let item of doctor.doNotWorkWith" class="not-work-with">{{ item }}</li>
         </ul>
       </div>
-
+</div>
+      <div class="psychologist-card">
       <div class="booking-block" *ngIf="doctor.calendar">
         <h3>Забронювати сесію</h3>
         <p class="timezone-info">Бронювання проводиться за київським часом</p>
 
         <div class="session-type-toggle">
-          <ion-button [class.active]="sessionType === 'online'" (click)="sessionType = 'online'">Онлайн</ion-button>
-          <ion-button [class.active]="sessionType === 'offline'" (click)="sessionType = 'offline'">Очно</ion-button>
+          <button class="sessionbutton" [class.active]="sessionType === 'online'" (click)="sessionType = 'online'">Онлайн</button>
+          <button class="sessionbutton" [class.active]="sessionType === 'offline'" (click)="sessionType = 'offline'">Очно</button>
         </div>
 
         <div class="booking-for-toggle">
-          <ion-button [class.active]="bookingFor === 'me'" (click)="bookingFor = 'me'">Для мене</ion-button>
-          <ion-button [class.active]="bookingFor === 'pair'" (click)="bookingFor = 'pair'">Для пари</ion-button>
-          <ion-button [class.active]="bookingFor === 'child'" (click)="bookingFor = 'child'">Для дитини</ion-button>
+          <button class="sessionbutton" [class.active]="bookingFor === 'me'" (click)="bookingFor = 'me'">Для мене</button>
+          <button class="sessionbutton" [class.active]="bookingFor === 'pair'" (click)="bookingFor = 'pair'">Для пари</button>
+          <button class="sessionbutton" [class.active]="bookingFor === 'child'" (click)="bookingFor = 'child'">Для дитини</button>
         </div>
 
         <div class="week-navigator">
@@ -180,8 +182,8 @@
         <div class="calendar-grid" *ngIf="currentWeek">
           <div class="day-column" *ngFor="let dayKey of dayKeys">
             <div class="day-header">
-              <p>{{ currentWeek.days[dayKey].day_name }}</p>
-              <p>{{ currentWeek.days[dayKey].day_no }}</p>
+              <p class="calendar-name">{{ currentWeek.days[dayKey].day_name }}</p>
+              <p class="calendar-no">{{ currentWeek.days[dayKey].day_no }}</p>
             </div>
             <div class="time-slots">
               <button *ngFor="let slot of currentWeek.days[dayKey].times" [disabled]="slot.disabled">
@@ -191,7 +193,8 @@
           </div>
         </div>
       </div>
-
+      </div>
+      <div class="psychologist-card">
       <div class="info-block reviews-block">
         <h4 class="info-title">Відгуки клієнтів</h4>
         <div *ngIf="doctor.reviews && doctor.reviews.length > 0; else noReviews">
@@ -214,7 +217,8 @@
         <ng-template #noReviews>
           <p>Відгуків поки що немає.</p>
         </ng-template>
-        <ion-button class="leave-review-button" expand="block" fill="outline">Залишити відгук</ion-button>
+        <button class="leave-review-button" expand="block" fill="outline">Залишити відгук</button>
+      </div>
       </div>
     </div>
     <ng-template #errorView>
