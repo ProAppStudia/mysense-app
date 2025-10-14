@@ -90,8 +90,8 @@
     <h3 class="filter-section-title">Оберіть прийнятну ціну</h3>
     <div class="custom-range-group">
       <div class="range-slider">
-        <input type="range" min="900" max="2700" [value]="filters.priceRange.lower" (input)="filters.priceRange.lower = $any($event.target.value)">
-        <input type="range" min="900" max="2700" [value]="filters.priceRange.upper" (input)="filters.priceRange.upper = $any($event.target.value)">
+        <input #rangeInput type="range" min="900" max="2700" [value]="filters.priceRange.lower" (input)="filters.priceRange.lower = $any($event.target.value); updateRangeBackground()">
+        <input #rangeInput type="range" min="900" max="2700" [value]="filters.priceRange.upper" (input)="filters.priceRange.upper = $any($event.target.value); updateRangeBackground()">
       </div>
       <div class="custom-range-labels">
         <span>{{ filters.priceRange.lower }}</span>

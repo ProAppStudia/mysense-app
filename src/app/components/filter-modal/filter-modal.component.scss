@@ -102,7 +102,7 @@
 .range-slider {
   position: relative;
   height: 8px;
-  background: #ddd;
+  background: linear-gradient(to right, #ddd 0%, #ddd 0%, #7b61ff 0%, #7b61ff 100%, #ddd 100%, #ddd 100%); /* Initial gradient, will be updated by JS */
   border-radius: 5px;
   margin: 0 15px;
 }

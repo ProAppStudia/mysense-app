@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +10,8 @@ import { IonicModule } from '@ionic/angular';
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule]
 })
-export class FilterModalComponent implements OnInit {
+export class FilterModalComponent implements OnInit, AfterViewInit {
+  @ViewChildren('rangeInput') rangeInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   filters = {
     type: 'individual',
@@ -35,6 +36,28 @@ export class FilterModalComponent implements OnInit {
 
   ngOnInit() {}
 
+  ngAfterViewInit() {
+    this.updateRangeBackground();
+    this.rangeInputs.forEach(input => {
+      input.nativeElement.addEventListener('input', () => this.updateRangeBackground());
+    });
+  }
+
+  updateRangeBackground() {
+    const min = 900;
+    const max = 2700;
+    const lower = this.filters.priceRange.lower;
+    const upper = this.filters.priceRange.upper;
+
+    const percent1 = ((lower - min) / (max - min)) * 100;
+    const percent2 = ((upper - min) / (max - min)) * 100;
+
+    const rangeSlider = document.querySelector('.range-slider') as HTMLElement;
+    if (rangeSlider) {
+      rangeSlider.style.background = `linear-gradient(to right, #ddd ${percent1}%, #7b61ff ${percent1}%, #7b61ff ${percent2}%, #ddd ${percent2}%)`;
+    }
+  }
+
   dismiss() {
     this.modalController.dismiss();
   }
@@ -44,7 +67,6 @@ export class FilterModalComponent implements OnInit {
       .filter(d => d.checked)
       .map(d => d.name);
     this.modalController.dismiss(this.filters);
-
   }
 
   resetFilters() {
