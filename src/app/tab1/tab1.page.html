@@ -183,12 +183,12 @@
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding">
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()">
+        <form class="loginform" [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()">
           <ion-text>
             <h1 class="ion-text-center">Вхід в особистий кабінет</h1>
             <p class="ion-text-center">Увійдіть до свого облікового запису</p>
           </ion-text>
-          <ion-list>
+          <ion-list class="login-inputs">
             <ion-item>
               <ion-input
                 label="Ел. адреса"

@@ -812,3 +812,15 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
   font-size: 14px; /* Smaller font size */
   height: 36px; /* Reduce button height */
 }
+.loginform{
+    background: white;
+    border-radius: 16px;
+    padding: 15px;
+}
+ion-list.login-inputs.md.list-md.hydrated {
+    background: white !important;
+}
+.login-inputs ion-item {
+    --background: white !important;
+    --padding-bottom: 0;
+}
