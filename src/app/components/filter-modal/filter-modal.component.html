@@ -8,94 +8,100 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-list>
-    <ion-radio-group [value]="filters.type" (ionChange)="filters.type = $event.detail.value">
-      <ion-list-header>
-        <ion-label>Тип терапії</ion-label>
-      </ion-list-header>
-      <ion-item>
-        <ion-label>Індивідуальна</ion-label>
-        <ion-radio slot="end" value="individual"></ion-radio>
-      </ion-item>
-      <ion-item>
-        <ion-label>Сімейна</ion-label>
-        <ion-radio slot="end" value="family"></ion-radio>
-      </ion-item>
-      <ion-item>
-        <ion-label>Дитяча</ion-label>
-        <ion-radio slot="end" value="child"></ion-radio>
-      </ion-item>
-    </ion-radio-group>
+  <div class="filter-section">
+    <h3 class="filter-section-title">Тип терапії</h3>
+    <div class="custom-radio-group">
+      <label class="custom-radio-item" [class.selected]="filters.type === 'individual'">
+        <input type="radio" name="therapy-type" value="individual" [(ngModel)]="filters.type">
+        Індивідуальна
+      </label>
+      <label class="custom-radio-item" [class.selected]="filters.type === 'family'">
+        <input type="radio" name="therapy-type" value="family" [(ngModel)]="filters.type">
+        Сімейна
+      </label>
+      <label class="custom-radio-item" [class.selected]="filters.type === 'child'">
+        <input type="radio" name="therapy-type" value="child" [(ngModel)]="filters.type">
+        Дитяча
+      </label>
+    </div>
+  </div>
 
-    <ion-list-header>
-      <ion-label>Напрямки</ion-label>
-    </ion-list-header>
-    <ion-item *ngFor="let direction of directions">
-      <ion-label>{{ direction.name }}</ion-label>
-      <ion-checkbox slot="start" [checked]="direction.checked" (ionChange)="direction.checked = $event.detail.checked"></ion-checkbox>
-    </ion-item>
+  <div class="filter-section">
+    <h3 class="filter-section-title">Напрямки</h3>
+    <div class="custom-checkbox-group">
+      <label class="custom-checkbox-item" *ngFor="let direction of directions" [class.selected]="direction.checked">
+        <input type="checkbox" [checked]="direction.checked" (change)="direction.checked = $event.target.checked">
+        {{ direction.name }}
+      </label>
+    </div>
+  </div>
 
-    <ion-radio-group [value]="filters.format" (ionChange)="filters.format = $event.detail.value">
-      <ion-list-header>
-        <ion-label>Оберіть формат сесії</ion-label>
-      </ion-list-header>
-      <ion-item>
-        <ion-label>Онлайн</ion-label>
-        <ion-radio slot="end" value="online"></ion-radio>
-      </ion-item>
-      <ion-item>
-        <ion-label>Очно</ion-label>
-        <ion-radio slot="end" value="in-person"></ion-radio>
-      </ion-item>
-    </ion-radio-group>
+  <div class="filter-section">
+    <h3 class="filter-section-title">Оберіть формат сесії</h3>
+    <div class="custom-radio-group">
+      <label class="custom-radio-item" [class.selected]="filters.format === 'online'">
+        <input type="radio" name="session-format" value="online" [(ngModel)]="filters.format">
+        Онлайн
+      </label>
+      <label class="custom-radio-item" [class.selected]="filters.format === 'in-person'">
+        <input type="radio" name="session-format" value="in-person" [(ngModel)]="filters.format">
+        Очно
+      </label>
+    </div>
+  </div>
 
-    <ion-radio-group [value]="filters.gender" (ionChange)="filters.gender = $event.detail.value">
-      <ion-list-header>
-        <ion-label>Оберіть стать психолога</ion-label>
-      </ion-list-header>
-      <ion-item>
-        <ion-label>Не важливо</ion-label>
-        <ion-radio slot="end" value="any"></ion-radio>
-      </ion-item>
-      <ion-item>
-        <ion-label>Чоловік</ion-label>
-        <ion-radio slot="end" value="male"></ion-radio>
-      </ion-item>
-      <ion-item>
-        <ion-label>Жінка</ion-label>
-        <ion-radio slot="end" value="female"></ion-radio>
-      </ion-item>
-    </ion-radio-group>
+  <div class="filter-section">
+    <h3 class="filter-section-title">Оберіть стать психолога</h3>
+    <div class="custom-radio-group">
+      <label class="custom-radio-item" [class.selected]="filters.gender === 'any'">
+        <input type="radio" name="gender" value="any" [(ngModel)]="filters.gender">
+        Не важливо
+      </label>
+      <label class="custom-radio-item" [class.selected]="filters.gender === 'male'">
+        <input type="radio" name="gender" value="male" [(ngModel)]="filters.gender">
+        Чоловік
+      </label>
+      <label class="custom-radio-item" [class.selected]="filters.gender === 'female'">
+        <input type="radio" name="gender" value="female" [(ngModel)]="filters.gender">
+        Жінка
+      </label>
+    </div>
+  </div>
 
-    <ion-radio-group [value]="filters.language" (ionChange)="filters.language = $event.detail.value">
-      <ion-list-header>
-        <ion-label>Оберіть мову спілкування</ion-label>
-      </ion-list-header>
-      <ion-item>
-        <ion-label>Українська</ion-label>
-        <ion-radio slot="end" value="ukrainian"></ion-radio>
-      </ion-item>
-      <ion-item>
-        <ion-label>Російська</ion-label>
-        <ion-radio slot="end" value="russian"></ion-radio>
-      </ion-item>
-      <ion-item>
-        <ion-label>Не важливо</ion-label>
-        <ion-radio slot="end" value="any"></ion-radio>
-      </ion-item>
-    </ion-radio-group>
+  <div class="filter-section">
+    <h3 class="filter-section-title">Оберіть мову спілкування</h3>
+    <div class="custom-radio-group">
+      <label class="custom-radio-item" [class.selected]="filters.language === 'ukrainian'">
+        <input type="radio" name="language" value="ukrainian" [(ngModel)]="filters.language">
+        Українська
+      </label>
+      <label class="custom-radio-item" [class.selected]="filters.language === 'russian'">
+        <input type="radio" name="language" value="russian" [(ngModel)]="filters.language">
+        Російська
+      </label>
+      <label class="custom-radio-item" [class.selected]="filters.language === 'any'">
+        <input type="radio" name="language" value="any" [(ngModel)]="filters.language">
+        Не важливо
+      </label>
+    </div>
+  </div>
 
-    <ion-list-header>
-      <ion-label>Оберіть прийнятну ціну</ion-label>
-    </ion-list-header>
-    <ion-item>
-      <ion-range min="900" max="2700" dualKnobs="true" pin="true" [value]="filters.priceRange" (ionChange)="filters.priceRange = $any($event.detail.value)">
-        <ion-label slot="start">900</ion-label>
-        <ion-label slot="end">2700</ion-label>
-      </ion-range>
-    </ion-item>
-  </ion-list>
+  <div class="filter-section">
+    <h3 class="filter-section-title">Оберіть прийнятну ціну</h3>
+    <div class="custom-range-group">
+      <div class="range-slider">
+        <input type="range" min="900" max="2700" [value]="filters.priceRange.lower" (input)="filters.priceRange.lower = $any($event.target.value)">
+        <input type="range" min="900" max="2700" [value]="filters.priceRange.upper" (input)="filters.priceRange.upper = $any($event.target.value)">
+      </div>
+      <div class="custom-range-labels">
+        <span>{{ filters.priceRange.lower }}</span>
+        <span>{{ filters.priceRange.upper }} грн.</span>
+      </div>
+    </div>
+  </div>
 
-  <ion-button expand="block" (click)="applyFilters()">Застосувати</ion-button>
-  <ion-button expand="block" fill="clear" (click)="resetFilters()">Скинути фільтри</ion-button>
+  <div class="filter-actions">
+    <button class="custom-filter-button primary" (click)="applyFilters()">Застосувати</button>
+    <button class="custom-filter-button secondary" (click)="resetFilters()">Скинути фільтри</button>
+  </div>
 </ion-content>

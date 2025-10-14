@@ -1,3 +1,202 @@
-ion-item {
-    --inner-border-width: 0;
-  }
+.filter-section {
+  margin-bottom: 20px;
+}
+
+.filter-section-title {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #2f264d; /* Dark text for titles */
+}
+
+.custom-radio-group, .custom-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f8f8; /* Light background for groups */
+  border-radius: 8px;
+  overflow: hidden; /* Ensures rounded corners apply to children */
+}
+
+.custom-radio-item, .custom-checkbox-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  font-size: 1em;
+  color: #2f264d; /* Dark text for items */
+  border-bottom: 1px solid #eee; /* Separator between items */
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.custom-radio-item:last-child, .custom-checkbox-item:last-child {
+  border-bottom: none; /* No border for the last item */
+}
+
+.custom-radio-item.selected, .custom-checkbox-item.selected {
+  background-color: #7b61ff; /* Purple background for selected items */
+  color: white;
+}
+
+.custom-radio-item input[type="radio"],
+.custom-checkbox-item input[type="checkbox"] {
+  margin-right: 10px;
+  /* Hide default radio/checkbox */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 50%; /* For radio buttons */
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.custom-checkbox-item input[type="checkbox"] {
+  border-radius: 4px; /* Square for checkboxes */
+}
+
+.custom-radio-item input[type="radio"]:checked,
+.custom-checkbox-item input[type="checkbox"]:checked {
+  border-color: #7b61ff; /* Purple border when checked */
+  background-color: #7b61ff; /* Purple background when checked */
+}
+
+.custom-radio-item input[type="radio"]:checked::before {
+  content: '';
+  display: block;
+  width: 10px;
+  height: 10px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.custom-checkbox-item input[type="checkbox"]:checked::before {
+  content: '✓'; /* Checkmark for checkboxes */
+  display: block;
+  color: white;
+  font-size: 14px;
+  line-height: 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+.custom-range-group {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  padding: 10px 0;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+}
+
+.range-slider {
+  position: relative;
+  height: 8px;
+  background: #ddd;
+  border-radius: 5px;
+  margin: 0 15px;
+}
+
+.range-slider input[type="range"] {
+  position: absolute;
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  pointer-events: none; /* Allow clicks to pass through to the track */
+  margin: 0;
+  padding: 0;
+}
+
+.range-slider input[type="range"]::-webkit-slider-runnable-track {
+  height: 8px;
+  background: transparent;
+  border-radius: 5px;
+}
+
+.range-slider input[type="range"]::-moz-range-track {
+  height: 8px;
+  background: transparent;
+  border-radius: 5px;
+}
+
+.range-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #7b61ff;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 0 2px rgba(0,0,0,0.3);
+  margin-top: -6px; /* Adjust to center thumb on track */
+  pointer-events: all; /* Make thumb clickable */
+}
+
+.range-slider input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #7b61ff;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 0 2px rgba(0,0,0,0.3);
+  pointer-events: all; /* Make thumb clickable */
+}
+
+.custom-range-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  font-size: 0.9em;
+  color: #666;
+  padding: 0 15px;
+}
+
+.filter-actions {
+  margin-top: 30px;
+}
+
+.custom-filter-button {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border-radius: 5px;
+  font-size: 1.1em;
+  cursor: pointer;
+  margin-bottom: 10px;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.custom-filter-button.primary {
+  background-color: #7b61ff; /* Purple for primary button */
+  color: white;
+  border: none;
+}
+
+.custom-filter-button.primary:hover {
+  background-color: #6a4edb; /* Darker purple on hover */
+}
+
+.custom-filter-button.secondary {
+  background: none;
+  color: #7b61ff; /* Purple text for secondary button */
+  border: 1px solid #7b61ff;
+}
+
+.custom-filter-button.secondary:hover {
+  background-color: #f0eaff; /* Light purple background on hover */
+}
