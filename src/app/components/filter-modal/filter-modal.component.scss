@@ -44,7 +44,8 @@
   border-bottom: none; /* No border for the last item */
 }
 
-.custom-radio-item.selected,  {
+.custom-radio-item.selected,
+.custom-checkbox-item.selected {
   background-color: #7b61ff; /* Purple background for selected items */
   color: white;
 }
@@ -103,18 +104,20 @@
 
 
 .custom-range-group {
-  display: flex;
-  flex-direction: column;
-  margin-top: 10px;
-  padding: 10px 0;
-  background-color: #f8f8f8;
-  border-radius: 8px;
+      display: flex
+;
+    flex-direction: column;
+    margin-top: 10px;
+    padding: 10px 0;
+    background-color: #f2edff;
+    border-radius: 8px;
+    padding: 40px 20px 20px;
 }
 
 .range-slider {
   position: relative;
-  height: 8px;
-  background: linear-gradient(to right, #ddd 0%, #ddd 0%, #7b61ff 0%, #7b61ff 100%, #ddd 100%, #ddd 100%); /* Initial gradient, will be updated by JS */
+  height: 10px;
+  background: linear-gradient(to right, #ddd 0%, #ddd 0%, #7190F9 0%, #7190F9 100%, #ddd 100%, #ddd 100%); /* Initial gradient, will be updated by JS */
   border-radius: 5px;
   margin: 0 15px;
 }
@@ -147,7 +150,7 @@
   appearance: none;
   width: 20px;
   height: 20px;
-  background: #7b61ff;
+  background: #7190F9;
   border-radius: 50%;
   cursor: pointer;
   border: 2px solid #fff;
@@ -159,7 +162,7 @@
 .range-slider input[type="range"]::-moz-range-thumb {
   width: 20px;
   height: 20px;
-  background: #7b61ff;
+  background: #7190F9;
   border-radius: 50%;
   cursor: pointer;
   border: 2px solid #fff;

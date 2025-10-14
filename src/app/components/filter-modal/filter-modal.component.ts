@@ -54,7 +54,7 @@ export class FilterModalComponent implements OnInit, AfterViewInit {
 
     const rangeSlider = document.querySelector('.range-slider') as HTMLElement;
     if (rangeSlider) {
-      rangeSlider.style.background = `linear-gradient(to right, #ddd ${percent1}%, #7b61ff ${percent1}%, #7b61ff ${percent2}%, #ddd ${percent2}%)`;
+      rangeSlider.style.background = `linear-gradient(to right, #ddd ${percent1}%, rgb(113, 144, 249) ${percent1}%, rgb(113, 144, 249) ${percent2}%, #ddd ${percent2}%)`;
     }
   }
 
