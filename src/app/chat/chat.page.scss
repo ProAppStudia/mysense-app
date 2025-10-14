@@ -3,8 +3,11 @@
   overflow-x: auto;
   padding: 10px;
   gap: 10px;
+  
 }
-
+ion-content {
+      --background: var(--ion-color-mysense-light-purple);
+}
 .psychologist-card {
      display: flex;
     flex-direction: row;
@@ -22,8 +25,13 @@
 }
 .psychologist-card.active {
   border: 2px solid #795bda;
-    background: #795bda1a;
+   
+    color: #795bda;
 }
+.psychologist-card.active {
+  
+}
+
 .psychologist-avatar img {
    
     border-radius: 4px;
@@ -32,21 +40,41 @@
 
 .chat-actions {
   display: flex;
-  justify-content: center;
-  padding: 10px;
-  gap: 10px;
+    justify-content: center;
+    padding: 10px;
+    gap: 10px;
+    background: white;
+    margin: 10px 10px 0px;
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
 }
-
-.active-action {
-  --background: var(--ion-color-primary);
-  --color: white;
+.chat-actions button {
+  flex: 1;
+  border: none;
+  padding: 5px 10px;
+  font-size: 12px;
+  color: #795bda;
+  border: 1px solid #795bda;
+  border-radius: 4px;
+  cursor: pointer;
+  border-radius: 8px;
+  background: white;
 }
-
+.chat-actions button.active-action {
+  background: var(--ion-color-primary);
+  color: white;
+}
+button.btn-reserve {
+    color: rgba(255, 92, 141, 1) !important;
+}
 .message-list {
   padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+    display: flex
+;
+    flex-direction: column;
+    gap: 10px;
+    background: white;
+    margin: 0 10px;
 }
 
 .message-item {

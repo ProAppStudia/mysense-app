@@ -1,8 +1,4 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Особистий кабінет</ion-title>
-  </ion-toolbar>
-</ion-header>
+
 
 <ion-content>
   <div class="profile-container" >
@@ -129,16 +125,19 @@
         <ion-icon slot="start" name="document-text-outline"></ion-icon>
         <ion-label>Правова Інформація</ion-label>
       </ion-item>
-      <ion-item *ngIf="isLoggedIn()" button detail="false" (click)="logout()">
-        <ion-icon slot="start" name="log-out-outline"></ion-icon>
-        <ion-label>Вийти</ion-label>
-      </ion-item>
+     
     </ion-list>
 
     <ion-list class="profile-menu-group">
       <ion-item detail routerLink="/emergency-help">
         <ion-icon slot="start" name="warning-outline"></ion-icon>
         <ion-label>Термінова допомога</ion-label>
+      </ion-item>
+    </ion-list>
+    <ion-list class="profile-menu-group">
+       <ion-item *ngIf="isLoggedIn()" button detail="false" (click)="logout()">
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        <ion-label>Вийти</ion-label>
       </ion-item>
     </ion-list>
   </div>
