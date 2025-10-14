@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, IonAvatar, IonLabel, IonFooter, IonInput, IonItem } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, IonAvatar, IonLabel, IonFooter, IonInput, IonItem, RefresherCustomEvent } from '@ionic/angular/standalone';
 import { ChatService } from '../services/chat.service';
 import { addIcons } from 'ionicons';
 import { send } from 'ionicons/icons';
@@ -11,7 +11,8 @@ import { send } from 'ionicons/icons';
   templateUrl: './chat.page.html',
   styleUrls: ['./chat.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButton, IonIcon, IonAvatar, IonLabel, IonFooter, IonInput, IonItem]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButton, IonIcon, IonAvatar, IonLabel, IonFooter, IonInput, IonItem],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ChatPage implements OnInit {
   chats: any[] = [];
@@ -58,6 +59,35 @@ export class ChatPage implements OnInit {
       },
       error: (error) => {
         // Handle error appropriately in a real app
+      }
+    });
+  }
+
+  handleRefresh(event: RefresherCustomEvent) {
+    this.chatService.getMyChats().subscribe({
+      next: (data: any) => {
+        if (Array.isArray(data)) {
+          this.chats = data.map((chat: any) => ({
+            ...chat,
+            photo: chat.img || chat.photo
+          }));
+        } else if (data && data.chats) {
+          this.chats = data.chats.map((chat: any) => ({
+            ...chat,
+            photo: chat.img || chat.photo
+          }));
+        }
+        if (this.chats && this.chats.length > 0) {
+          this.selectChat(this.chats[0]);
+        } else {
+          this.selectedChat = null;
+          this.messages = [];
+        }
+        event.detail.complete();
+      },
+      error: (error) => {
+        console.error('Error refreshing chats:', error);
+        event.detail.complete();
       }
     });
   }

@@ -1,7 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, RefresherCustomEvent } from '@ionic/angular';
 import { DoctorService } from '../../services/doctor.service';
 import { Router } from '@angular/router';
 
@@ -34,7 +34,8 @@ interface TestData {
   templateUrl: './selection-test.page.html',
   styleUrls: ['./selection-test.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [IonicModule, CommonModule, FormsModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SelectionTestPage implements OnInit {
   currentStep = signal(0);
@@ -144,5 +145,17 @@ export class SelectionTestPage implements OnInit {
       return Object.values(questionsForType);
     }
     return null;
+  }
+
+  handleRefresh(event: RefresherCustomEvent) {
+    this.isLoading = true;
+    this.error = null;
+    this.currentStep.set(0);
+    this.selectedConsultationType = null;
+    this.selectedConsultationFormat = null;
+    this.selectedGender = null;
+    this.answers = {};
+    this.loadTestQuestions();
+    event.detail.complete();
   }
 }

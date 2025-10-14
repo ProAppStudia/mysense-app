@@ -1,6 +1,9 @@
 
 
 <ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <div *ngIf="isLoading" class="ion-text-center">
     <ion-spinner></ion-spinner>
     <p>Завантаження питань...</p>

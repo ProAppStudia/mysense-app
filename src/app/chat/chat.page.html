@@ -1,6 +1,9 @@
 
 
 <ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <div class="psychologists-container">
     <div class="psychologist-card" *ngFor="let chat of chats" (click)="selectChat(chat)" [class.active]="chat === selectedChat">
       <div class="psychologist-avatar">

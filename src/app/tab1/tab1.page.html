@@ -1,4 +1,7 @@
 <ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <div class="login-buttons" *ngIf="!isLoggedIn()">
     <button class="login-button" (click)="openLoginModal()">
       <ion-icon slot="start" src="assets/icon/sing-in.svg"></ion-icon>

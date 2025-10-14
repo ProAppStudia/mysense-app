@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA, ViewChild, ElementRef, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { IonContent, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel, IonHeader, IonToolbar, IonModal, IonInput, IonSpinner, IonText, IonButtons, IonCheckbox } from '@ionic/angular/standalone';
+import { IonContent, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel, IonHeader, IonToolbar, IonModal, IonInput, IonSpinner, IonText, IonButtons, IonCheckbox, RefresherCustomEvent } from '@ionic/angular/standalone';
 import { HttpClient } from '@angular/common/http';
 import { register } from 'swiper/element/bundle';
 import { AuthService } from '../services/auth.service'; // Import AuthService
@@ -449,5 +449,10 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
 
   toggleRegisterPasswordVisibility() {
     this.registerPasswordVisible.update(value => !value);
+  }
+
+  handleRefresh(event: RefresherCustomEvent) {
+    this.getHomepageData(); // Reload your data
+    event.detail.complete(); // Complete the refresher animation
   }
 }

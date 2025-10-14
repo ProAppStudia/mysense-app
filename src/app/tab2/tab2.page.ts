@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonToolbar, IonContent, IonButton, IonIcon, IonButtons, ModalController, IonSearchbar, PopoverController } from '@ionic/angular/standalone';
+import { IonToolbar, IonContent, IonButton, IonIcon, IonButtons, ModalController, IonSearchbar, PopoverController, RefresherCustomEvent } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { filterCircleOutline, swapVerticalOutline, arrowUpOutline, arrowDownOutline, closeOutline } from 'ionicons/icons';
 import { DoctorService } from '../services/doctor.service';
@@ -144,5 +144,14 @@ export class Tab2Page implements OnInit {
       return typeMatch && formatMatch && genderMatch && languageMatch && priceMatch && directionMatch;
     });
     this.cdr.detectChanges();
+  }
+
+  handleRefresh(event: RefresherCustomEvent) {
+    this.doctorService.getPsychologists().subscribe(psychologists => {
+      this.allDoctors = psychologists.filter(p => this.isDoctorCardView(p)) as DoctorCardView[];
+      this.doctors = [...this.allDoctors];
+      this.cdr.detectChanges();
+      event.detail.complete(); // Complete the refresher animation
+    });
   }
 }
