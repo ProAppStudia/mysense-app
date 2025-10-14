@@ -11,28 +11,40 @@
 
 .custom-radio-group, .custom-checkbox-group {
   display: flex;
-  flex-direction: column;
-  background-color: #f8f8f8; /* Light background for groups */
-  border-radius: 8px;
-  overflow: hidden; /* Ensures rounded corners apply to children */
+    flex-direction: column;
+    background-color: #f1edff;
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 10px;
+    gap: 10px;
 }
 
 .custom-radio-item, .custom-checkbox-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 15px;
-  font-size: 1em;
-  color: #2f264d; /* Dark text for items */
-  border-bottom: 1px solid #eee; /* Separator between items */
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+  display: flex
+;
+    align-items: center;
+    padding: 15px 15px;
+    font-size: 16px;
+    color: #2f264d;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+   
+    background: white;
+    border-radius: 8px;
+}
+.custom-radio-group.tip-terapy input {
+    display: none;
+}
+.tip-terapy .custom-radio-item {
+    justify-content: center;
 }
 
 .custom-radio-item:last-child, .custom-checkbox-item:last-child {
   border-bottom: none; /* No border for the last item */
 }
 
-.custom-radio-item.selected, .custom-checkbox-item.selected {
+.custom-radio-item.selected,  {
   background-color: #7b61ff; /* Purple background for selected items */
   color: white;
 }

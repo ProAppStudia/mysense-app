@@ -134,8 +134,8 @@
         <ion-label>Термінова допомога</ion-label>
       </ion-item>
     </ion-list>
-    <ion-list class="profile-menu-group">
-       <ion-item *ngIf="isLoggedIn()" button detail="false" (click)="logout()">
+    <ion-list *ngIf="isLoggedIn()" class="profile-menu-group">
+       <ion-item  button detail="false" (click)="logout()">
         <ion-icon slot="start" name="log-out-outline"></ion-icon>
         <ion-label>Вийти</ion-label>
       </ion-item>

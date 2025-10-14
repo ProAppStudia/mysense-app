@@ -10,7 +10,7 @@
 <ion-content class="ion-padding">
   <div class="filter-section">
     <h3 class="filter-section-title">Тип терапії</h3>
-    <div class="custom-radio-group">
+    <div class="custom-radio-group tip-terapy">
       <label class="custom-radio-item" [class.selected]="filters.type === 'individual'">
         <input type="radio" name="therapy-type" value="individual" [(ngModel)]="filters.type">
         Індивідуальна
@@ -28,7 +28,7 @@
 
   <div class="filter-section">
     <h3 class="filter-section-title">Напрямки</h3>
-    <div class="custom-checkbox-group">
+    <div class="custom-checkbox-group tip-direction">
       <label class="custom-checkbox-item" *ngFor="let direction of directions" [class.selected]="direction.checked">
         <input type="checkbox" [checked]="direction.checked" (change)="direction.checked = $event.target.checked">
         {{ direction.name }}
@@ -38,7 +38,7 @@
 
   <div class="filter-section">
     <h3 class="filter-section-title">Оберіть формат сесії</h3>
-    <div class="custom-radio-group">
+    <div class="custom-radio-group tip-terapy">
       <label class="custom-radio-item" [class.selected]="filters.format === 'online'">
         <input type="radio" name="session-format" value="online" [(ngModel)]="filters.format">
         Онлайн
@@ -52,7 +52,7 @@
 
   <div class="filter-section">
     <h3 class="filter-section-title">Оберіть стать психолога</h3>
-    <div class="custom-radio-group">
+    <div class="custom-radio-group tip-terapy">
       <label class="custom-radio-item" [class.selected]="filters.gender === 'any'">
         <input type="radio" name="gender" value="any" [(ngModel)]="filters.gender">
         Не важливо
@@ -70,7 +70,7 @@
 
   <div class="filter-section">
     <h3 class="filter-section-title">Оберіть мову спілкування</h3>
-    <div class="custom-radio-group">
+    <div class="custom-radio-group tip-terapy">
       <label class="custom-radio-item" [class.selected]="filters.language === 'ukrainian'">
         <input type="radio" name="language" value="ukrainian" [(ngModel)]="filters.language">
         Українська
