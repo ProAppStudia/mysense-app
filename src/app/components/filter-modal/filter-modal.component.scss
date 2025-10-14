@@ -9,6 +9,10 @@
   color: #2f264d; /* Dark text for titles */
 }
 
+ion-header ion-buttons ion-button ion-icon {
+  font-size: 2em; /* Twice the size */
+}
+
 .custom-radio-group, .custom-checkbox-group {
   display: flex;
     flex-direction: column;
@@ -148,35 +152,37 @@
 .range-slider input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
-  background: #7190F9;
+  width: 30px;
+  height: 30px;
+  background: #fff;
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid #fff;
+  border: 2px solid #7190F9;
   box-shadow: 0 0 2px rgba(0,0,0,0.3);
-  margin-top: -6px; /* Adjust to center thumb on track */
+  margin-top: -11px; /* Adjust to center thumb on track */
   pointer-events: all; /* Make thumb clickable */
 }
 
 .range-slider input[type="range"]::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  background: #7190F9;
+  width: 30px;
+  height: 30px;
+  background: #fff;
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid #fff;
+  border: 2px solid #7190F9;
   box-shadow: 0 0 2px rgba(0,0,0,0.3);
+  margin-top: -11px; /* Adjust to center thumb on track */
   pointer-events: all; /* Make thumb clickable */
 }
 
 .custom-range-labels {
   display: flex;
   justify-content: space-between;
-  margin-top: 5px;
-  font-size: 0.9em;
-  color: #666;
+  margin-bottom: 15px; /* Moved above slider, so margin-bottom */
+  font-size: 1.1em; /* Slightly larger font */
+  color: #2f264d; /* Darker text color */
   padding: 0 15px;
+  font-weight: 500; /* Bolder font */
 }
 
 .filter-actions {

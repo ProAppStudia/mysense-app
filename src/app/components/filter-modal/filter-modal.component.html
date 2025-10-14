@@ -2,7 +2,9 @@
   <ion-toolbar>
     <ion-title>Фільтри</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="dismiss()">Закрити</ion-button>
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -89,13 +91,13 @@
   <div class="filter-section">
     <h3 class="filter-section-title">Оберіть прийнятну ціну</h3>
     <div class="custom-range-group">
-      <div class="range-slider">
-        <input #rangeInput type="range" min="900" max="2700" [value]="filters.priceRange.lower" (input)="filters.priceRange.lower = $any($event.target.value); updateRangeBackground()">
-        <input #rangeInput type="range" min="900" max="2700" [value]="filters.priceRange.upper" (input)="filters.priceRange.upper = $any($event.target.value); updateRangeBackground()">
-      </div>
       <div class="custom-range-labels">
         <span>{{ filters.priceRange.lower }}</span>
         <span>{{ filters.priceRange.upper }} грн.</span>
+      </div>
+      <div class="range-slider">
+        <input #rangeInput type="range" min="900" max="2700" [value]="filters.priceRange.lower" (input)="filters.priceRange.lower = $any($event.target.value); updateRangeBackground()">
+        <input #rangeInput type="range" min="900" max="2700" [value]="filters.priceRange.upper" (input)="filters.priceRange.upper = $any($event.target.value); updateRangeBackground()">
       </div>
     </div>
   </div>
