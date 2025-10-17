@@ -1,7 +1,7 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, IonAvatar, IonLabel, IonFooter, IonInput, IonItem, RefresherCustomEvent } from '@ionic/angular/standalone';
+import { IonContent, IonToolbar, IonButton, IonIcon, IonFooter, IonInput, IonItem, RefresherCustomEvent } from '@ionic/angular/standalone';
 import { ChatService } from '../services/chat.service';
 import { AuthService } from '../services/auth.service'; // Import AuthService
 import { addIcons } from 'ionicons';
@@ -12,7 +12,7 @@ import { send } from 'ionicons/icons';
   templateUrl: './chat.page.html',
   styleUrls: ['./chat.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButton, IonIcon, IonAvatar, IonLabel, IonFooter, IonInput, IonItem],
+  imports: [IonContent, IonToolbar, CommonModule, FormsModule, IonButton, IonIcon, IonFooter, IonInput, IonItem],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ChatPage implements OnInit {

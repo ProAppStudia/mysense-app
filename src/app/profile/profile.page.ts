@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { IonContent, IonButton, IonList, IonItem, IonIcon, IonLabel, IonHeader, IonToolbar, IonTitle, IonInput, IonSpinner, IonText } from '@ionic/angular/standalone';
+import { IonContent, IonButton, IonList, IonItem, IonIcon, IonLabel, IonInput, IonSpinner, IonText } from '@ionic/angular/standalone';
 import { AuthService, UserProfile, UpdateProfilePayload } from '../services/auth.service';
 import { DoctorService } from '../services/doctor.service';
 import { Router, NavigationExtras } from '@angular/router';
@@ -19,7 +19,7 @@ import {
   standalone: true,
   imports: [
     IonContent, IonButton, IonList, IonItem, IonIcon, IonLabel,
-    IonHeader, IonToolbar, IonTitle, IonInput, IonSpinner, IonText,
+    IonInput, IonSpinner, IonText,
     CommonModule, FormsModule, ReactiveFormsModule
   ]
 })
