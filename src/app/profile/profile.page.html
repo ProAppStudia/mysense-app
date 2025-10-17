@@ -117,15 +117,17 @@
         <ion-icon slot="start" name="help-circle-outline"></ion-icon>
         <ion-label>Питання/Відповіді</ion-label>
       </ion-item>
-      <ion-item detail routerLink="/notifications">
+      <ion-item detail (click)="goToNotifications()">
         <ion-icon slot="start" name="notifications-outline"></ion-icon>
         <ion-label>Сповіщення</ion-label>
       </ion-item>
-      <ion-item detail routerLink="/support">
-        <ion-icon slot="start" name="headset-outline"></ion-icon>
-        <ion-label>Служба підтримки</ion-label>
-      </ion-item>
-      <ion-item detail routerLink="/legal-info">
+      <a href="https://t.me/senseMy_care" target="_blank" class="ion-item-link">
+        <ion-item detail="true">
+          <ion-icon slot="start" name="headset-outline"></ion-icon>
+          <ion-label>Служба підтримки</ion-label>
+        </ion-item>
+      </a>
+      <ion-item detail (click)="goToLegalInfo()">
         <ion-icon slot="start" name="document-text-outline"></ion-icon>
         <ion-label>Правова Інформація</ion-label>
       </ion-item>
@@ -140,7 +142,7 @@
     </ion-list>
     <ion-list *ngIf="isLoggedIn()" class="profile-menu-group">
        <ion-item  button detail="false" (click)="logout()">
-        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        <ion-icon slot="start" name="log-out-outline" class="logout-icon"></ion-icon>
         <ion-label>Вийти</ion-label>
       </ion-item>
     </ion-list>

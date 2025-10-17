@@ -1,0 +1,40 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/profile"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Сповіщення</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div *ngIf="isLoading" class="ion-text-center">
+    <ion-spinner></ion-spinner>
+    <p>Завантаження налаштувань сповіщень...</p>
+  </div>
+
+  <div *ngIf="error" class="ion-text-center ion-padding">
+    <ion-text color="danger">
+      <h2>Помилка</h2>
+      <p>{{ error }}</p>
+    </ion-text>
+  </div>
+
+  <div *ngIf="!isLoading && !error">
+    <ion-item>
+      <ion-label>Дозволити сповіщення</ion-label>
+      <ion-toggle [(ngModel)]="notificationsEnabled" (ionChange)="toggleNotifications()"></ion-toggle>
+    </ion-item>
+
+    <ion-item lines="none">
+      <ion-label>Статус дозволу: {{ permissionStatus }}</ion-label>
+    </ion-item>
+
+    <ion-text *ngIf="permissionStatus === 'denied' && !notificationsEnabled" color="warning" class="ion-padding-top">
+      <p>Сповіщення вимкнено. Будь ласка, увімкніть їх у налаштуваннях вашого пристрою, щоб отримувати важливі оновлення.</p>
+    </ion-text>
+    <ion-text *ngIf="permissionStatus === 'prompt'" color="medium" class="ion-padding-top">
+      <p>Дозвіл на сповіщення ще не надано. Будь ласка, увімкніть його, щоб отримувати сповіщення.</p>
+    </ion-text>
+  </div>
+</ion-content>

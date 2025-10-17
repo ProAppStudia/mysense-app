@@ -123,3 +123,7 @@ ion-content {
 .ion-item-link {
   text-decoration: none;
 }
+
+.logout-icon {
+  color: var(--ion-color-danger, #eb445a); /* Using Ionic's danger color variable */
+}

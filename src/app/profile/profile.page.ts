@@ -209,6 +209,17 @@ export class ProfilePage implements OnInit {
   }
 
   goToFaq() {
+    console.log('Navigating to FAQ page...');
     this.router.navigate(['/faq']);
+  }
+
+  goToNotifications() {
+    console.log('Navigating to Notifications page...');
+    this.router.navigate(['/notifications']);
+  }
+
+  goToLegalInfo() {
+    console.log('Navigating to Legal Info page...');
+    this.router.navigate(['/legal-info']);
   }
 }
