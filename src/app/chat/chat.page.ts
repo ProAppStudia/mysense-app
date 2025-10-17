@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, IonAvatar, IonLabel, IonFooter, IonInput, IonItem, RefresherCustomEvent } from '@ionic/angular/standalone';
 import { ChatService } from '../services/chat.service';
+import { AuthService } from '../services/auth.service'; // Import AuthService
 import { addIcons } from 'ionicons';
 import { send } from 'ionicons/icons';
 
@@ -18,33 +19,37 @@ export class ChatPage implements OnInit {
   chats: any[] = [];
   selectedChat: any = null;
   messages: any[] = [];
+  isLoggedIn: boolean = false; // Add property to track login status
 
-  constructor(private chatService: ChatService) {
+  constructor(private chatService: ChatService, private authService: AuthService) { // Inject AuthService
     addIcons({ send });
   }
 
   ngOnInit() {
-    this.chatService.getMyChats().subscribe({
-      next: (data: any) => {
-        if (Array.isArray(data)) {
-          this.chats = data.map((chat: any) => ({
-            ...chat,
-            photo: chat.img || chat.photo // Use img if available, otherwise use existing photo
-          }));
-        } else if (data && data.chats) {
-          this.chats = data.chats.map((chat: any) => ({
-            ...chat,
-            photo: chat.img || chat.photo // Use img if available, otherwise use existing photo
-          }));
+    this.isLoggedIn = this.authService.isAuthenticated(); // Check login status on init
+    if (this.isLoggedIn) {
+      this.chatService.getMyChats().subscribe({
+        next: (data: any) => {
+          if (Array.isArray(data)) {
+            this.chats = data.map((chat: any) => ({
+              ...chat,
+              photo: chat.img || chat.photo // Use img if available, otherwise use existing photo
+            }));
+          } else if (data && data.chats) {
+            this.chats = data.chats.map((chat: any) => ({
+              ...chat,
+              photo: chat.img || chat.photo // Use img if available, otherwise use existing photo
+            }));
+          }
+          if (this.chats && this.chats.length > 0) {
+            this.selectChat(this.chats[0]);
+          }
+        },
+        error: (error) => {
+          // Handle error appropriately in a real app
         }
-        if (this.chats && this.chats.length > 0) {
-          this.selectChat(this.chats[0]);
-        }
-      },
-      error: (error) => {
-        // Handle error appropriately in a real app
-      }
-    });
+      });
+    }
   }
 
   selectChat(chat: any) {

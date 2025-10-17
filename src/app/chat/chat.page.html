@@ -4,32 +4,41 @@
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <div class="psychologists-container">
-    <div class="psychologist-card" *ngFor="let chat of chats" (click)="selectChat(chat)" [class.active]="chat === selectedChat">
-      <div class="psychologist-avatar">
-        <img [src]="chat.photo || 'assets/icon/favicon.png'" />
+  <div *ngIf="isLoggedIn && chats.length > 0">
+    <div class="psychologists-container">
+      <div class="psychologist-card" *ngFor="let chat of chats" (click)="selectChat(chat)" [class.active]="chat === selectedChat">
+        <div class="psychologist-avatar">
+          <img [src]="chat.photo || 'assets/icon/favicon.png'" />
+        </div>
+        <div class="psychologist-text">{{ chat.fullname }}</div>
       </div>
-      <div class="psychologist-text">{{ chat.fullname }}</div>
+    </div>
+
+    <div class="chat-actions">
+      <button class="active-action">Чат</button>
+      <button fill="clear">Завдання</button>
+      <button class="btn-reserve" fill="clear">Забронювати сесію</button>
+    </div>
+
+    <div class="message-list" *ngIf="selectedChat">
+      <div *ngFor="let message of messages" class="message-item" [class.my-message]="message.side === 'right'">
+        <div class="message-bubble">
+          <p>{{ message.text }}</p>
+          <span class="timestamp">{{ message.date }}</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="chat-actions">
-    <button class="active-action">Чат</button>
-    <button fill="clear">Завдання</button>
-    <button class="btn-reserve" fill="clear">Забронювати сесію</button>
-  </div>
-
-  <div class="message-list" *ngIf="selectedChat">
-    <div *ngFor="let message of messages" class="message-item" [class.my-message]="message.side === 'right'">
-      <div class="message-bubble">
-        <p>{{ message.text }}</p>
-        <span class="timestamp">{{ message.date }}</span>
-      </div>
-    </div>
+  <div *ngIf="!isLoggedIn || chats.length === 0" class="no-chats-container ion-padding">
+    <p class="ion-text-center">У вас ще немає чатів</p>
+    <ion-button expand="block" routerLink="/tabs/tests" class="ion-margin-top">Пройдіть тест</ion-button>
+    <p class="ion-text-center ion-margin-top">або </p>
+    <ion-button expand="block" routerLink="/tabs/tab2" class="ion-margin-top">Вибрати психолога</ion-button>
   </div>
 </ion-content>
 
-<ion-footer *ngIf="selectedChat">
+<ion-footer *ngIf="selectedChat && isLoggedIn">
   <ion-toolbar>
     <ion-item lines="none">
       <ion-input placeholder="Напишіть ваше повідомлення"></ion-input>
