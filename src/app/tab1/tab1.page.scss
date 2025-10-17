@@ -818,8 +818,9 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
 
 .session-actions {
   display: flex;
-  justify-content: space-around;
- 
+  justify-content: space-between; /* Changed to space-between to push buttons to edges */
+  gap: 10px; /* Add some gap between buttons */
+  padding: 0 10px; /* Add horizontal padding to the actions container */
 }
 
 .session-actions ion-button {
@@ -827,10 +828,12 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
   --color: #222b40; /* Apply the requested color to both buttons */
   font-size: 16px;
   text-transform: none;
-  --padding-start: 0;
-  --padding-end: 0;
+  --padding-start: 5px; /* Add some padding to the button text */
+  --padding-end: 5px; /* Add some padding to the button text */
   --box-shadow: none;
   margin: 0;
+  flex-grow: 1; /* Allow buttons to grow and take available space */
+  flex-basis: 0; /* Distribute space equally */
 }
 
 .session-actions ion-button ion-icon {
@@ -874,6 +877,13 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
   text-transform: none; /* Remove uppercase text */
   font-size: 14px; /* Smaller font size */
   height: 36px; /* Reduce button height */
+  white-space: nowrap; /* Prevent text from wrapping */
+}
+
+.session-actions .pay-button,
+.session-actions .cancel-button,
+.session-actions .reschedule-button {
+  min-width: 100px; /* Ensure a minimum width for buttons */
 }
 .loginform{
     background: white;

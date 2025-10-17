@@ -1,111 +1,119 @@
-.session-card {
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  padding: 15px;
+.sessions-list {
   display: flex;
   flex-direction: column;
-  position: relative;
+  gap: 20px; /* Increased space between session cards */
+  width: 100%;
+  max-width: 500px; /* Match main content width */
+  margin: 20px auto 0 auto; /* Center the list */
+}
+
+.session-card {
+  background-color: #a498d9; /* Purple background from tab1 */
+  color: #fff;
+  border-radius: 16px;
+  padding: 20px 20px 5px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: left;
   width: 100%;
   box-sizing: border-box;
-  margin-bottom: 15px;
-
-  &.status-заброньована .session-type-indicator {
-    background-color: orange;
-  }
-  &.status-оплачена .session-type-indicator {
-    background-color: green;
-  }
-  &.status-скасована .session-type-indicator {
-    background-color: red;
-  }
-  &.status-пройдена .session-type-indicator {
-    background-color: var(--ion-color-primary);
-  }
 }
 
-.session-type-indicator {
-  width: 4px;
-  height: 100%;
-  position: absolute;
-  left: 0;
-  top: 0;
-  border-top-left-radius: 12px;
-  border-bottom-left-radius: 12px;
+.session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start; /* Align items to the start */
 }
 
-.session-details {
-  margin-left: 15px;
-  flex-grow: 1;
-}
-
-.session-details h3 {
+.session-date-time {
+  display: flex;
+  align-items: center;
   font-size: 18px;
   font-weight: bold;
-  color: #333;
-  margin: 0 0 5px 0;
 }
 
-.session-status {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 10px;
+.session-date-time ion-icon {
+  font-size: 20px;
+  margin-right: 8px;
+  color: #fff;
 }
 
 .doctor-info {
   display: flex;
   align-items: center;
-  font-size: 14px;
-  color: #666;
+  font-size: 16px;
 }
 
 .doctor-info img {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  margin-right: 8px;
-}
-
-.doctor-info span {
   margin-right: 10px;
-}
-
-.doctor-info ion-icon {
-  font-size: 16px;
-  margin-right: 5px;
-  color: #999;
-}
-
-.session-icon {
-  font-size: 24px;
-  color: var(--ion-color-primary);
-  position: absolute;
-  top: 15px;
-  right: 15px;
 }
 
 .session-actions {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  margin-top: 15px;
-  width: 100%;
+  padding: 0 10px;
 }
 
 .session-actions ion-button {
+  --background: transparent;
+  --color: #222b40; /* Apply the requested color to both buttons */
+  font-size: 16px;
   text-transform: none;
-  font-size: 14px;
-  height: 36px;
+  --padding-start: 5px;
+  --padding-end: 5px;
+  --box-shadow: none;
+  margin: 0;
+  flex-grow: 1;
+  flex-basis: 0;
+  white-space: nowrap;
 }
 
-.pay-button {
-  --background: green;
-  --color: white;
+.session-actions ion-button ion-icon {
+  font-size: 18px;
+  margin-left: 5px;
+}
+
+.session-actions .pay-button,
+.session-actions .cancel-button,
+.session-actions .reschedule-button {
+  min-width: 100px;
 }
 
 .no-sessions {
   text-align: center;
   margin-top: 50px;
   color: var(--ion-color-medium);
+}
+
+.session-segments {
+  margin-top: 20px;
+  --background: transparent;
+  width: 100%;
+  max-width: 300px; /* Adjust width as needed */
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--ion-color-primary); /* Border for the segment container */
+}
+
+.session-segments ion-segment-button {
+  --background-checked: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
+  --color-checked: #fff;
+  --indicator-color: transparent; /* Hide default indicator */
+  border-radius: 0; /* Remove individual button border-radius */
+  font-weight: bold;
+  height: 40px;
+}
+
+.session-segments ion-segment-button:first-child {
+  border-right: 1px solid var(--ion-color-primary); /* Separator between buttons */
 }

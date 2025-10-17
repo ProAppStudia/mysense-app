@@ -8,29 +8,46 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <div *ngIf="sessions.length > 0">
-    <div *ngFor="let session of sessions" class="session-card" [ngClass]="'status-' + session.status.toLowerCase()">
-      <div class="session-type-indicator"></div>
-      <div class="session-details">
-        <h3>{{ session.type }}</h3>
-        <p class="session-status">{{ session.status }}</p>
-        <div class="doctor-info">
-          <img [src]="'https://mysense.care' + session.doctor_image" alt="{{ session.doctor_name }}">
-          <span>{{ session.doctor_name }}</span>
-          <ion-icon name="time-outline"></ion-icon>
-          <span>{{ session.time_range }}</span>
+  <ion-segment [(ngModel)]="selectedSegment" (ionChange)="segmentChanged()" value="planned" class="session-segments">
+    <ion-segment-button value="planned">
+      <ion-label>Заплановані</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="past">
+      <ion-label>Минулі</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  
+    <div *ngIf="filteredSessions.length > 0; else noSessions" class="sessions-list">
+      <div *ngFor="let session of filteredSessions; let i = index" class="session-card">
+        <div class="session-info">
+          <div class="session-date-time">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span>{{ formatSessionTime(session.time_range).date }} о {{ formatSessionTime(session.time_range).time }}</span>
+          </div>
+          <div class="doctor-info">
+            <img [src]="'https://mysense.care' + session.doctor_image" alt="{{ session.doctor_name }}">
+            <span>{{ session.doctor_name }}</span>
+          </div>
+        </div>
+        <div class="session-actions" *ngIf="selectedSegment === 'planned'">
+          <ion-button fill="clear" class="reschedule-button" (click)="rescheduleSession(session.id)">
+            Перенести
+            <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" [class]="session.status === 'Очікується' ? 'pay-button' : 'cancel-button'" (click)="session.status === 'Очікується' ? paySession(session.id) : cancelSession(session.id)">
+            {{ session.status === 'Очікується' ? 'Оплатити' : 'Скасувати' }}
+            <ion-icon slot="end" [name]="session.status === 'Очікується' ? 'wallet-outline' : 'close-outline'"></ion-icon>
+          </ion-button>
         </div>
       </div>
-      <ion-icon [name]="session.icon" class="session-icon"></ion-icon>
-      <div class="session-actions" *ngIf="session.status !== 'Скасована' && session.status !== 'Пройдена'">
-        <ion-button *ngIf="session.status === 'Заброньована' || session.status === 'Оплачена'" expand="block" fill="outline" class="reschedule-button">Перенести</ion-button>
-        <ion-button *ngIf="session.status === 'Заброньована'" expand="block" fill="solid" color="success" class="pay-button">Оплатити</ion-button>
-        <ion-button *ngIf="session.status === 'Оплачена'" expand="block" fill="outline" color="danger" class="cancel-button">Відмінити</ion-button>
-      </div>
     </div>
-  </div>
+  
 
-  <div *ngIf="sessions.length === 0" class="no-sessions">
-    <p>У вас ще немає запланованих сесій.</p>
-  </div>
+  <ng-template #noSessions>
+    <div class="no-sessions">
+      <p *ngIf="selectedSegment === 'planned'">У вас ще немає запланованих сесій.</p>
+      <p *ngIf="selectedSegment === 'past'">У вас ще немає минулих сесій.</p>
+    </div>
+  </ng-template>
 </ion-content>

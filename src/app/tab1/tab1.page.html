@@ -19,7 +19,7 @@
       </div>
 
       <div class="sessions-list">
-        <div class="session-card" *ngFor="let session of userSessions">
+        <div class="session-card" *ngFor="let session of userSessions | slice:0:2; let i = index">
           <div class="session-info">
             <div class="session-date-time">
               <ion-icon name="calendar-outline"></ion-icon>
@@ -35,9 +35,9 @@
               Перенести
               <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
             </ion-button>
-            <ion-button fill="clear" class="cancel-button" (click)="cancelSession(session.id)">
-              Скасувати
-              <ion-icon slot="end" name="close-outline"></ion-icon>
+            <ion-button fill="clear" [class]="i === 0 ? 'pay-button' : 'cancel-button'" (click)="i === 0 ? paySession(session.id) : cancelSession(session.id)">
+              {{ i === 0 ? 'Оплатити' : 'Скасувати' }}
+              <ion-icon slot="end" [name]="i === 0 ? 'wallet-outline' : 'close-outline'"></ion-icon>
             </ion-button>
           </div>
         </div>
