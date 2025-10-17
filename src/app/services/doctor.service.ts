@@ -19,7 +19,7 @@ export class DoctorService {
       map(response => response),
       catchError(error => {
         console.error('Error fetching test questions:', error);
-        return of(null);
+        return of({ step: {} }); // Return an object with an empty 'step' to prevent errors
       })
     );
   }
@@ -48,41 +48,32 @@ export class DoctorService {
       }
     }
 
-    return this.http.get(this.apiUrl, { params, responseType: 'text' }).pipe(
+    return this.http.get<any>(this.apiUrl, { params }).pipe(
       map(response => {
-        try {
-          const data = JSON.parse(response);
-          if (data && Array.isArray(data.doctors)) {
-            return data.doctors.map((doc: any) => this.transformToDoctorCardView(doc));
-          }
-          return [];
-        } catch (e) {
-          return [];
+        if (response && Array.isArray(response.doctors)) {
+          return response.doctors.map((doc: any) => this.transformToDoctorCardView(doc));
         }
+        return [];
       }),
-      catchError(() => of([])) // On error, return an empty array
+      catchError(error => {
+        console.error('Error fetching psychologists:', error);
+        return of([]); // On error, return an empty array
+      })
     );
   }
 
   getDoctorProfile(doctorId: number | string): Observable<DoctorCardView | { error: string }> {
     const params = new HttpParams().set('action', 'get_doctor_profile').set('doctor_id', doctorId.toString());
 
-    return this.http.get(this.apiUrl, { params, responseType: 'text' }).pipe(
+    return this.http.get<any>(this.apiUrl, { params }).pipe(
       map(response => {
-        try {
-          const data = JSON.parse(response);
-          if (data.error) {
-            return { error: data.error };
-          }
-          return this.transformToDoctorCardView(data);
-        } catch (e) {
-          if (response.includes('error')) {
-            return { error: 'An error occurred while fetching the doctor profile.' };
-          }
-          return { error: 'Invalid response format.' };
+        if (response.error) {
+          return { error: response.error };
         }
+        return this.transformToDoctorCardView(response);
       }),
       catchError(error => {
+        console.error('Error fetching doctor profile:', error);
         return of({ error: 'Failed to fetch doctor profile.' });
       })
     );
