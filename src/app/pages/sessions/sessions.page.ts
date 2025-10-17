@@ -36,53 +36,56 @@ export class SessionsPage implements OnInit {
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras.state) {
       const doctors = navigation.extras.state['doctors'];
-      this.sessions = [
-        {
-          id: 1,
-          type: 'Індивідуальна сесія',
-          status: 'Очікується', // Changed to 'Очікується' for testing 'Оплатити' button
-          doctor_name: `${doctors[0].firstname} ${doctors[0].lastname}`,
-          doctor_image: doctors[0].img,
-          time_range: '20 вересня о 14:00',
-          icon: 'videocam-outline'
-        },
-        {
-          id: 2,
-          type: 'Сімейна сесія',
-          status: 'Заброньована', // Changed to 'Заброньована' for testing 'Скасувати' button
-          doctor_name: `${doctors[1].firstname} ${doctors[1].lastname}`,
-          doctor_image: doctors[1].img,
-          time_range: '22 вересня о 18:00',
-          icon: 'videocam-outline'
-        },
-        {
-          id: 3,
-          type: 'Індивідуальна сесія',
-          status: 'Скасована',
-          doctor_name: `${doctors[2].firstname} ${doctors[2].lastname}`,
-          doctor_image: doctors[2].img,
-          time_range: '25 вересня о 10:00',
-          icon: 'videocam-outline'
-        },
-        {
-          id: 4,
-          type: 'Індивідуальна сесія',
-          status: 'Пройдена',
-          doctor_name: `${doctors[3].firstname} ${doctors[3].lastname}`,
-          doctor_image: doctors[3].img,
-          time_range: '15 вересня о 12:00',
-          icon: 'videocam-outline'
-        },
-        {
-          id: 5,
-          type: 'Сімейна сесія',
-          status: 'Пройдена',
-          doctor_name: `${doctors[4].firstname} ${doctors[4].lastname}`,
-          doctor_image: doctors[4].img,
-          time_range: '18 вересня о 16:00',
-          icon: 'videocam-outline'
-        }
-      ];
+      // Ensure doctors array is not empty before accessing elements
+      if (doctors && doctors.length > 0) {
+        this.sessions = [
+          {
+            id: 1,
+            type: 'Індивідуальна сесія',
+            status: 'Очікується',
+            doctor_name: doctors[0].fullName, // Use fullName from DoctorCardView
+            doctor_image: doctors[0].avatarUrl, // Use avatarUrl from DoctorCardView
+            time_range: '20 вересня о 14:00',
+            icon: 'videocam-outline'
+          },
+          {
+            id: 2,
+            type: 'Сімейна сесія',
+            status: 'Заброньована',
+            doctor_name: doctors[1].fullName, // Use fullName from DoctorCardView
+            doctor_image: doctors[1].avatarUrl, // Use avatarUrl from DoctorCardView
+            time_range: '22 вересня о 18:00',
+            icon: 'videocam-outline'
+          },
+          {
+            id: 3,
+            type: 'Індивідуальна сесія',
+            status: 'Скасована',
+            doctor_name: doctors[2].fullName,
+            doctor_image: doctors[2].avatarUrl,
+            time_range: '25 вересня о 10:00',
+            icon: 'videocam-outline'
+          },
+          {
+            id: 4,
+            type: 'Індивідуальна сесія',
+            status: 'Пройдена',
+            doctor_name: doctors[3].fullName,
+            doctor_image: doctors[3].avatarUrl,
+            time_range: '15 вересня о 12:00',
+            icon: 'videocam-outline'
+          },
+          {
+            id: 5,
+            type: 'Сімейна сесія',
+            status: 'Пройдена',
+            doctor_name: doctors[4].fullName,
+            doctor_image: doctors[4].avatarUrl,
+            time_range: '18 вересня о 16:00',
+            icon: 'videocam-outline'
+          }
+        ];
+      }
     }
   }
 

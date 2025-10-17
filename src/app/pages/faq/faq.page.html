@@ -1,0 +1,39 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/profile"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ faqHeading }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div *ngIf="isLoading" class="ion-text-center">
+    <ion-spinner></ion-spinner>
+    <p>Завантаження питань...</p>
+  </div>
+
+  <div *ngIf="error" class="ion-text-center ion-padding">
+    <ion-text color="danger">
+      <h2>Помилка</h2>
+      <p>{{ error }}</p>
+    </ion-text>
+  </div>
+
+  <div *ngIf="!isLoading && !error && faqItems.length > 0">
+    <ion-accordion-group>
+      <ion-accordion *ngFor="let item of faqItems" value="{{ item.heading }}" toggleIcon="add-outline" toggleIconSlot="end">
+        <ion-item slot="header">
+          <ion-label>{{ item.heading }}</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <div [innerHTML]="item.content"></div>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </div>
+
+  <div *ngIf="!isLoading && !error && faqItems.length === 0" class="ion-text-center ion-padding">
+    <p>Наразі немає доступних питань та відповідей.</p>
+  </div>
+</ion-content>

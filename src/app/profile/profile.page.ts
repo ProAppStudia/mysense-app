@@ -10,8 +10,7 @@ import { addIcons } from 'ionicons';
 import {
   personCircleOutline, createOutline, calendarOutline, addCircleOutline, bookOutline, libraryOutline,
   informationCircleOutline, helpCircleOutline, notificationsOutline, headsetOutline, documentTextOutline,
-  logOutOutline, warningOutline, personOutline, videocamOutline
-} from 'ionicons/icons';
+  logOutOutline, warningOutline, personOutline, videocamOutline, checkboxOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-profile',
@@ -48,11 +47,7 @@ export class ProfilePage implements OnInit {
     private doctorService: DoctorService,
     private router: Router
   ) {
-    addIcons({
-      personCircleOutline, createOutline, calendarOutline, addCircleOutline, bookOutline, libraryOutline,
-      informationCircleOutline, helpCircleOutline, notificationsOutline, headsetOutline, documentTextOutline,
-      logOutOutline, warningOutline, personOutline
-    });
+    addIcons({personCircleOutline,createOutline,calendarOutline,addCircleOutline,bookOutline,checkboxOutline,libraryOutline,informationCircleOutline,helpCircleOutline,notificationsOutline,headsetOutline,documentTextOutline,warningOutline,logOutOutline,personOutline});
   }
 
   ngOnInit() {
@@ -92,6 +87,18 @@ export class ProfilePage implements OnInit {
   }
 
   viewAllSessions() {
+    // Ensure doctors data is loaded before navigating
+    if (this.doctors.length === 0) {
+      this.doctorService.getPsychologists().subscribe(psychologists => {
+        this.doctors = psychologists;
+        this.navigateToSessions();
+      });
+    } else {
+      this.navigateToSessions();
+    }
+  }
+
+  private navigateToSessions() {
     const navigationExtras: NavigationExtras = {
       state: {
         sessions: this.userSessions,
@@ -195,5 +202,13 @@ export class ProfilePage implements OnInit {
 
   goToHowToUse() {
     this.router.navigate(['/how-to-use']);
+  }
+
+  goToMyDiary() {
+    this.router.navigate(['/tabs/diary']);
+  }
+
+  goToFaq() {
+    this.router.navigate(['/faq']);
   }
 }

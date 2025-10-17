@@ -92,9 +92,13 @@
     </div>
 
     <ion-list class="profile-menu-group">
-      <ion-item detail routerLink="/my-diary">
+      <ion-item detail (click)="goToMyDiary()">
         <ion-icon slot="start" name="book-outline"></ion-icon>
         <ion-label>Мій щоденник</ion-label>
+      </ion-item>
+      <ion-item detail routerLink="/tabs/tests">
+        <ion-icon slot="start" name="checkbox-outline"></ion-icon>
+        <ion-label>Мої тести</ion-label>
       </ion-item>
       <ion-item detail routerLink="/my-library">
         <ion-icon slot="start" name="library-outline"></ion-icon>
@@ -109,7 +113,7 @@
           <ion-label>Як користуватись додатком</ion-label>
         </ion-item>
       </a>
-      <ion-item detail routerLink="/faq">
+      <ion-item detail (click)="goToFaq()">
         <ion-icon slot="start" name="help-circle-outline"></ion-icon>
         <ion-label>Питання/Відповіді</ion-label>
       </ion-item>

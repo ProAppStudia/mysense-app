@@ -26,7 +26,7 @@
             <span>{{ formatSessionTime(session.time_range).date }} о {{ formatSessionTime(session.time_range).time }}</span>
           </div>
           <div class="doctor-info">
-            <img [src]="'https://mysense.care' + session.doctor_image" alt="{{ session.doctor_name }}">
+            <img [src]="session.doctor_image" alt="{{ session.doctor_name }}">
             <span>{{ session.doctor_name }}</span>
           </div>
         </div>
