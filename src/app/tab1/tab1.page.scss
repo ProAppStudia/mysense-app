@@ -211,17 +211,31 @@ ion-content {
   line-height: 1.5;
 }
 
-.doctors-section, .section-9, .section-11 {
+.doctors-section, .section-9 {
   margin-top: 40px;
   padding: 20px;
 
   border-radius: 8px;
   text-align: center;
 }
-
-.section-10 {
+.section-11 { /* Added section-11 back as a separate block */
   margin-top: 40px;
 
+  border-radius: 8px;
+  text-align: center;
+}
+.article-card h3 {
+    font-size: 18px;
+    text-align: left;
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+.article-card p {
+   text-align: left;
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+.section-10 {
   border-radius: 8px;
   text-align: center;
   width: 100%;
@@ -282,37 +296,48 @@ ion-content {
   width: 150px; /* Adjust as needed */
 }
 
+.reviews-container {
+  width: 100%;
+  
+  margin: 0 auto; /* Center the container */
+  
+  box-sizing: border-box;
+}
+
 .reviews-slider-section {
   margin-top: 40px;
-
   border-radius: 8px;
   text-align: center;
-  width: 100%;
-  max-width: 500px;
+  width: 100%; /* Ensure it takes full width of its container */
+  /* Removed max-width: 500px; */
 }
 
 .reviews-swiper {
   width: 100%;
   height: auto; /* Adjust height based on content */
-  padding: 20px 0;
+  padding: 20px 0 40px 0; /* Increased bottom padding to make space for pagination */
   display: block;
   --swiper-pagination-color: var(--ion-color-primary); /* Color of active pagination dot */
   --swiper-pagination-bullet-inactive-color: #999; /* Color of inactive pagination dots */
   --swiper-pagination-bullet-inactive-opacity: 1;
   --swiper-pagination-bullet-size: 8px;
-  --swiper-pagination-bottom: -20px; /* Position pagination at the bottom */
-  --swiper-spacing: 40px; /* Increased space between slides */
+  --swiper-pagination-bottom: 0px; /* Position pagination at the bottom of the swiper container */
+  --swiper-spacing: 0; /* No extra space between slides for full width */
+
+  /* Navigation arrows styling */
+  --swiper-navigation-color: var(--ion-color-primary); /* Color of navigation arrows */
+  --swiper-navigation-size: 40px; /* Increased size of navigation arrows */
+  --swiper-navigation-sides-offset: 0px; /* Position arrows at the very edge */
 }
 
 .reviews-swiper swiper-slide {
-  width: 78%;
-    display: flex
-;
-    justify-content: center;
-    align-items: stretch;
-    height: 100%;
-    margin-right: 1%;
-    margin-left: 1%;
+  width: 100%; /* Make slides full width */
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  height: 100%;
+  margin-right: 0;
+  margin-left: 0;
 }
 
 .review-slide-content {
@@ -330,16 +355,20 @@ ion-content {
 }
 
 .review-slide-content h3 {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  color: #333;
+  font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 0px;
+    color: #333;
+    text-align: left;
+    margin-left: 15px;
 }
 
 .review-slide-content p {
   font-size: 16px;
   color: #666;
   line-height: 1.5;
+  padding: 0 15px;
+  text-align: left;
 }
 
 .review-text-content {
@@ -362,45 +391,70 @@ ion-content {
 .review-slide-content ion-button {
   --padding-start: 0;
   --padding-end: 0;
-  --color: var(--ion-color-primary);
+  --color: #a498d9;
   font-size: 14px;
   text-transform: none;
   height: auto;
-  align-self: flex-start; /* Align button to the start */
+
+}
+button.rewiew-more {
+    font-size: 14px;
+    font-weight: 400;
+    color: #a498d9;
+    background: 0 0;
+    border: none;
+    text-align: left;
+    margin-left: 15px;
+}
+.review-date {
+  margin-top: auto; 
+ 
+    font-weight: 400;
+    color: #9895a6 !important;
+        text-align: right !important;
 }
 
-.review-date {
-  margin-top: auto; /* Push the date to the bottom */
+.articles-container {
+  width: 100%;
+  max-width: 500px; /* Adjust as needed to match other content containers */
+  margin: 0 auto; /* Center the container */
+  padding: 0 0px; /* Remove horizontal padding to allow arrows to be at the very edge */
+  box-sizing: border-box;
 }
 
 .articles-swiper {
   width: 100%;
   height: auto; /* Adjust height based on content */
-  padding: 20px 0;
+  padding: 20px 0 40px 0; /* Increased bottom padding to make space for pagination */
   display: block;
   --swiper-pagination-color: var(--ion-color-primary); /* Color of active pagination dot */
   --swiper-pagination-bullet-inactive-color: #999; /* Color of inactive pagination dots */
   --swiper-pagination-bullet-inactive-opacity: 1;
   --swiper-pagination-bullet-size: 8px;
-  --swiper-pagination-bottom: -20px; /* Position pagination at the bottom */
-  --swiper-spacing: 40px; /* Increased space between slides */
+  --swiper-pagination-bottom: 0px; /* Position pagination at the bottom of the swiper container */
+  --swiper-spacing: 0; /* No extra space between slides for full width */
+
+  /* Navigation arrows styling */
+  --swiper-navigation-color: var(--ion-color-primary); /* Color of navigation arrows */
+  --swiper-navigation-size: 30px; /* Size of navigation arrows */
+  --swiper-navigation-sides-offset: 10px; /* Distance from the sides */
 }
 
 .articles-slider-container {
   width: 100%;
-  max-width: 500px; /* Constrain width to match other sections */
-  overflow: hidden; /* Hide overflowing content */
+  /* Removed max-width: 500px; */
+  /* Removed overflow: hidden; to ensure navigation arrows are visible */
   margin-top: 20px;
 }
 
 .articles-swiper swiper-slide {
-  width: 78%;
+  width: 100%; /* Make slides full width */
   display: flex;
   justify-content: center;
   align-items: stretch;
   height: 100%;
-  margin-right: 1%;
-  margin-left: 1%;
+  margin-right: 0;
+  margin-left: 0;
 }
 
 .article-card {
@@ -433,12 +487,21 @@ ion-content {
   margin-bottom: 10px;
 }
 
+.article-card .article-date {
+     font-size: 14px;
+    color: #9895a6;
+    margin-top: 5px;
+    text-align: left;
+}
+.articles-swiper .swiper-pagination {
+  bottom: 10px; 
+}
 
 
 .section-10 ion-accordion-group {
   margin-top: 20px;
   width: 100%;
-  max-width: 500px; /* Ensure it doesn't exceed main content width */
+  
 }
 
 .section-10 ion-accordion {

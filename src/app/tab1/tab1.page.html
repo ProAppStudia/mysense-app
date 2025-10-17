@@ -122,22 +122,24 @@
     </div>
 
     <!-- Reviews Slider Section -->
-    <div class="reviews-slider-section">
-       <h2>{{ homepageData.section_9.heading }}</h2>
-      <swiper-container class="reviews-swiper" #reviewsSwiper [pagination]="true" slides-per-view="auto" centered-slides="true">
-        <swiper-slide *ngFor="let review of homepageData.section_9.reviews">
-          <div class="review-slide-content">
-            <h3>{{ review.user_name }}</h3>
-            <p class="review-text-content" [class.expanded]="review.showFullText">
-              {{ review.text }}
-            </p>
-            <ion-button *ngIf="review.text.length > TRUNCATE_LENGTH" fill="clear" size="small" (click)="toggleText(review)">
-              {{ review.showFullText ? 'Згорнути' : 'Більше' }}
-            </ion-button>
-            <p class="review-date">{{ review.date }}</p>
-          </div>
-        </swiper-slide>
-      </swiper-container>
+    <div class="reviews-container">
+      <div class="reviews-slider-section">
+        <h2>{{ homepageData.section_9.heading }}</h2>
+        <swiper-container class="reviews-swiper" #reviewsSwiper [navigation]="true" slides-per-view="1" centered-slides="true">
+          <swiper-slide *ngFor="let review of homepageData.section_9.reviews">
+            <div class="review-slide-content">
+              <h3>{{ review.user_name }}</h3>
+              <p class="review-text-content" [class.expanded]="review.showFullText">
+                {{ review.text }}
+              </p>
+              <button class="rewiew-more" *ngIf="review.text.length > TRUNCATE_LENGTH" fill="clear" size="small" (click)="toggleText(review)">
+                {{ review.showFullText ? 'Згорнути' : 'Показати ще' }}
+              </button>
+              <p class="review-date">{{ review.date }}</p>
+            </div>
+          </swiper-slide>
+        </swiper-container>
+      </div>
     </div>
 
     <!-- Section 10 - Accordion for Questions and Answers -->
@@ -157,18 +159,21 @@
     </div>
 
     <!-- Section 11 -->
-    <div class="section-11">
-      <h2>{{ homepageData.section_11.heading }}</h2>
-      <div class="articles-slider-container">
-        <swiper-container class="articles-swiper" #articlesSwiper [pagination]="true" slides-per-view="auto" centered-slides="true">
-          <swiper-slide *ngFor="let article of homepageData.section_11.articles">
+    <div class="articles-container">
+      <div class="section-11">
+        <h2>{{ homepageData.section_11.heading }}</h2>
+        <div class="articles-slider-container">
+          <swiper-container class="articles-swiper" #articlesSwiper [pagination]="true" slides-per-view="1" centered-slides="true">
+            <swiper-slide *ngFor="let article of homepageData.section_11.articles">
             <div class="article-card">
               <img [src]="article.img" alt="{{ article.title }}">
               <h3>{{ article.title }}</h3>
               <p>{{ article.short_description }}</p>
+              <p class="article-date">{{ article.date }}</p>
             </div>
-          </swiper-slide>
-        </swiper-container>
+            </swiper-slide>
+          </swiper-container>
+        </div>
       </div>
     </div>
 
