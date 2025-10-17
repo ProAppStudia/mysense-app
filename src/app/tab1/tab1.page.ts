@@ -457,7 +457,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleRefresh(event: RefresherCustomEvent) {
-    this.getHomepageData(); // Reload your data
+    window.location.reload(); // Perform a full page reload
     event.detail.complete(); // Complete the refresher animation
   }
 }

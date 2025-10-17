@@ -148,14 +148,7 @@ export class SelectionTestPage implements OnInit {
   }
 
   handleRefresh(event: RefresherCustomEvent) {
-    this.isLoading = true;
-    this.error = null;
-    this.currentStep.set(0);
-    this.selectedConsultationType = null;
-    this.selectedConsultationFormat = null;
-    this.selectedGender = null;
-    this.answers = {};
-    this.loadTestQuestions();
-    event.detail.complete();
+    window.location.reload(); // Perform a full page reload
+    event.detail.complete(); // Complete the refresher animation
   }
 }

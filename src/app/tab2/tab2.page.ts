@@ -147,11 +147,7 @@ export class Tab2Page implements OnInit {
   }
 
   handleRefresh(event: RefresherCustomEvent) {
-    this.doctorService.getPsychologists().subscribe(psychologists => {
-      this.allDoctors = psychologists.filter(p => this.isDoctorCardView(p)) as DoctorCardView[];
-      this.doctors = [...this.allDoctors];
-      this.cdr.detectChanges();
-      event.detail.complete(); // Complete the refresher animation
-    });
+    window.location.reload(); // Perform a full page reload
+    event.detail.complete(); // Complete the refresher animation
   }
 }
