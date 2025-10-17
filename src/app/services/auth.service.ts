@@ -81,6 +81,7 @@ export class AuthService {
           const jsonResponse = JSON.parse(responseText);
           if (jsonResponse.success === true && jsonResponse.token) {
             this.tokenStorage.setToken(jsonResponse.token);
+            window.location.reload(); // Full page reload after successful login
             return { success: true, token: jsonResponse.token };
           } else if (jsonResponse.error) {
             return { success: false, message: jsonResponse.error };
@@ -95,6 +96,7 @@ export class AuthService {
           const token = tokenMatch ? tokenMatch[1] : undefined;
           if (token) {
             this.tokenStorage.setToken(token);
+            window.location.reload(); // Full page reload after successful login
             return { success: true, token: token };
           }
           return { success: true, message: 'Login successful, but token not found in response.' };
@@ -116,6 +118,7 @@ export class AuthService {
       const jsonResponse = JSON.parse(responseText);
       if (jsonResponse.success === true && jsonResponse.token) {
         this.tokenStorage.setToken(jsonResponse.token);
+        window.location.reload(); // Full page reload after successful registration
         return { stage: 'done', success: true, token: jsonResponse.token };
       } else if (jsonResponse.show_code_field === true) {
         return { stage: 'awaiting_code', message: jsonResponse.message || 'Code sent. Please check your phone.' };
@@ -136,6 +139,7 @@ export class AuthService {
       const token = tokenMatch ? tokenMatch[1] : '';
       if (token) {
         this.tokenStorage.setToken(token);
+        window.location.reload(); // Full page reload after successful registration
         return { stage: 'done', success: true, token: token };
       }
       return { stage: 'error', message: 'Registration successful, but token not found in response.' };
@@ -176,6 +180,7 @@ export class AuthService {
 
   logout(): void {
     this.tokenStorage.clear();
+    window.location.reload(); // Full page reload after logout
   }
 
   isAuthenticated(): boolean {
