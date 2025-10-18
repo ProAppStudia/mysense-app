@@ -1,34 +1,108 @@
-import { Component, OnInit, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA, ViewChild, ElementRef, signal, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  OnDestroy,
+  CUSTOM_ELEMENTS_SCHEMA,
+  ViewChild,
+  ElementRef,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { IonContent, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel, IonHeader, IonToolbar, IonModal, IonInput, IonSpinner, IonText, IonButtons, IonCheckbox, RefresherCustomEvent } from '@ionic/angular/standalone';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormGroup,
+  FormControl,
+  Validators,
+} from '@angular/forms';
+import {
+  IonContent,
+  IonButton,
+  IonAccordionGroup,
+  IonAccordion,
+  IonItem,
+  IonLabel,
+  IonHeader,
+  IonToolbar,
+  IonModal,
+  IonInput,
+  IonSpinner,
+  IonText,
+  IonButtons,
+  IonCheckbox,
+  RefresherCustomEvent,
+} from '@ionic/angular/standalone';
 import { HttpClient } from '@angular/common/http';
-import { register } from 'swiper/element/bundle';
-import { AuthService } from '../services/auth.service'; // Import AuthService
-import { environment } from '../../environments/environment'; // Import environment for base URL
-import { Subscription, interval } from 'rxjs';
-import { addIcons } from 'ionicons';
-import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, checkmarkDoneOutline, heart, checkmarkCircleOutline, walletOutline } from 'ionicons/icons';
 import { Router, RouterLink, NavigationExtras } from '@angular/router';
+import { register } from 'swiper/element/bundle';
+import { addIcons } from 'ionicons';
+import {
+  timeOutline,
+  videocamOutline,
+  personOutline,
+  addCircleOutline,
+  calendarOutline,
+  chatbubblesOutline,
+  searchOutline,
+  peopleOutline,
+  bookOutline,
+  checkboxOutline,
+  documentTextOutline,
+  closeOutline,
+  eyeOffOutline,
+  eyeOutline,
+  addOutline,
+  arrowForwardOutline,
+  checkmarkDoneOutline,
+  heart,
+  checkmarkCircleOutline,
+  walletOutline,
+} from 'ionicons/icons';
+import { Subscription, interval } from 'rxjs';
 
-addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, walletOutline });
+import { AuthService } from '../services/auth.service';
+import { environment } from '../../environments/environment';
+
 register();
+addIcons({
+  timeOutline,
+  videocamOutline,
+  personOutline,
+  addCircleOutline,
+  calendarOutline,
+  chatbubblesOutline,
+  searchOutline,
+  peopleOutline,
+  bookOutline,
+  checkboxOutline,
+  documentTextOutline,
+  closeOutline,
+  eyeOffOutline,
+  eyeOutline,
+  addOutline,
+  arrowForwardOutline,
+  checkmarkDoneOutline,
+  heart,
+  checkmarkCircleOutline,
+  walletOutline,
+});
 
 interface Doctor {
   img: string;
   firstname: string;
-  lastname: string; // Added lastname
+  lastname: string;
   practice_years_text: string;
 }
 
 interface Session {
   id: number;
-  type: 'Індивідуальна сесія' | 'Сімейна сесія' | 'Дитяча сесія' ;
-  status: string; // e.g., 'Waiting for call', 'Confirmed', 'Completed'
+  type: 'Індивідуальна сесія' | 'Сімейна сесія' | 'Дитяча сесія';
+  status: string;
   doctor_name: string;
   doctor_image: string;
-  time_range: string; // e.g., '4:00 PM-9:00 PM'
-  icon: string; // e.g., 'videocam-outline' or 'person-outline'
+  time_range: string;
+  icon: string;
 }
 
 interface HomepageData {
@@ -51,7 +125,13 @@ interface HomepageData {
   };
   section_9: {
     heading: string;
-    reviews: { text: string; date: string; user_name: string; showFullText?: boolean; truncatedText?: string }[];
+    reviews: {
+      text: string;
+      date: string;
+      user_name: string;
+      showFullText?: boolean;
+      truncatedText?: string;
+    }[];
   };
   section_10: {
     heading: string;
@@ -60,7 +140,14 @@ interface HomepageData {
   };
   section_11: {
     heading: string;
-    articles: { id: number; slug: string; img: string; title: string; short_description: string; date: string }[];
+    articles: {
+      id: number;
+      slug: string;
+      img: string;
+      title: string;
+      short_description: string;
+      date: string;
+    }[];
   };
 }
 
@@ -70,8 +157,24 @@ interface HomepageData {
   styleUrls: ['tab1.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonButton, CommonModule, IonAccordionGroup, IonAccordion, IonItem, IonLabel, RouterLink,
-    FormsModule, ReactiveFormsModule, IonHeader, IonToolbar, IonModal, IonInput, IonSpinner, IonText, IonButtons, IonCheckbox
+    IonContent,
+    IonButton,
+    CommonModule,
+    IonAccordionGroup,
+    IonAccordion,
+    IonItem,
+    IonLabel,
+    RouterLink,
+    FormsModule,
+    ReactiveFormsModule,
+    IonHeader,
+    IonToolbar,
+    IonModal,
+    IonInput,
+    IonSpinner,
+    IonText,
+    IonButtons,
+    IonCheckbox,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
@@ -80,11 +183,16 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('reviewsSwiper') reviewsSwiper?: ElementRef;
 
   homepageData: HomepageData | null = null;
-  readonly TRUNCATE_LENGTH = 100; // Define a constant for truncation length
+  readonly TRUNCATE_LENGTH = 100;
+
+  // auth
   isLoggedIn = signal(false);
+  private authSub?: Subscription;
+
+  // sessions (плейсхолдер)
   userSessions: Session[] = [];
 
-  // Login Modal States
+  // Login modal state
   loginOpen = signal(false);
   loading = signal(false);
   errorMsg = signal<string | null>(null);
@@ -92,10 +200,10 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
 
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required, Validators.minLength(6)])
+    password: new FormControl('', [Validators.required, Validators.minLength(6)]),
   });
 
-  // Register Modal States
+  // Register modal state
   registerOpen = signal(false);
   registerLoading = signal(false);
   registerErrorMsg = signal<string | null>(null);
@@ -110,66 +218,92 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     name: new FormControl('', [Validators.required, Validators.minLength(2)]),
     surname: new FormControl('', [Validators.required, Validators.minLength(2)]),
     email: new FormControl('', [Validators.required, Validators.email]),
-    phone: new FormControl('', [Validators.required, Validators.pattern(/^\+?[0-9\s\-()]{7,25}$/)]),
+    phone: new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^\+?[0-9\s\-()]{7,25}$/),
+    ]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
     confirm: new FormControl(false, [Validators.requiredTrue]),
-    code: new FormControl('', []) // Code field initially not required
+    code: new FormControl('', []),
   });
 
-  constructor(private http: HttpClient, private authService: AuthService, private router: Router) {
-      addIcons({calendarOutline,arrowForwardOutline,closeOutline,addCircleOutline,chatbubblesOutline,checkmarkCircleOutline,bookOutline});}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
+  // ---------- LIFECYCLE ----------
   ngOnInit() {
-    this.getHomepageData(); // Fetch homepage data first
+    // 1) стартові дані
+    this.getHomepageData();
     this.isLoggedIn.set(this.authService.isAuthenticated());
+
+    // 2) реагуємо на логін/логаут (без перезавантаження додатку)
+    this.authSub = this.authService.authState$.subscribe((state) => {
+      this.isLoggedIn.set(state);
+      // Після зміни авторизації — підвантажити домашні дані ще раз,
+      // щоб з’явились/зникли персоналізовані шматки.
+      this.getHomepageData();
+    });
+  }
+
+  ngAfterViewInit() {
+    if (this.articlesSwiper) {
+      this.articlesSwiper.nativeElement.addEventListener('swiperinit', () => {
+        this.articlesSwiper?.nativeElement?.swiper?.update?.();
+      });
+    }
+    if (this.reviewsSwiper) {
+      this.reviewsSwiper.nativeElement.addEventListener('swiperinit', () => {
+        this.reviewsSwiper?.nativeElement?.swiper?.update?.();
+      });
+    }
   }
 
   ngOnDestroy() {
     this.stopCountdown();
+    this.authSub?.unsubscribe();
   }
 
+  // ---------- HELPERS ----------
   formatSessionTime(timeRange: string): { date: string; time: string } {
     const parts = timeRange.split(' о ');
     if (parts.length === 2) {
-      // Assuming timeRange is like "16 Жовтня 2025 о 14:00"
-      // parts[0] will be "16 Жовтня 2025"
-      // parts[1] will be "14:00"
       return { date: parts[0], time: parts[1] };
     }
-    // Fallback if format is unexpected, try to extract date and time if possible
-    const dateMatch = timeRange.match(/(\d{1,2}\s[А-Яа-я]+\s\d{4})/); // e.g., "16 Жовтня 2025"
-    const timeMatch = timeRange.match(/(\d{1,2}:\d{2})/); // e.g., "14:00"
-
+    const dateMatch = timeRange.match(/(\d{1,2}\s[А-Яа-яІіЇїЄє]+?\s\d{4})/);
+    const timeMatch = timeRange.match(/(\d{1,2}:\d{2})/);
     return {
       date: dateMatch ? dateMatch[0] : timeRange,
-      time: timeMatch ? timeMatch[0] : ''
+      time: timeMatch ? timeMatch[0] : '',
     };
   }
 
-  checkLoginStatus() {
-    if (this.isLoggedIn() && this.homepageData && this.homepageData.doctors && this.homepageData.doctors.length >= 2) {
+  private setupMockSessionsIfLoggedIn() {
+    if (this.isLoggedIn() && this.homepageData?.doctors?.length! >= 2) {
       this.userSessions = [
         {
           id: 1,
-          type: 'Індивідуальна сесія', // Changed to match interface
-          status: 'Очікується', // Changed status to "Очікується"
-          doctor_name: `${this.homepageData.doctors[0].firstname} ${this.homepageData.doctors[0].lastname}`,
-          doctor_image: this.homepageData.doctors[0].img, // Use the image path directly from API
-          time_range: '20 вересня 2025 о 14:00', // Changed time to "20 вересня 2025 о 14:00"
-          icon: 'videocam-outline'
-        },
+          type: 'Індивідуальна сесія',
+          status: 'Очікується',
+          doctor_name: `${this.homepageData!.doctors[0].firstname} ${this.homepageData!.doctors[0].lastname}`,
+          doctor_image: this.homepageData!.doctors[0].img,
+          time_range: '20 вересня 2025 о 14:00',
+          icon: 'videокam-outline',
+        } as Session,
         {
           id: 2,
-          type: 'Сімейна сесія', // Changed to match interface
-          status: 'Очікується', // Changed status to "Очікується"
-          doctor_name: `${this.homepageData.doctors[1].firstname} ${this.homepageData.doctors[1].lastname}`,
-          doctor_image: this.homepageData.doctors[1].img, // Use the image path directly from API
-          time_range: '20 вересня 2025 о 14:00', // Changed time to "20 вересня 2025 о 14:00"
-          icon: 'videocam-outline'
-        }
+          type: 'Сімейна сесія',
+          status: 'Очікується',
+          doctor_name: `${this.homepageData!.doctors[1].firstname} ${this.homepageData!.doctors[1].lastname}`,
+          doctor_image: this.homepageData!.doctors[1].img,
+          time_range: '20 вересня 2025 о 14:00',
+          icon: 'videокam-outline',
+        } as Session,
       ];
-      // In a real scenario, you would call getUserSessions() here
-      // this.getUserSessions();
+    } else {
+      this.userSessions = [];
     }
   }
 
@@ -177,103 +311,69 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     review.showFullText = !review.showFullText;
   }
 
-  ngAfterViewInit() {
-    if (this.articlesSwiper) {
-      this.articlesSwiper.nativeElement.addEventListener('swiperinit', () => {
-        if (this.articlesSwiper && this.articlesSwiper.nativeElement.swiper) {
-          this.articlesSwiper.nativeElement.swiper.update();
-        }
-      });
-    }
-
-    if (this.reviewsSwiper) {
-      this.reviewsSwiper.nativeElement.addEventListener('swiperinit', () => {
-        if (this.reviewsSwiper && this.reviewsSwiper.nativeElement.swiper) {
-          this.reviewsSwiper.nativeElement.swiper.update();
-        }
-      });
-    }
-  }
-
-  // getUserSessions() {
-  //   const token = this.authService.getToken();
-  //   if (token) {
-  //     this.http.get<Session[]>(`${environment.baseUrl}/connector.php?action=get_user_sessions&token=${token}`).subscribe(
-  //       (sessions) => {
-  //         this.userSessions = sessions.map(session => ({
-  //           ...session,
-  //           icon: session.type === 'Video Consultation' ? 'videocam-outline' : 'person-outline'
-  //         }));
-  //         console.log('User Sessions:', this.userSessions);
-  //       },
-  //       (error) => {
-  //         console.error('Error fetching user sessions:', error);
-  //         // Handle error, e.g., clear token if it's invalid
-  //         if (error.status === 401) { // Unauthorized
-  //           this.authService.logout();
-  //           this.isLoggedIn = false;
-  //         }
-  //       }
-  //     );
-  //   }
-  // }
-
+  // ---------- DATA ----------
   getHomepageData() {
-    this.http.get<HomepageData>(`${environment.baseUrl}/connector.php?action=get_homepage`).subscribe((data) => {
-      this.homepageData = data;
-      if (this.homepageData && this.homepageData.section_9 && this.homepageData.section_9.reviews) {
-        this.homepageData.section_9.reviews = this.homepageData.section_9.reviews.map(review => ({
-          ...review,
-          showFullText: false,
-          truncatedText: review.text.length > this.TRUNCATE_LENGTH ? review.text.substring(0, this.TRUNCATE_LENGTH) + '...' : review.text
-        }));
-      }
-      console.log('Homepage Data:', this.homepageData);
-      console.log('Doctors Data:', this.homepageData?.doctors); // Add this line to inspect doctors data
-      this.checkLoginStatus(); // Call checkLoginStatus after homepageData is loaded
-    });
+    this.http
+      .get<HomepageData>(`${environment.baseUrl}/connector.php?action=get_homepage`)
+      .subscribe((data) => {
+        this.homepageData = data;
+
+        // обрізаємо довгі тексти відгуків
+        if (this.homepageData?.section_9?.reviews) {
+          this.homepageData.section_9.reviews = this.homepageData.section_9.reviews.map(
+            (review) => ({
+              ...review,
+              showFullText: false,
+              truncatedText:
+                review.text.length > this.TRUNCATE_LENGTH
+                  ? review.text.substring(0, this.TRUNCATE_LENGTH) + '...'
+                  : review.text,
+            })
+          );
+        }
+
+        // підставляємо «мої сесії» (плейсхолдер)
+        this.setupMockSessionsIfLoggedIn();
+
+        console.log('BASE_URL at runtime:', environment.baseUrl);
+        console.log('Homepage Data:', this.homepageData);
+        console.log('Doctors Data:', this.homepageData?.doctors);
+      });
   }
 
+  // ---------- SESSIONS (плейсхолдер дій) ----------
   rescheduleSession(sessionId: number) {
     console.log('Reschedule session:', sessionId);
-    // Add your reschedule logic here
   }
-
   cancelSession(sessionId: number) {
     console.log('Cancel session:', sessionId);
-    // Add your cancel logic here
   }
-
   paySession(sessionId: number) {
     console.log('Pay for session:', sessionId);
-    // Add your payment logic here
   }
-
   viewAllSessions() {
     const navigationExtras: NavigationExtras = {
       state: {
         sessions: this.userSessions,
-        doctors: this.homepageData?.doctors
-      }
+        doctors: this.homepageData?.doctors,
+      },
     };
     this.router.navigate(['/sessions'], navigationExtras);
   }
 
-  // Login Modal Methods
+  // ---------- LOGIN MODAL ----------
   openLoginModal() {
     this.loginOpen.set(true);
     this.errorMsg.set(null);
     this.loginForm.reset();
     this.passwordVisible.set(false);
   }
-
   closeLoginModal() {
     this.loginOpen.set(false);
     this.errorMsg.set(null);
     this.loginForm.reset();
     this.passwordVisible.set(false);
   }
-
   onSubmitLogin() {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
@@ -284,14 +384,13 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     this.errorMsg.set(null);
 
     const { email, password } = this.loginForm.value;
-
     if (email && password) {
       this.authService.login(email, password).subscribe({
         next: (response) => {
           this.loading.set(false);
           if (response.success) {
             this.isLoggedIn.set(true);
-            this.closeLoginModal();
+            this.closeLoginModal(); // authState$ сам перевантажить дані
           } else {
             this.errorMsg.set(response.message || 'Login failed. Please try again.');
           }
@@ -300,58 +399,54 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
           this.loading.set(false);
           this.errorMsg.set('An unexpected error occurred. Please try again later.');
           console.error('Login error:', err);
-        }
+        },
       });
     }
   }
-
   togglePasswordVisibility() {
-    this.passwordVisible.update(value => !value);
+    this.passwordVisible.update((v) => !v);
   }
 
-  // Register Modal Methods
+  // ---------- REGISTER MODAL ----------
   openRegisterModal() {
     this.registerOpen.set(true);
     this.resetRegisterModalState();
   }
-
   closeRegisterModal() {
     this.registerOpen.set(false);
     this.resetRegisterModalState();
   }
-
   private resetRegisterModalState() {
     this.registerLoading.set(false);
     this.registerErrorMsg.set(null);
     this.infoMsg.set(null);
     this.registerStep.set('form');
     this.registerForm.reset();
-    this.registerForm.get('confirm')?.setValue(false); // Ensure checkbox is reset
-    this.registerForm.get('code')?.clearValidators(); // Clear code validators
+    this.registerForm.get('confirm')?.setValue(false);
+    this.registerForm.get('code')?.clearValidators();
     this.registerForm.get('code')?.updateValueAndValidity();
     this.stopCountdown();
     this.countdown.set(0);
     this.canResend.set(false);
     this.registerPasswordVisible.set(false);
   }
-
   onSubmitRegister() {
     if (this.registerStep() === 'form') {
-      // Validate form fields for the first step
-      this.registerForm.get('code')?.clearValidators(); // Ensure code is not validated on first step
+      this.registerForm.get('code')?.clearValidators();
       this.registerForm.get('code')?.updateValueAndValidity();
 
-      if (this.registerForm.get('name')?.invalid ||
-          this.registerForm.get('surname')?.invalid ||
-          this.registerForm.get('email')?.invalid ||
-          this.registerForm.get('phone')?.invalid ||
-          this.registerForm.get('password')?.invalid ||
-          this.registerForm.get('confirm')?.invalid) {
+      if (
+        this.registerForm.get('name')?.invalid ||
+        this.registerForm.get('surname')?.invalid ||
+        this.registerForm.get('email')?.invalid ||
+        this.registerForm.get('phone')?.invalid ||
+        this.registerForm.get('password')?.invalid ||
+        this.registerForm.get('confirm')?.invalid
+      ) {
         this.registerForm.markAllAsTouched();
         return;
       }
     } else if (this.registerStep() === 'code') {
-      // Validate code field for the second step
       this.registerForm.get('code')?.setValidators([Validators.required]);
       this.registerForm.get('code')?.updateValueAndValidity();
 
@@ -365,8 +460,6 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     this.registerErrorMsg.set(null);
 
     const { name, surname, email, phone, password, confirm, code } = this.registerForm.value;
-
-    // Ensure confirm is always a boolean
     const isConfirmed = confirm ?? false;
 
     if (name && surname && email && phone && password && isConfirmed !== undefined) {
@@ -377,7 +470,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         phone,
         password,
         confirm: isConfirmed,
-        code: this.registerStep() === 'code' ? code || '' : undefined // Only send code if on 'code' step
+        code: this.registerStep() === 'code' ? code || '' : undefined,
       };
 
       this.authService.register(payload).subscribe({
@@ -388,76 +481,74 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
             this.infoMsg.set(response.message);
             this.startCountdown(60);
             this.canResend.set(false);
-            this.registerForm.get('code')?.setValue(''); // Clear code field for new input
+            this.registerForm.get('code')?.setValue('');
           } else if (response.stage === 'done') {
             this.isLoggedIn.set(true);
-            this.closeRegisterModal();
+            this.closeRegisterModal(); // authState$ сам підвантажить дані
           } else if (response.stage === 'error') {
             this.registerErrorMsg.set(response.message);
             if (this.registerStep() === 'code') {
-              this.canResend.set(true); // Allow resend on code error
+              this.canResend.set(true);
             }
           }
         },
         error: (err) => {
           this.registerLoading.set(false);
-          this.registerErrorMsg.set('An unexpected error occurred during registration. Please try again later.');
+          this.registerErrorMsg.set(
+            'An unexpected error occurred during registration. Please try again later.'
+          );
           console.error('Register error:', err);
           if (this.registerStep() === 'code') {
-            this.canResend.set(true); // Allow resend on network error
+            this.canResend.set(true);
           }
-        }
+        },
       });
     }
   }
-
   resendCode() {
-    this.registerForm.get('code')?.clearValidators(); // Clear code validators for resend
+    this.registerForm.get('code')?.clearValidators();
     this.registerForm.get('code')?.updateValueAndValidity();
-    this.registerForm.get('code')?.setValue(''); // Clear code field
+    this.registerForm.get('code')?.setValue('');
     this.canResend.set(false);
     this.registerPasswordVisible.set(false);
   }
-
   startCountdown(seconds: number) {
-    this.stopCountdown(); // Clear any existing timer
+    this.stopCountdown();
     this.countdown.set(seconds);
     this.canResend.set(false);
 
     this.countdownSubscription = interval(1000).subscribe(() => {
-      this.countdown.update(value => value - 1);
+      this.countdown.update((v) => v - 1);
       if (this.countdown() <= 0) {
         this.stopCountdown();
         this.canResend.set(true);
         this.infoMsg.set('Перевірте телефон та спробуйте ще раз');
-        this.registerForm.get('code')?.setValue(''); // Clear code field after countdown
+        this.registerForm.get('code')?.setValue('');
       }
-      });
+    });
   }
-
   stopCountdown() {
     if (this.countdownSubscription) {
       this.countdownSubscription.unsubscribe();
       this.countdownSubscription = null;
     }
   }
-
   formatTime(seconds: number): string {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${this.pad(minutes)}:${this.pad(remainingSeconds)}`;
   }
-
   private pad(num: number): string {
     return num < 10 ? '0' + num : '' + num;
   }
-
   toggleRegisterPasswordVisibility() {
-    this.registerPasswordVisible.update(value => !value);
+    this.registerPasswordVisible.update((v) => !v);
   }
 
+  // ---------- PULL TO REFRESH ----------
   handleRefresh(event: RefresherCustomEvent) {
-    window.location.reload(); // Perform a full page reload
-    event.detail.complete(); // Complete the refresher animation
+    // без повного reload – просто підтягнемо дані ще раз
+    this.getHomepageData();
+    event.detail.complete();
   }
 }

@@ -64,7 +64,7 @@ export class ProfilePage implements OnInit {
             doctor_name: this.doctors[0].fullName,
             doctor_image: this.doctors[0].avatarUrl,
             time_range: '20 вересня о 14:00',
-            icon: 'videocam-outline'
+            icon: 'videокam-outline'
           },
           {
             id: 2,
@@ -73,7 +73,7 @@ export class ProfilePage implements OnInit {
             doctor_name: this.doctors[1].fullName,
             doctor_image: this.doctors[1].avatarUrl,
             time_range: '22 вересня о 18:00',
-            icon: 'videocam-outline'
+            icon: 'videокam-outline'
           }
         ];
       });

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { TokenStorageService } from './token-storage.service';
 import { environment } from '../../environments/environment';
@@ -60,6 +60,10 @@ export class AuthService {
   private readonly PROFILE_URL = `${environment.baseUrl}/connector.php?action=get_my_profile`;
   private readonly UPDATE_PROFILE_URL = `${environment.baseUrl}/connector.php?action=set_my_profile`;
 
+  // 👇 додаємо реактивний стан авторизації
+  private authStateSubject = new BehaviorSubject<boolean>(this.isAuthenticated());
+  authState$ = this.authStateSubject.asObservable();
+
   constructor(
     private http: HttpClient,
     private tokenStorage: TokenStorageService,
@@ -73,27 +77,26 @@ export class AuthService {
 
     return this.http.post(this.LOGIN_URL, body.toString(), { headers, responseType: 'text' }).pipe(
       map((responseText) => {
-        // 1) JSON-спроба
         try {
           const jsonResponse = JSON.parse(responseText);
           if (jsonResponse.success === true && jsonResponse.token) {
             this.tokenStorage.setToken(jsonResponse.token);
-            // після логіну лишаємося в апці → відкриваємо Tab1 (там у тебе модалка/стан)
+            this.authStateSubject.next(true); // ✅ оновлення стану
             this.router.navigateByUrl('/tabs/tab1', { replaceUrl: true });
             return { success: true, token: jsonResponse.token };
           } else if (jsonResponse.error) {
             return { success: false, message: jsonResponse.error };
           }
         } catch {
-          // впаде у текстовий парсер
+          // fallback
         }
 
-        // 2) Fallback: текстовий парсер
         if (responseText.toLowerCase().includes('success')) {
           const tokenMatch = responseText.match(/(?:token=|"token":")([^"&]+)/i);
           const token = tokenMatch ? tokenMatch[1] : undefined;
           if (token) {
             this.tokenStorage.setToken(token);
+            this.authStateSubject.next(true);
             this.router.navigateByUrl('/tabs/tab1', { replaceUrl: true });
             return { success: true, token };
           }
@@ -117,6 +120,7 @@ export class AuthService {
       const jsonResponse = JSON.parse(responseText);
       if (jsonResponse.success === true && jsonResponse.token) {
         this.tokenStorage.setToken(jsonResponse.token);
+        this.authStateSubject.next(true);
         this.router.navigateByUrl('/tabs/tab1', { replaceUrl: true });
         return { stage: 'done', success: true, token: jsonResponse.token };
       } else if (jsonResponse.show_code_field === true) {
@@ -128,7 +132,7 @@ export class AuthService {
         return { stage: 'error', message: jsonResponse.error };
       }
     } catch {
-      // текстовий парсер нижче
+      // fallback
     }
 
     if (responseText.toLowerCase().includes('show_code_field')) {
@@ -140,6 +144,7 @@ export class AuthService {
       const token = tokenMatch ? tokenMatch[1] : '';
       if (token) {
         this.tokenStorage.setToken(token);
+        this.authStateSubject.next(true);
         this.router.navigateByUrl('/tabs/tab1', { replaceUrl: true });
         return { stage: 'done', success: true, token };
       }
@@ -179,10 +184,8 @@ export class AuthService {
   // ---------- LOGOUT ----------
   logout(): void {
     this.tokenStorage.clear();
-    // сторінки /login більше немає → повертаємо на Tab1
-    this.router.navigateByUrl('/tabs/tab1', { replaceUrl: true });
-    // (опційно) одразу відкрити модалку:
-    // window.dispatchEvent(new CustomEvent('open-login-modal'));
+    this.authStateSubject.next(false); // ✅ оновлення стану
+    this.router.navigateByUrl('/login', { replaceUrl: true });
   }
 
   // ---------- TOKEN / AUTH ----------
@@ -198,9 +201,7 @@ export class AuthService {
   getProfile(): Observable<UserProfile> {
     return this.http.get<UserProfile>(this.PROFILE_URL).pipe(
       map((res: any) => {
-        // очікуємо { success: true, ...fields } або { error: "...", is_doctor: ... }
         if (res && res.success === true) return res as UserProfile;
-
         return {
           success: false,
           avatar: '',
