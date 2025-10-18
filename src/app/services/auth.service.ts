@@ -16,7 +16,7 @@ export interface UserProfile {
   avatar: string;
   firstname: string;
   lastname: string;
-  fullname?: string; // додано
+  fullname?: string;
   email: string;
   phone: string;
   success: boolean;
@@ -73,11 +73,12 @@ export class AuthService {
 
     return this.http.post(this.LOGIN_URL, body.toString(), { headers, responseType: 'text' }).pipe(
       map((responseText) => {
-        // 1) спроба JSON
+        // 1) JSON-спроба
         try {
           const jsonResponse = JSON.parse(responseText);
           if (jsonResponse.success === true && jsonResponse.token) {
             this.tokenStorage.setToken(jsonResponse.token);
+            // після логіну лишаємося в апці → відкриваємо Tab1 (там у тебе модалка/стан)
             this.router.navigateByUrl('/tabs/tab1', { replaceUrl: true });
             return { success: true, token: jsonResponse.token };
           } else if (jsonResponse.error) {
@@ -87,7 +88,7 @@ export class AuthService {
           // впаде у текстовий парсер
         }
 
-        // 2) текстовий парсер (fallback)
+        // 2) Fallback: текстовий парсер
         if (responseText.toLowerCase().includes('success')) {
           const tokenMatch = responseText.match(/(?:token=|"token":")([^"&]+)/i);
           const token = tokenMatch ? tokenMatch[1] : undefined;
@@ -127,7 +128,7 @@ export class AuthService {
         return { stage: 'error', message: jsonResponse.error };
       }
     } catch {
-      // текстовий парсер
+      // текстовий парсер нижче
     }
 
     if (responseText.toLowerCase().includes('show_code_field')) {
@@ -178,7 +179,10 @@ export class AuthService {
   // ---------- LOGOUT ----------
   logout(): void {
     this.tokenStorage.clear();
-    this.router.navigateByUrl('/login', { replaceUrl: true });
+    // сторінки /login більше немає → повертаємо на Tab1
+    this.router.navigateByUrl('/tabs/tab1', { replaceUrl: true });
+    // (опційно) одразу відкрити модалку:
+    // window.dispatchEvent(new CustomEvent('open-login-modal'));
   }
 
   // ---------- TOKEN / AUTH ----------
@@ -194,7 +198,9 @@ export class AuthService {
   getProfile(): Observable<UserProfile> {
     return this.http.get<UserProfile>(this.PROFILE_URL).pipe(
       map((res: any) => {
+        // очікуємо { success: true, ...fields } або { error: "...", is_doctor: ... }
         if (res && res.success === true) return res as UserProfile;
+
         return {
           success: false,
           avatar: '',

@@ -1,30 +1,37 @@
-import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
+import { HttpInterceptorFn, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TokenStorageService } from '../services/token-storage.service';
 import { environment } from '../../environments/environment';
 import { catchError, tap } from 'rxjs/operators';
-import { of, throwError } from 'rxjs';
+import { throwError } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenStorage = inject(TokenStorageService);
   const router = inject(Router);
+
   const token = tokenStorage.getToken();
 
-  // прикрутимо інтерцептор лише до нашого API
-  const isOurApi = req.url.startsWith(environment.baseUrl);
+  // Чіпляємось тільки до нашого бекенду
+  const isOurApi =
+    typeof req.url === 'string' && req.url.startsWith(environment.baseUrl);
 
-  // не чіпаємо логін/реєстрацію (без Authorization)
+  // Логін/реєстрацію не чіпаємо
   const isAuthEndpoint =
     req.url === `${environment.baseUrl}/connector.php?action=login` ||
     req.url === `${environment.baseUrl}/connector.php?action=register`;
 
-  // базові заголовки (без печальок для CORS)
+  // Preflight взагалі не чіпаємо
+  if (req.method === 'OPTIONS') {
+    return next(req);
+  }
+
+  // Базові заголовки
   let headers = req.headers
     .set('Accept', 'application/json')
     .set('X-Requested-With', 'XMLHttpRequest');
 
-  // додаємо токен, якщо це наш API, не login/register, і токен є
+  // Якщо це наш API і не логін/реєстрація — додаємо токен
   if (isOurApi && !isAuthEndpoint && token) {
     headers = headers
       .set('Authorization', `Bearer ${token}`)
@@ -35,20 +42,36 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(cloned).pipe(
     tap((event) => {
-      // опційний хук на успішні відповіді
+      // Місце для діагностики, якщо треба
       if (event instanceof HttpResponse) {
-        // наприклад, можна логувати статуси у debug-режимі
+        // console.debug('[HTTP]', event.status, cloned.url);
       }
     }),
-    catchError((err) => {
-      // якщо токен прострочився/некоректний
-      if (isOurApi && err?.status === 401) {
-        tokenStorage.clear();
-        // м’яка переадресація на логін
-        router.navigateByUrl('/login', { replaceUrl: true });
-        // повернемо «чисту» помилку наверх, якщо компонент хоче її показати
-        return of(err);
+    catchError((err: HttpErrorResponse) => {
+      // Якщо не наш API — просто пробросимо помилку
+      if (!isOurApi) {
+        return throwError(() => err);
       }
+
+      // Неавторизований / заборонено
+      if (err.status === 401 || err.status === 403) {
+        tokenStorage.clear();
+
+        // М'яко ведемо на таб1 (де в тебе логін-модалка)
+        // Щоб не робити зайвих навігацій — перевіримо поточний URL
+        const targetUrl = '/tabs/tab1';
+        if (router.url !== targetUrl) {
+          router.navigateByUrl(targetUrl, { replaceUrl: true });
+        }
+
+        // (опційно) можна кинути подію, щоб одразу відкрити модалку логіну:
+        // window.dispatchEvent(new CustomEvent('open-login-modal'));
+
+        // ВАЖЛИВО: не маскуємо помилку — пробросимо її далі
+        return throwError(() => err);
+      }
+
+      // Інші помилки теж пробросимо — нехай компоненти вирішують, що робити
       return throwError(() => err);
     })
   );
