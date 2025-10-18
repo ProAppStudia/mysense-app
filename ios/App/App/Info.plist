@@ -52,7 +52,11 @@
 			<key>mysense.care</key>
 			<dict>
 				<key>NSIncludesSubdomains</key><true/>
-				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key><false/>
+				<key>NSTemporaryExceptionMinimumTLSVersion</key><string>TLSv1.2</string>
+			</dict>
+			<key>www.mysense.care</key>
+			<dict>
+				<key>NSIncludesSubdomains</key><true/>
 				<key>NSTemporaryExceptionMinimumTLSVersion</key><string>TLSv1.2</string>
 			</dict>
 		</dict>

@@ -8,8 +8,11 @@ import { authInterceptor } from './app/interceptors/auth.interceptor';
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
+import { environment } from './environments/environment';
 
 addIcons({ home, filterOutline, flaskOutline, chatbubblesOutline, personOutline, calendarOutline, addCircleOutline, bookOutline, libraryOutline, informationCircleOutline, notificationsOutline, headsetOutline, documentTextOutline, logOutOutline, eyeOutline, eyeOffOutline, closeOutline, helpCircleOutline, warningOutline });
+
+console.log('BASE_URL at runtime:', environment.baseUrl);
 
 bootstrapApplication(AppComponent, {
   providers: [
