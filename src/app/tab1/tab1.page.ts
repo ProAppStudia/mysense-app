@@ -157,6 +157,9 @@ interface HomepageData {
   styleUrls: ['tab1.page.scss'],
   standalone: true,
   imports: [
+    IonContent, IonButton, CommonModule, IonAccordionGroup, IonAccordion, IonItem, IonLabel, RouterLink,
+    FormsModule, ReactiveFormsModule, IonHeader, IonToolbar, IonModal, IonInput, IonSpinner, IonText, IonButtons, IonCheckbox,
+    TestsBlockComponent
     IonContent,
     IonButton,
     CommonModule,

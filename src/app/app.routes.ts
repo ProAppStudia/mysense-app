@@ -42,4 +42,8 @@ export const routes: Routes = [
     path: 'refund-policy',
     loadComponent: () => import('./pages/legal-info/refund-policy/refund-policy.page').then( m => m.RefundPolicyPage)
   },
+  {
+    path: 'quiz/:id',
+    loadComponent: () => import('./pages/quiz/quiz.page').then(m => m.QuizPage)
+  },
 ];

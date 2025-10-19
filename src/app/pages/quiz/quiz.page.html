@@ -1,0 +1,110 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab1"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ quiz?.title || 'Тест' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="isLoading" class="ion-text-center">
+    <ion-spinner></ion-spinner>
+    <p>Завантаження тесту...</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <ion-button (click)="loadQuiz()">Спробувати ще раз</ion-button>
+  </div>
+
+  <div *ngIf="quiz && !isLoading && !error && !showResult">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-subtitle>Крок {{ currentQuestionIndex + 1 }} з {{ quiz.questions.length }}</ion-card-subtitle>
+        <ion-card-title>{{ currentQuestion?.text }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div [ngSwitch]="currentQuestion?.type">
+          <!-- Yes/No type -->
+          <ion-radio-group *ngSwitchCase="'yes_no'" [(ngModel)]="selectedAnswer" (ionChange)="onAnswerChange($event, currentQuestion!)">
+            <ion-item>
+              <ion-radio value="yes" labelPlacement="end">Так</ion-radio>
+            </ion-item>
+            <ion-item>
+              <ion-radio value="no" labelPlacement="end">Ні</ion-radio>
+            </ion-item>
+          </ion-radio-group>
+
+          <!-- Yes/No/Sometimes type -->
+          <ion-radio-group *ngSwitchCase="'yes_no_sometimes'" [(ngModel)]="selectedAnswer" (ionChange)="onAnswerChange($event, currentQuestion!)">
+            <ion-item>
+              <ion-radio value="yes" labelPlacement="end">Так</ion-radio>
+            </ion-item>
+            <ion-item>
+              <ion-radio value="sometimes" labelPlacement="end">Іноді</ion-radio>
+            </ion-item>
+            <ion-item>
+              <ion-radio value="no" labelPlacement="end">Ні</ion-radio>
+            </ion-item>
+          </ion-radio-group>
+
+          <!-- Custom type -->
+          <div *ngSwitchCase="'custom'">
+            <div *ngIf="currentQuestion?.multiple">
+              <ion-item *ngFor="let option of currentQuestion?.options">
+                <ion-checkbox
+                  [value]="option.id"
+                  [checked]="(selectedAnswer || []).includes(option.id)"
+                  (ionChange)="onAnswerChange($event, currentQuestion!)"
+                  labelPlacement="end"
+                >{{ option.label }}</ion-checkbox>
+              </ion-item>
+            </div>
+            <ion-radio-group *ngIf="!currentQuestion?.multiple" [(ngModel)]="selectedAnswer" (ionChange)="onAnswerChange($event, currentQuestion!)">
+              <ion-item *ngFor="let option of currentQuestion?.options">
+                <ion-radio [value]="option.id" labelPlacement="end">{{ option.label }}</ion-radio>
+              </ion-item>
+            </ion-radio-group>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-footer class="ion-padding-vertical">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="prevQuestion()" [disabled]="isFirstQuestion">
+            <ion-icon slot="start" name="arrow-back"></ion-icon>
+            Назад
+          </ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+          <ion-button *ngIf="!isLastQuestion" (click)="nextQuestion()" [disabled]="!isAnswerSelected">
+            Далі
+            <ion-icon slot="end" name="arrow-forward"></ion-icon>
+          </ion-button>
+          <ion-button *ngIf="isLastQuestion" (click)="finishQuiz()" [disabled]="!isAnswerSelected" color="success">
+            Завершити
+            <ion-icon slot="end" name="checkmark-circle-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-footer>
+  </div>
+
+  <div *ngIf="showResult" class="quiz-result-container ion-text-center">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ quiz?.title }}</ion-card-title>
+        <ion-card-subtitle>Ваш результат:</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <h1 class="result-percent">{{ resultPercent }}%</h1>
+        <p class="result-text">{{ resultText }}</p>
+        <ion-button expand="block" (click)="retakeQuiz()" class="ion-margin-top">Пройти ще раз</ion-button>
+        <ion-button expand="block" fill="outline" (click)="goToHome()" class="ion-margin-top">На головну</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
