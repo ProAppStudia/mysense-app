@@ -26,16 +26,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  // Базові заголовки
-  let headers = req.headers
-    .set('Accept', 'application/json')
-    .set('X-Requested-With', 'XMLHttpRequest');
-
-  // Якщо це наш API і не логін/реєстрація — додаємо токен
-  if (isOurApi && !isAuthEndpoint && token) {
-    headers = headers
-      .set('Authorization', `Bearer ${token}`)
-      .set('X-Auth-Token', token);
+  if (token) {
+    const clonedRequest = req.clone({
+      setHeaders: {
+        Authorization: `token : ${token}`
+      }
+    });
+    return next(clonedRequest);
   }
 
   const cloned = req.clone({ headers });
