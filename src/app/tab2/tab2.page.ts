@@ -4,16 +4,18 @@ import { IonToolbar, IonContent, IonButton, IonIcon, IonButtons, ModalController
 import { addIcons } from 'ionicons';
 import { filterCircleOutline, swapVerticalOutline, arrowUpOutline, arrowDownOutline, closeOutline } from 'ionicons/icons';
 import { DoctorService } from '../services/doctor.service';
+import { CityService } from '../services/city.service'; // Import CityService
 import { DoctorCardView } from '../models/doctor-card-view.model';
 import { CommonModule } from '@angular/common';
 import { FilterModalComponent } from '../components/filter-modal/filter-modal.component';
 import { SortPopoverComponent } from '../components/sort-popover/sort-popover.component';
+import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
 
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
-  imports: [IonToolbar, IonContent, IonButton, IonIcon, IonButtons, CommonModule, IonSearchbar],
+  imports: [IonToolbar, IonContent, IonButton, IonIcon, IonButtons, CommonModule, IonSearchbar, HttpClientModule], // Add HttpClientModule
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class Tab2Page implements OnInit {
@@ -21,9 +23,11 @@ export class Tab2Page implements OnInit {
   doctors: (DoctorCardView | { error: string })[] = [];
   private allDoctors: DoctorCardView[] = [];
   public searchTerm: string = '';
+  public cities: any[] = []; // Add cities property
 
   constructor(
     private doctorService: DoctorService,
+    private cityService: CityService, // Inject CityService
     private cdr: ChangeDetectorRef,
     private router: Router,
     private route: ActivatedRoute,
@@ -38,6 +42,13 @@ export class Tab2Page implements OnInit {
       this.allDoctors = psychologists.filter(p => this.isDoctorCardView(p)) as DoctorCardView[];
       this.doctors = [...this.allDoctors];
       this.cdr.detectChanges();
+    });
+
+    this.cityService.getCities().subscribe(data => {
+      if (data && data.cities) {
+        this.cities = data.cities;
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -104,6 +115,9 @@ export class Tab2Page implements OnInit {
 
     const modal = await this.modalController.create({
       component: FilterModalComponent,
+      componentProps: {
+        cities: this.cities // Pass the cities data
+      },
       presentingElement: document.querySelector('ion-router-outlet') || undefined
     });
     await modal.present();
@@ -141,7 +155,9 @@ export class Tab2Page implements OnInit {
       const directionMatch = !filters.directions || filters.directions.length === 0 || 
                              filters.directions.some((direction: string) => doctor.specialization?.includes(direction));
 
-      return typeMatch && formatMatch && genderMatch && languageMatch && priceMatch && directionMatch;
+      const cityMatch = !filters.city_id || filters.format !== 'in-person' || (doctor.city_id && doctor.city_id === filters.city_id);
+
+      return typeMatch && formatMatch && genderMatch && languageMatch && priceMatch && directionMatch && cityMatch;
     });
     this.cdr.detectChanges();
   }

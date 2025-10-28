@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, Input } from '@angular/core'; // Import Input
 import { ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +11,7 @@ import { IonicModule } from '@ionic/angular';
   imports: [CommonModule, FormsModule, IonicModule]
 })
 export class FilterModalComponent implements OnInit, AfterViewInit {
+  @Input() cities: any[] = []; // Receive cities data
   @ViewChildren('rangeInput') rangeInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   filters = {
@@ -19,7 +20,8 @@ export class FilterModalComponent implements OnInit, AfterViewInit {
     gender: 'any',
     language: 'any',
     priceRange: { lower: 900, upper: 2700 },
-    directions: [] as string[]
+    directions: [] as string[],
+    city_id: null // Add city_id filter
   };
 
   directions = [
@@ -34,7 +36,12 @@ export class FilterModalComponent implements OnInit, AfterViewInit {
 
   constructor(private modalController: ModalController) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Set a default city if available and no city is selected
+    if (this.cities.length > 0 && !this.filters.city_id) {
+      this.filters.city_id = this.cities[0].city_id;
+    }
+  }
 
   ngAfterViewInit() {
     this.updateRangeBackground();
@@ -76,7 +83,8 @@ export class FilterModalComponent implements OnInit, AfterViewInit {
       gender: 'any',
       language: 'any',
       priceRange: { lower: 900, upper: 2700 },
-      directions: []
+      directions: [],
+      city_id: null
     };
     this.directions.forEach(d => d.checked = false);
     this.modalController.dismiss({ reset: true });

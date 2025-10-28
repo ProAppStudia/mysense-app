@@ -7,6 +7,7 @@ export interface DoctorCardView {
   id: number | string;
   fullName: string;
   city?: string;
+  city_id?: number | string; // Add city_id
   avatarUrl?: string;
   online?: boolean;
   inPerson?: boolean;

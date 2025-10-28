@@ -52,6 +52,16 @@
     </div>
   </div>
 
+  <div class="filter-section" *ngIf="filters.format === 'in-person'">
+    <h3 class="filter-section-title">Оберіть місто</h3>
+    <div class="custom-radio-group tip-city">
+      <label class="custom-radio-item" *ngFor="let city of cities" [class.selected]="filters.city_id === city.city_id">
+        <input type="radio" name="city" [value]="city.city_id" [(ngModel)]="filters.city_id">
+        {{ city.name }}
+      </label>
+    </div>
+  </div>
+
   <div class="filter-section">
     <h3 class="filter-section-title">Оберіть стать психолога</h3>
     <div class="custom-radio-group tip-terapy">
