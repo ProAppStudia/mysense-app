@@ -12,6 +12,7 @@ export interface DoctorCardView {
   online?: boolean;
   inPerson?: boolean;
   specialization?: string;
+  direction_id?: number | string; // Add direction_id
   experienceYears?: number | string;
   sessionsCount?: number | string;
   feedbackCount?: number | string;

@@ -23,11 +23,16 @@ export class Tab2Page implements OnInit {
   doctors: (DoctorCardView | { error: string })[] = [];
   private allDoctors: DoctorCardView[] = [];
   public searchTerm: string = '';
-  public cities: any[] = []; // Add cities property
+  public cities: any[] = [];
+  public directions: any[] = [];
+  public prices: { min_price: number, max_price: number } = { min_price: 900, max_price: 2700 };
+  public languages: any[] = [];
+  public types: any[] = [];
+  public formats: any[] = []; // Add formats property
 
   constructor(
     private doctorService: DoctorService,
-    private cityService: CityService, // Inject CityService
+    private cityService: CityService,
     private cdr: ChangeDetectorRef,
     private router: Router,
     private route: ActivatedRoute,
@@ -38,17 +43,38 @@ export class Tab2Page implements OnInit {
   }
 
   ngOnInit() {
-    this.doctorService.getPsychologists().subscribe(psychologists => {
+    this.loadDoctors(); // Load doctors initially without filters
+
+    this.cityService.getCities().subscribe(data => {
+      if (data) {
+        if (data.cities) {
+          this.cities = data.cities;
+        }
+        if (data.directions) {
+          this.directions = data.directions;
+        }
+        if (data.prices) {
+          this.prices = data.prices;
+        }
+        if (data.languages) {
+          this.languages = data.languages;
+        }
+        if (data.types) {
+          this.types = Object.keys(data.types).map(key => ({ id: key, text: data.types[key].text, selected: data.types[key].selected }));
+        }
+        if (data.format) {
+          this.formats = data.format;
+        }
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private loadDoctors(filters: any = {}) { // Default to an empty object if no filters are provided
+    this.doctorService.getPsychologists(filters).subscribe(psychologists => {
       this.allDoctors = psychologists.filter(p => this.isDoctorCardView(p)) as DoctorCardView[];
       this.doctors = [...this.allDoctors];
       this.cdr.detectChanges();
-    });
-
-    this.cityService.getCities().subscribe(data => {
-      if (data && data.cities) {
-        this.cities = data.cities;
-        this.cdr.detectChanges();
-      }
     });
   }
 
@@ -116,7 +142,12 @@ export class Tab2Page implements OnInit {
     const modal = await this.modalController.create({
       component: FilterModalComponent,
       componentProps: {
-        cities: this.cities // Pass the cities data
+        cities: this.cities, // Pass the cities data
+        directions: this.directions, // Pass the directions data
+        prices: this.prices, // Pass the prices data
+        languages: this.languages, // Pass the languages data
+        types: this.types, // Pass the types data
+        formats: this.formats // Pass the formats data
       },
       presentingElement: document.querySelector('ion-router-outlet') || undefined
     });
@@ -133,33 +164,7 @@ export class Tab2Page implements OnInit {
   }
 
   applyFilters(filters: any) {
-    this.doctors = this.allDoctors.filter(doctor => {
-      if (!this.isDoctorCardView(doctor)) return false;
-
-      const typeMatch = !filters.type || 
-                        (filters.type === 'individual' && doctor.priceIndividual) ||
-                        (filters.type === 'family' && doctor.priceFamily) ||
-                        (filters.type === 'child'); // Assuming there is a property for this
-
-      const formatMatch = !filters.format ||
-                          (filters.format === 'online' && doctor.online) ||
-                          (filters.format === 'in-person' && doctor.inPerson);
-
-      const genderMatch = !filters.gender || filters.gender === 'any'; // Assuming no gender property
-
-      const languageMatch = !filters.language || filters.language === 'any' || (doctor.languages && doctor.languages.includes(filters.language));
-
-      const priceMatch = (!filters.priceRange || !doctor.priceIndividual) || 
-                         (doctor.priceIndividual >= filters.priceRange.lower && doctor.priceIndividual <= filters.priceRange.upper);
-
-      const directionMatch = !filters.directions || filters.directions.length === 0 || 
-                             filters.directions.some((direction: string) => doctor.specialization?.includes(direction));
-
-      const cityMatch = !filters.city_id || filters.format !== 'in-person' || (doctor.city_id && doctor.city_id === filters.city_id);
-
-      return typeMatch && formatMatch && genderMatch && languageMatch && priceMatch && directionMatch && cityMatch;
-    });
-    this.cdr.detectChanges();
+    this.loadDoctors(filters);
   }
 
   handleRefresh(event: RefresherCustomEvent) {

@@ -13,17 +13,9 @@
   <div class="filter-section">
     <h3 class="filter-section-title">Тип терапії</h3>
     <div class="custom-radio-group tip-terapy">
-      <label class="custom-radio-item" [class.selected]="filters.type === 'individual'">
-        <input type="radio" name="therapy-type" value="individual" [(ngModel)]="filters.type">
-        Індивідуальна
-      </label>
-      <label class="custom-radio-item" [class.selected]="filters.type === 'family'">
-        <input type="radio" name="therapy-type" value="family" [(ngModel)]="filters.type">
-        Сімейна
-      </label>
-      <label class="custom-radio-item" [class.selected]="filters.type === 'child'">
-        <input type="radio" name="therapy-type" value="child" [(ngModel)]="filters.type">
-        Дитяча
+      <label class="custom-radio-item" *ngFor="let type of types" [class.selected]="filters.type === type.id">
+        <input type="radio" name="therapy-type" [value]="type.id" [(ngModel)]="filters.type">
+        {{ type.text }}
       </label>
     </div>
   </div>
@@ -41,18 +33,14 @@
   <div class="filter-section">
     <h3 class="filter-section-title">Оберіть формат сесії</h3>
     <div class="custom-radio-group tip-terapy">
-      <label class="custom-radio-item" [class.selected]="filters.format === 'online'">
-        <input type="radio" name="session-format" value="online" [(ngModel)]="filters.format">
-        Онлайн
-      </label>
-      <label class="custom-radio-item" [class.selected]="filters.format === 'in-person'">
-        <input type="radio" name="session-format" value="in-person" [(ngModel)]="filters.format">
-        Очно
+      <label class="custom-radio-item" *ngFor="let formatOption of formats" [class.selected]="filters.format === formatOption.id">
+        <input type="radio" name="session-format" [value]="formatOption.id" [(ngModel)]="filters.format">
+        {{ formatOption.name }}
       </label>
     </div>
   </div>
 
-  <div class="filter-section" *ngIf="filters.format === 'in-person'">
+  <div class="filter-section" *ngIf="filters.format === 'offline'">
     <h3 class="filter-section-title">Оберіть місто</h3>
     <div class="custom-radio-group tip-city">
       <label class="custom-radio-item" *ngFor="let city of cities" [class.selected]="filters.city_id === city.city_id">
@@ -83,17 +71,9 @@
   <div class="filter-section">
     <h3 class="filter-section-title">Оберіть мову спілкування</h3>
     <div class="custom-radio-group tip-terapy">
-      <label class="custom-radio-item" [class.selected]="filters.language === 'ukrainian'">
-        <input type="radio" name="language" value="ukrainian" [(ngModel)]="filters.language">
-        Українська
-      </label>
-      <label class="custom-radio-item" [class.selected]="filters.language === 'russian'">
-        <input type="radio" name="language" value="russian" [(ngModel)]="filters.language">
-        Російська
-      </label>
-      <label class="custom-radio-item" [class.selected]="filters.language === 'any'">
-        <input type="radio" name="language" value="any" [(ngModel)]="filters.language">
-        Не важливо
+      <label class="custom-radio-item" *ngFor="let lang of languages" [class.selected]="filters.language === lang.code">
+        <input type="radio" name="language" [value]="lang.code" [(ngModel)]="filters.language">
+        {{ lang.name }}
       </label>
     </div>
   </div>
@@ -106,8 +86,8 @@
         <span>{{ filters.priceRange.upper }} грн.</span>
       </div>
       <div class="range-slider">
-        <input #rangeInput type="range" min="900" max="2700" [value]="filters.priceRange.lower" (input)="filters.priceRange.lower = $any($event.target.value); updateRangeBackground()">
-        <input #rangeInput type="range" min="900" max="2700" [value]="filters.priceRange.upper" (input)="filters.priceRange.upper = $any($event.target.value); updateRangeBackground()">
+        <input #rangeInput type="range" [min]="prices.min_price" [max]="prices.max_price" [value]="filters.priceRange.lower" (input)="filters.priceRange.lower = $any($event.target.value); updateRangeBackground()">
+        <input #rangeInput type="range" [min]="prices.min_price" [max]="prices.max_price" [value]="filters.priceRange.upper" (input)="filters.priceRange.upper = $any($event.target.value); updateRangeBackground()">
       </div>
     </div>
   </div>
