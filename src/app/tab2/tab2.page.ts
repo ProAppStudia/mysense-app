@@ -28,7 +28,8 @@ export class Tab2Page implements OnInit {
   public prices: { min_price: number, max_price: number } = { min_price: 900, max_price: 2700 };
   public languages: any[] = [];
   public types: any[] = [];
-  public formats: any[] = []; // Add formats property
+  public formats: any[] = [];
+  public genders: any[] = []; // Add genders property
 
   constructor(
     private doctorService: DoctorService,
@@ -64,6 +65,9 @@ export class Tab2Page implements OnInit {
         }
         if (data.format) {
           this.formats = data.format;
+        }
+        if (data.genders) {
+          this.genders = data.genders;
         }
         this.cdr.detectChanges();
       }
@@ -147,7 +151,8 @@ export class Tab2Page implements OnInit {
         prices: this.prices, // Pass the prices data
         languages: this.languages, // Pass the languages data
         types: this.types, // Pass the types data
-        formats: this.formats // Pass the formats data
+        formats: this.formats, // Pass the formats data
+        genders: this.genders // Pass the genders data
       },
       presentingElement: document.querySelector('ion-router-outlet') || undefined
     });

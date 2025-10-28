@@ -53,17 +53,9 @@
   <div class="filter-section">
     <h3 class="filter-section-title">Оберіть стать психолога</h3>
     <div class="custom-radio-group tip-terapy">
-      <label class="custom-radio-item" [class.selected]="filters.gender === 'any'">
-        <input type="radio" name="gender" value="any" [(ngModel)]="filters.gender">
-        Не важливо
-      </label>
-      <label class="custom-radio-item" [class.selected]="filters.gender === 'male'">
-        <input type="radio" name="gender" value="male" [(ngModel)]="filters.gender">
-        Чоловік
-      </label>
-      <label class="custom-radio-item" [class.selected]="filters.gender === 'female'">
-        <input type="radio" name="gender" value="female" [(ngModel)]="filters.gender">
-        Жінка
+      <label class="custom-radio-item" *ngFor="let genderOption of genders" [class.selected]="filters.gender === genderOption.id">
+        <input type="radio" name="gender" [value]="genderOption.id" [(ngModel)]="filters.gender">
+        {{ genderOption.name }}
       </label>
     </div>
   </div>

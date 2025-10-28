@@ -16,7 +16,8 @@ export class FilterModalComponent implements OnInit, AfterViewInit {
   @Input() prices: { min_price: number, max_price: number } = { min_price: 900, max_price: 2700 }; // Receive prices data
   @Input() languages: any[] = [];
   @Input() types: any[] = [];
-  @Input() formats: any[] = []; // Receive formats data
+  @Input() formats: any[] = [];
+  @Input() genders: any[] = []; // Receive genders data
   @ViewChildren('rangeInput') rangeInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   filters = {
@@ -56,6 +57,11 @@ export class FilterModalComponent implements OnInit, AfterViewInit {
     // Set a default format if available and no format is selected
     if (this.formats.length > 0 && !this.filters.format) {
       this.filters.format = this.formats[0].id;
+    }
+
+    // Set a default gender if available and no gender is selected
+    if (this.genders.length > 0 && !this.filters.gender) {
+      this.filters.gender = this.genders[0].id;
     }
   }
 
@@ -113,6 +119,10 @@ export class FilterModalComponent implements OnInit, AfterViewInit {
     // Reset format filter
     if (this.formats.length > 0) {
       this.filters.format = this.formats[0].id;
+    }
+    // Reset gender filter
+    if (this.genders.length > 0) {
+      this.filters.gender = this.genders[0].id;
     }
     this.directions.forEach(d => d.checked = false);
     this.modalController.dismiss({ reset: true });
