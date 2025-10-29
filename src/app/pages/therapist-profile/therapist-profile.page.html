@@ -172,13 +172,13 @@
 
         <div class="session-type-toggle">
           <button class="sessionbutton" [class.active]="sessionType === 'online'" (click)="sessionType = 'online'">Онлайн</button>
-          <button class="sessionbutton" [class.active]="sessionType === 'offline'" (click)="sessionType = 'offline'">Очно</button>
+          <button *ngIf="doctor.inPerson" class="sessionbutton" [class.active]="sessionType === 'offline'" (click)="sessionType = 'offline'">Очно</button>
         </div>
 
         <div class="booking-for-toggle">
-          <button class="sessionbutton" [class.active]="bookingFor === 'me'" (click)="bookingFor = 'me'">Для мене</button>
-          <button class="sessionbutton" [class.active]="bookingFor === 'pair'" (click)="bookingFor = 'pair'">Для пари</button>
-          <button class="sessionbutton" [class.active]="bookingFor === 'child'" (click)="bookingFor = 'child'">Для дитини</button>
+          <button *ngIf="doctor.priceIndividual" class="sessionbutton" [class.active]="bookingFor === 'me'" (click)="bookingFor = 'me'">Для мене</button>
+          <button *ngIf="doctor.priceFamily" class="sessionbutton" [class.active]="bookingFor === 'pair'" (click)="bookingFor = 'pair'">Для пари</button>
+          <button *ngIf="doctor.workWithTypes?.includes('Діти')" class="sessionbutton" [class.active]="bookingFor === 'child'" (click)="bookingFor = 'child'">Для дитини</button>
         </div>
 
         <div class="week-navigator">
