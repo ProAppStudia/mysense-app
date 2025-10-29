@@ -76,11 +76,9 @@ export class FilterModalComponent implements OnInit, AfterViewInit {
 
     console.log('FilterModalComponent: selectedDirections after filtering and mapping:', selectedDirections);
 
-    // If the backend expects a single direction_id, send only the first one
-    // Otherwise, if the backend can handle an array, send the whole array.
-    // Based on the PHP snippet, it expects a single ID.
-    this.filters.direction_id = selectedDirections.length > 0 ? selectedDirections[0] : null;
-    delete this.filters.directions; // Explicitly remove the 'directions' array to avoid sending it
+    // Send an array of selected direction IDs. The backend needs to be updated to handle this.
+    this.filters.direction_id = selectedDirections.length > 0 ? selectedDirections : null;
+    // No need to delete this.filters.directions as we are now sending direction_id as an array
 
     // Convert language code to ID if a language is selected and it's not 'any'
     if (this.filters.language && this.filters.language !== 'any') {

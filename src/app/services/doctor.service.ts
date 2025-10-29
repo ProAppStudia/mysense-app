@@ -87,7 +87,8 @@ export class DoctorService {
         body.max_price = filters.priceRange.upper;
       }
       if (filters.direction_id && filters.direction_id !== null) {
-        body.direction_id = filters.direction_id;
+        // If direction_id is an array, send it as an array. Otherwise, send as single value.
+        body.direction_id = Array.isArray(filters.direction_id) ? filters.direction_id : [filters.direction_id];
       }
       if (filters.city_id && filters.city_id !== null) {
         body.city_id = filters.city_id;
