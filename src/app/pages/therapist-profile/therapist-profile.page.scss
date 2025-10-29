@@ -148,9 +148,19 @@ button.sessionbutton.active {
   }
 p.calendar-name {
     margin: 0;
+        font-size: 16px;
+    color: #2f264d;
+}
+p.calendar-no {
+    margin: 0;
+    font-size: 14px;
+    color: #9895a6;
+    line-height: 150%;
 }
   .day-header {
     margin-bottom: 10px;
+        padding: 8px;
+            border-top: 1px solid #f1edff;
   }
 
   .time-slots {
@@ -347,6 +357,16 @@ p.calendar-name {
     font-weight: 400;
     color: #2f264d;
     margin-top: 0;
+  }
+  .info-title-icon {
+     font-size: 14px;
+    color: #9895a6;
+    margin-bottom: 6px;
+    margin-top: 0;
+        display: flex
+;
+    align-items: center;
+        gap: 10px;
   }
   .info-title-about {
     font-size: 20px;

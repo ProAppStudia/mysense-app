@@ -218,8 +218,9 @@ ion-content {
 }
 
 ion-toolbar ion-buttons ion-button ion-icon {
-  font-size: 2.0em;
-  color: var(--ion-color-primary);
+  font-size: 18px;
+    color: var(--ion-color-primary);
+    margin-right: 5px;
 }
 
 ion-searchbar {

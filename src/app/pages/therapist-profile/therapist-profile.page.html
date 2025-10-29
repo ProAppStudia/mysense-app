@@ -76,7 +76,7 @@
       </div>
       <div class="psychologist-card">
       <div class="info-block">
-        <h4 class="info-title">
+        <h4 class="info-title-icon">
           <ion-icon src="assets/icon/zkem.svg"></ion-icon>
           З ким я працюю
         </h4>
@@ -84,7 +84,7 @@
           <li *ngFor="let type of doctor.workWithTypes">{{ type }}</li>
         </ul>
 
-        <h4 class="info-title">
+        <h4 class="info-title-icon">
           <ion-icon src="assets/icon/star.svg"></ion-icon>
           Працюю з:
         </h4>
@@ -93,7 +93,7 @@
           <li *ngIf="doctor.worksWithLgbt">ЛГБТКІ+</li>
         </ul>
 
-        <h4 class="info-title">
+        <h4 class="info-title-icon">
           <ion-icon src="assets/icon/lang.svg"></ion-icon>
           Мова спілкування:
         </h4>
@@ -149,7 +149,8 @@
           <li *ngFor="let item of doctor.worksWith">{{ item }}</li>
         </ul>
       </div>
-
+      </div>
+<div class="psychologist-card">
       <div class="info-block">
         <h4 class="info-title">Я не працюю з:</h4>
         <ul>
