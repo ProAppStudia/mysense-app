@@ -27,13 +27,13 @@ export class FilterModalComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.filters = {
-      type: this.types.length > 0 ? this.types[0].id : 'individual',
-      format: this.formats.length > 0 ? this.formats[0].id : 'online',
-      gender: this.genders.length > 0 ? this.genders[0].id : 'any',
-      language: this.languages.length > 0 ? this.languages[0].code : 'any',
+      type: null, // No default type selected
+      format: null, // No default format selected
+      gender: null, // No default gender selected
+      language: null, // No default language selected
       priceRange: { lower: this.prices.min_price, upper: this.prices.max_price },
       directions: [] as string[],
-      city_id: this.cities.length > 0 ? this.cities[0].city_id : null
+      city_id: null // No default city selected
     };
 
     this.initialFilters = { ...this.filters }; // Store initial state

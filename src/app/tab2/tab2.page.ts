@@ -169,6 +169,7 @@ export class Tab2Page implements OnInit {
   }
 
   applyFilters(filters: any) {
+    console.log('Applying filters:', filters);
     this.loadDoctors(filters);
   }
 

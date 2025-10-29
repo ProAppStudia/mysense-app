@@ -64,9 +64,8 @@ export class DoctorService {
       );
     } else {
       // If filters are present, use the POST request
-      const body: any = {
-        action: 'get_psychologists'
-      };
+      let params = new HttpParams().set('action', 'get_psychologists');
+      const body: any = {}; // Initialize an empty body for POST
 
       if (filters.type) {
         body.type_id = filters.type;
