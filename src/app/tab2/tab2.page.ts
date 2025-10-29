@@ -30,6 +30,7 @@ export class Tab2Page implements OnInit {
   public types: any[] = [];
   public formats: any[] = [];
   public genders: any[] = []; // Add genders property
+  public currentFilters: any = {}; // Store current active filters
 
   constructor(
     private doctorService: DoctorService,
@@ -44,7 +45,7 @@ export class Tab2Page implements OnInit {
   }
 
   ngOnInit() {
-    this.loadDoctors(); // Load doctors initially without filters
+    this.loadDoctors(this.currentFilters); // Load doctors initially with stored filters
 
     this.cityService.getCities().subscribe(data => {
       if (data) {
@@ -155,7 +156,8 @@ export class Tab2Page implements OnInit {
         languages: this.languages, // Pass the languages data
         types: this.types, // Pass the types data
         formats: this.formats, // Pass the formats data
-        genders: this.genders // Pass the genders data
+        genders: this.genders, // Pass the genders data
+        initialFilters: this.currentFilters // Pass the currently applied filters
       },
       presentingElement: document.querySelector('ion-router-outlet') || undefined
     });
@@ -164,8 +166,10 @@ export class Tab2Page implements OnInit {
     const { data } = await modal.onWillDismiss();
     if (data) {
       if (data.reset) {
+        this.currentFilters = {}; // Reset stored filters
         this.doctors = [...this.allDoctors];
       } else {
+        this.currentFilters = data; // Store the applied filters
         this.applyFilters(data);
       }
     }

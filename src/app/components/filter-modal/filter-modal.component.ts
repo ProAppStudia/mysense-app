@@ -18,28 +18,45 @@ export class FilterModalComponent implements OnInit, AfterViewInit {
   @Input() types: any[] = [];
   @Input() formats: any[] = [];
   @Input() genders: any[] = []; // Receive genders data
+  @Input() initialFilters: any = {}; // Receive initial filters
   @ViewChildren('rangeInput') rangeInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   filters: any;
-  private initialFilters: any;
+  private defaultFilters: any; // Renamed to avoid confusion with @Input initialFilters
 
   constructor(private modalController: ModalController) { }
 
   ngOnInit() {
+    // Initialize filters with defaults or values from initialFilters
     this.filters = {
-      type: null, // No default type selected
-      format: null, // No default format selected
-      gender: null, // No default gender selected
-      language: null, // No default language selected
-      priceRange: { lower: this.prices.min_price, upper: this.prices.max_price },
-      directions: [] as string[],
-      city_id: null, // No default city selected
-      direction_id: null // Initialize direction_id
+      type: this.initialFilters.type || null,
+      format: this.initialFilters.format || null,
+      gender: this.initialFilters.gender || null,
+      language: this.initialFilters.language || null,
+      priceRange: this.initialFilters.priceRange || { lower: this.prices.min_price, upper: this.prices.max_price },
+      city_id: this.initialFilters.city_id || null,
+      direction_id: this.initialFilters.direction_id || null,
     };
 
-    this.initialFilters = { ...this.filters }; // Store initial state
+    this.defaultFilters = { // Store default state for reset
+      type: null,
+      format: null,
+      gender: null,
+      language: null,
+      priceRange: { lower: this.prices.min_price, upper: this.prices.max_price },
+      city_id: null,
+      direction_id: null,
+    };
 
-    this.directions = this.directions.map(d => ({ ...d, checked: false }));
+    // Map directions and set checked state based on initialFilters.direction_id
+    const initialDirectionIds = Array.isArray(this.initialFilters.direction_id)
+      ? this.initialFilters.direction_id
+      : (this.initialFilters.direction_id !== null ? [this.initialFilters.direction_id] : []);
+
+    this.directions = this.directions.map(d => ({
+      ...d,
+      checked: initialDirectionIds.includes(d.direction_id)
+    }));
   }
 
   ngAfterViewInit() {
@@ -96,7 +113,7 @@ export class FilterModalComponent implements OnInit, AfterViewInit {
   }
 
   resetFilters() {
-    this.filters = { ...this.initialFilters }; // Revert to initial state
+    this.filters = { ...this.defaultFilters }; // Revert to default state
     this.directions.forEach(d => d.checked = false); // Reset directions checked state
     this.updateRangeBackground(); // Update range slider background
     this.modalController.dismiss({ reset: true });

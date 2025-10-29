@@ -38,9 +38,6 @@ export class DoctorService {
       if (key === 'direction_id') { // Check for direction_id
         return filters.direction_id !== null;
       }
-      if (key === 'directions') { // Keep this for backward compatibility if needed, but it should be undefined now
-        return filters.directions && filters.directions.length > 0;
-      }
       return false;
     });
 
