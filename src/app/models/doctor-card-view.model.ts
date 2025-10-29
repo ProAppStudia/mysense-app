@@ -17,6 +17,7 @@ export interface DoctorCardView {
   experienceYears?: number | string;
   sessionsCount?: number | string;
   feedbackCount?: number | string;
+  reviewsCountText?: string;
   introMinutes?: number | string;
   priceIndividual?: number | string;
   priceFamily?: number | string;

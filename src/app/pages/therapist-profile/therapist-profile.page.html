@@ -44,9 +44,9 @@
         </span>
       </div>
       <div class="feedback-and-intro">
-        <span *ngIf="doctor.feedbackCount" class="feedback-item">
+        <span *ngIf="doctor?.reviewsCountText" class="feedback-item">
           <ion-icon src="assets/icon/otzyv.svg"></ion-icon>
-          {{ doctor.feedbackCount }} відгуки
+          {{ doctor?.reviewsCountText }}
         </span>
         <span *ngIf="doctor.introMinutes" class="intro-item">
           <ion-icon src="assets/icon/hello.svg"></ion-icon>
