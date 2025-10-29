@@ -33,7 +33,8 @@ export class FilterModalComponent implements OnInit, AfterViewInit {
       language: null, // No default language selected
       priceRange: { lower: this.prices.min_price, upper: this.prices.max_price },
       directions: [] as string[],
-      city_id: null // No default city selected
+      city_id: null, // No default city selected
+      direction_id: null // Initialize direction_id
     };
 
     this.initialFilters = { ...this.filters }; // Store initial state
@@ -68,9 +69,31 @@ export class FilterModalComponent implements OnInit, AfterViewInit {
   }
 
   applyFilters() {
-    this.filters.directions = this.directions
-      .filter(d => d.checked)
-      .map(d => d.name);
+    console.log('FilterModalComponent: this.directions before filtering:', this.directions);
+    const selectedDirections = this.directions
+      .filter(d => d && d.checked) // Ensure d is not null/undefined before accessing d.checked
+      .map(d => d.direction_id); // Map to direction_id
+
+    console.log('FilterModalComponent: selectedDirections after filtering and mapping:', selectedDirections);
+
+    // If the backend expects a single direction_id, send only the first one
+    // Otherwise, if the backend can handle an array, send the whole array.
+    // Based on the PHP snippet, it expects a single ID.
+    this.filters.direction_id = selectedDirections.length > 0 ? selectedDirections[0] : null;
+    delete this.filters.directions; // Explicitly remove the 'directions' array to avoid sending it
+
+    // Convert language code to ID if a language is selected and it's not 'any'
+    if (this.filters.language && this.filters.language !== 'any') {
+      const selectedLanguage = this.languages.find(lang => lang.code === this.filters.language);
+      if (selectedLanguage) {
+        this.filters.language = selectedLanguage.id; // Set to ID
+      } else {
+        // If no matching language found, perhaps set to null to avoid sending invalid data
+        this.filters.language = null;
+      }
+    }
+
+    console.log('FilterModalComponent: Dismissing with filters:', this.filters);
     this.modalController.dismiss(this.filters);
   }
 

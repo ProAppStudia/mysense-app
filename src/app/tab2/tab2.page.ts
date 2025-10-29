@@ -52,7 +52,10 @@ export class Tab2Page implements OnInit {
           this.cities = data.cities;
         }
         if (data.directions) {
-          this.directions = data.directions;
+          console.log('Tab2Page: Raw directions from CityService:', data.directions);
+          // Ensure directions are valid objects with a 'direction_id' property
+          this.directions = data.directions.filter((d: any) => d && d.direction_id !== undefined && d.direction_id !== null);
+          console.log('Tab2Page: Filtered directions for modal:', this.directions);
         }
         if (data.prices) {
           this.prices = data.prices;

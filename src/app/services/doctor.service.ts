@@ -35,8 +35,11 @@ export class DoctorService {
       if (key === 'priceRange') {
         return filters.priceRange.lower !== this.prices.min_price || filters.priceRange.upper !== this.prices.max_price;
       }
-      if (key === 'directions') {
-        return filters.directions.length > 0;
+      if (key === 'direction_id') { // Check for direction_id
+        return filters.direction_id !== null;
+      }
+      if (key === 'directions') { // Keep this for backward compatibility if needed, but it should be undefined now
+        return filters.directions && filters.directions.length > 0;
       }
       return false;
     });
@@ -83,8 +86,8 @@ export class DoctorService {
         body.min_price = filters.priceRange.lower;
         body.max_price = filters.priceRange.upper;
       }
-      if (filters.directions && filters.directions.length > 0) {
-        body.direction_id = filters.directions.map((d: any) => d.id || d.name);
+      if (filters.direction_id && filters.direction_id !== null) {
+        body.direction_id = filters.direction_id;
       }
       if (filters.city_id && filters.city_id !== null) {
         body.city_id = filters.city_id;
