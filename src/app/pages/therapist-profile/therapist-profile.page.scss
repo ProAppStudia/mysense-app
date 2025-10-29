@@ -20,7 +20,31 @@ ion-content {
   
   text-transform: none;
 }
+.info-block {
+  .work-with {
+    max-height: 225px; // Adjust this value to control the truncated height
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+    position: relative;
 
+    &.expanded {
+      max-height: 1000px; // A large value to allow full expansion
+    }
+    
+}
+.show-more-button {
+    background: none;
+    border: none;
+    color: #795bda;
+    font-weight: 500;
+    padding: 10px 0;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: left;
+    display: block;
+    width: 100%;
+  }
+}
 .info-block.about-me {
   .description {
     max-height: 225px; // Adjust this value to control the truncated height
@@ -314,7 +338,7 @@ p.calendar-no {
     }
 
     p {
-      margin: 0 0 5px 0;
+      margin: 0 0 16px 0;
     }
 
     .date {
@@ -387,7 +411,7 @@ p.calendar-no {
       padding-left: 25px;
       position: relative;
       margin-bottom: 8px;
-      font-size: 16px;
+      font-size: 14px;
       color: #423f4d;
 
       &::before {

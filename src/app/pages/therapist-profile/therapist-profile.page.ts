@@ -26,7 +26,7 @@ export class TherapistProfilePage implements OnInit {
   isDescriptionExpanded = false;
   isEducationExpanded = false;
   isReviewsExpanded = false;
-
+  isWorkwithExpanded = false;
   sessionType: 'online' | 'offline' = 'online';
   bookingFor: 'me' | 'pair' | 'child' = 'me';
   
@@ -78,7 +78,9 @@ export class TherapistProfilePage implements OnInit {
   toggleEducation() {
     this.isEducationExpanded = !this.isEducationExpanded;
   }
-
+  toggleWorkwith() {
+    this.isWorkwithExpanded = !this.isWorkwithExpanded;
+  }
   toggleReviews() {
     this.isReviewsExpanded = !this.isReviewsExpanded;
   }

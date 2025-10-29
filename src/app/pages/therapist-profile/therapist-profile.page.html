@@ -83,7 +83,7 @@
         <ul>
           <li *ngFor="let type of doctor.workWithTypes">{{ type }}</li>
         </ul>
-
+        <ng-container *ngIf="doctor.worksWithMilitary || doctor.worksWithLgbt">
         <h4 class="info-title-icon">
           <ion-icon src="assets/icon/star.svg"></ion-icon>
           Працюю з:
@@ -92,7 +92,7 @@
           <li *ngIf="doctor.worksWithMilitary">Військовими</li>
           <li *ngIf="doctor.worksWithLgbt">ЛГБТКІ+</li>
         </ul>
-
+        </ng-container>
         <h4 class="info-title-icon">
           <ion-icon src="assets/icon/lang.svg"></ion-icon>
           Мова спілкування:
@@ -113,6 +113,28 @@
         </button>
       </div>
       </div>
+      <div class="psychologist-card">
+      <div class="info-block">
+         <div class="work-with" [class.expanded]="isWorkwithExpanded">
+        <h4 class="info-title">Я працюю з:</h4>
+        <ul>
+          <li *ngFor="let item of doctor.worksWith">{{ item }}</li>
+        </ul>
+        
+      </div>
+      <button (click)="toggleWorkwith()" class="show-more-button">
+          {{ isWorkwithExpanded ? 'Згорнути' : 'Показати більше' }}
+        </button>
+      </div>
+      </div>
+<div class="psychologist-card">
+      <div class="info-block">
+        <h4 class="info-title">Я не працюю з:</h4>
+        <ul>
+          <li *ngFor="let item of doctor.doNotWorkWith" class="not-work-with">{{ item }}</li>
+        </ul>
+      </div>
+</div>
       <div class="psychologist-card">
       <div class="info-block education-block">
         <h4 class="info-title">Освіта</h4>
@@ -142,22 +164,7 @@
         </swiper-container>
       </div>
 </div>
-    <div class="psychologist-card">
-      <div class="info-block">
-        <h4 class="info-title">Я працюю з:</h4>
-        <ul>
-          <li *ngFor="let item of doctor.worksWith">{{ item }}</li>
-        </ul>
-      </div>
-      </div>
-<div class="psychologist-card">
-      <div class="info-block">
-        <h4 class="info-title">Я не працюю з:</h4>
-        <ul>
-          <li *ngFor="let item of doctor.doNotWorkWith" class="not-work-with">{{ item }}</li>
-        </ul>
-      </div>
-</div>
+    
       <div class="psychologist-card">
       <div class="booking-block" *ngIf="doctor.calendar">
         <h3>Забронювати сесію</h3>
