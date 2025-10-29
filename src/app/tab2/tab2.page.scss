@@ -4,6 +4,30 @@
   flex-direction: column;
   gap: 20px;
 }
+ion-toolbar {
+    --background: var(--ion-color-mysense-light-purple);
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
+}
+ion-searchbar ion-icon {
+    top: 7px !important;
+    width: 1.3125rem;
+    height: 1.3125rem;
+}
+input.searchbar-input.sc-ion-searchbar-md {
+    height: 34px;
+    background: white;
+        border-radius: 8px;
+}
+ion-button.filter-btn {
+    font-size: 14px;
+    background: #ffffff;
+    border-radius: 8px;
+    text-transform: capitalize;
+}
+.filter-btn ion-icon {
+    --font-size: 2px;
+   
+}
 ion-content {
   --background:var(--ion-color-mysense-light-purple); /* White background */
   text-align: center;
@@ -214,7 +238,9 @@ ion-searchbar::part(search-icon) {
 }
 
 :host ::ng-deep .searchbar-input.sc-ion-searchbar-md {
-  padding-inline-end: 0 !important;
+  padding-inline-end: 5px !important;
+  background: white;
+    height: 34px;
 }
 
 .sort-select {

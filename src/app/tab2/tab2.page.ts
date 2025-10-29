@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@a
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonToolbar, IonContent, IonButton, IonIcon, IonButtons, ModalController, IonSearchbar, PopoverController, RefresherCustomEvent } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { filterCircleOutline, swapVerticalOutline, arrowUpOutline, arrowDownOutline, closeOutline } from 'ionicons/icons';
+import { filterCircleOutline, swapVerticalOutline, arrowUpOutline, arrowDownOutline, closeOutline, filterOutline } from 'ionicons/icons';
 import { DoctorService } from '../services/doctor.service';
 import { CityService } from '../services/city.service'; // Import CityService
 import { DoctorCardView } from '../models/doctor-card-view.model';
@@ -41,7 +41,7 @@ export class Tab2Page implements OnInit {
     private modalController: ModalController,
     private popoverController: PopoverController
   ) {
-    addIcons({ filterCircleOutline, swapVerticalOutline, arrowUpOutline, arrowDownOutline, closeOutline });
+    addIcons({ filterCircleOutline, swapVerticalOutline, arrowUpOutline, arrowDownOutline, closeOutline, filterOutline });
   }
 
   ngOnInit() {
@@ -167,7 +167,7 @@ export class Tab2Page implements OnInit {
     if (data) {
       if (data.reset) {
         this.currentFilters = {}; // Reset stored filters
-        this.doctors = [...this.allDoctors];
+        this.loadDoctors({}); // Load all doctors without filters
       } else {
         this.currentFilters = data; // Store the applied filters
         this.applyFilters(data);

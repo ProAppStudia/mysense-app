@@ -2,11 +2,12 @@
   <ion-toolbar>
     <ion-searchbar placeholder="Пошук за ім'ям" (ionInput)="searchDoctors($event)"></ion-searchbar>
     <ion-buttons slot="end">
-      <ion-button (click)="openSortPopover($event)">
+      <ion-button class="filter-btn" (click)="openSortPopover($event)">
         <ion-icon name="swap-vertical-outline"></ion-icon>
+        Ціна
       </ion-button>
-      <ion-button (click)="openFilterModal()">
-        <ion-icon name="filter-circle-outline"></ion-icon>
+      <ion-button class="filter-btn" (click)="openFilterModal()">
+        <ion-icon name="filter-outline"></ion-icon>
         Фільтр
       </ion-button>
     </ion-buttons>
