@@ -11,6 +11,7 @@ export interface DoctorCardView {
   avatarUrl?: string;
   online?: boolean;
   inPerson?: boolean;
+  rawWorkType?: string; // Add rawWorkType to store the original work_type string
   specialization?: string;
   direction_id?: number | string; // Add direction_id
   experienceYears?: number | string;

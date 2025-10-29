@@ -144,6 +144,7 @@ export class DoctorService {
       avatarUrl: data.img,
       online: data.work_type.includes('Онлайн'),
       inPerson: data.work_type.includes('Очно'),
+      rawWorkType: data.work_type, // Populate rawWorkType
       specialization: data.specialisation,
       experienceYears: data.practice_years,
       sessionsCount: data.practice_time_hours,

@@ -45,9 +45,23 @@ export class TherapistProfilePage implements OnInit {
     if (id) {
       this.doctorService.getDoctorProfile(id).subscribe(data => {
         this.doctor = data;
-        if (this.isDoctorCardView(this.doctor) && this.doctor.calendar) {
-          this.weeks = Object.values(this.doctor.calendar.weeks);
-          this.currentWeekIndex = this.weeks.findIndex(w => w.active);
+        if (this.isDoctorCardView(this.doctor)) {
+          // Apply specific logic for therapist-profile page
+          if (this.doctor.rawWorkType === 'both' || this.doctor.rawWorkType === 'online') {
+            this.doctor.online = true;
+          } else {
+            this.doctor.online = false;
+          }
+          if (this.doctor.rawWorkType === 'both' || this.doctor.rawWorkType === 'offline') {
+            this.doctor.inPerson = true;
+          } else {
+            this.doctor.inPerson = false;
+          }
+
+          if (this.doctor.calendar) {
+            this.weeks = Object.values(this.doctor.calendar.weeks);
+            this.currentWeekIndex = this.weeks.findIndex(w => w.active);
+          }
         }
       });
     }
