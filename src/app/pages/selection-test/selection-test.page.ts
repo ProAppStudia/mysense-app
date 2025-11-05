@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
 import { DoctorService } from '../../services/doctor.service';
+import { Router } from '@angular/router';
 
 type View = 'type' | 'info' | 'step' | 'results';
 
@@ -56,7 +57,8 @@ export class SelectionTestPage implements OnInit {
   constructor(
     private api: DoctorService,
     private toast: ToastController,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -185,7 +187,7 @@ export class SelectionTestPage implements OnInit {
     this.loading.set(true);
     try {
       const res = await this.api.postResults(payload).toPromise();
-      this.results = Array.isArray(res?.doctors) ? res.doctors : [];  // <-- лише масив
+      this.results = Array.isArray(res?.doctors) ? res.doctors.map(doc => this.api.transformToDoctorCardView(doc)) : [];  // Map to DoctorCardView
       this.meta = {
         doctor_counts: res?.doctor_counts ?? 0,
         test_token: res?.test_token ?? '',
@@ -253,5 +255,9 @@ export class SelectionTestPage implements OnInit {
     this.meta = { doctor_counts: 0, test_token: '', is_doctor: false };
     this.currentStep.set(0);
     this.view.set('type');
+  }
+
+  goToProfile(doctorId: string | number) {
+    this.router.navigate(['/tabs/therapist-profile', doctorId]);
   }
 }

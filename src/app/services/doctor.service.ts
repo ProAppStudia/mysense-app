@@ -158,7 +158,7 @@ export class DoctorService {
     );
   }
 
-  private transformToDoctorCardView(data: any): DoctorCardView {
+  transformToDoctorCardView(data: any): DoctorCardView {
     let worksWith = [];
     if (Array.isArray(data.work_with)) {
       worksWith = data.work_with;

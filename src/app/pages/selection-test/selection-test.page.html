@@ -163,16 +163,69 @@
         </ion-toolbar>
       </ion-header>
 
-      <ion-list>
-        <ion-item *ngFor="let d of results">
-          <ion-label>
-            <h2>{{ d.fullname || d.name }}</h2>
-            <p *ngIf="d.city">{{ d.city }}</p>
-            <p *ngIf="d.price">Вартість: {{ d.price }} грн</p>
-          </ion-label>
-          <ion-button *ngIf="d.url" [href]="d.url" target="_blank" slot="end">Профіль</ion-button>
-        </ion-item>
-      </ion-list>
+      <ion-content class="ion-padding">
+        <div class="psychologist-cards-container">
+          <ng-container *ngFor="let doctor of results">
+            <div class="psychologist-card">
+              <div class="card-header">
+                <img [src]="doctor.avatarUrl || 'assets/img/IMG_1743.jpeg'" alt="Psychologist" class="psychologist-avatar">
+                <div class="header-info">
+                  <div class="online-offline-status">
+                    <span *ngIf="doctor.online" class="status-item online">
+                      <ion-icon src="assets/icon/onlain.svg"></ion-icon>
+                      Онлайн
+                    </span>
+                    <span *ngIf="doctor.inPerson" class="status-item offline">
+                      <ion-icon src="assets/icon/ochno.svg"></ion-icon>
+                      Очно
+                    </span>
+                  </div>
+                  <p *ngIf="doctor.city" class="location">{{ doctor.city }}</p>
+                  <h3 class="psychologist-name">{{ doctor.fullName }}</h3>
+                  <p *ngIf="doctor.verified" class="verified-specialist">
+                    <ion-icon src="assets/icon/verified.svg"></ion-icon>
+                    Перевірений фахівець
+                  </p>
+                </div>
+              </div>
+              <p *ngIf="doctor.specialization" class="specialization">{{ doctor.specialization }}</p>
+              <div class="stats">
+                <span *ngIf="doctor.experienceYears" class="stat-item">
+                  <ion-icon src="assets/icon/praktika.svg"></ion-icon>
+                  {{ doctor.experienceYears }} років практики
+                </span>
+                <span *ngIf="doctor.sessionsCount" class="stat-item">
+                  <ion-icon src="assets/icon/session.svg"></ion-icon>
+                  {{ doctor.sessionsCount }}+ сесій
+                </span>
+              </div>
+              <div class="feedback-and-intro">
+                <span *ngIf="doctor?.reviewsCountText" class="feedback-item">
+                  <ion-icon src="assets/icon/otzyv.svg"></ion-icon>
+                  {{ doctor?.reviewsCountText }}
+                </span>
+                <span *ngIf="doctor.introMinutes" class="intro-item">
+                  <ion-icon src="assets/icon/hello.svg"></ion-icon>
+                  Знайомство {{ doctor.introMinutes }} хв
+                </span>
+              </div>
+              <div class="pricing-and-profile">
+                <div class="pricing">
+                  <div *ngIf="doctor.priceIndividual" class="price-item">
+                    <p style="font-size: 14px; color: #9895a6; font-weight: 400;">Індивідуальна</p>
+                    <p class="price-value" style="color: #2f264d; font-size: 20px; font-weight: 500;">{{ doctor.priceIndividual }} <span class="currency" style="font-size: 14px; color: #9895a6; font-weight: 400;">грн.</span></p>
+                  </div>
+                  <div *ngIf="doctor.priceFamily" class="price-item">
+                    <p style="font-size: 14px; color: #9895a6; font-weight: 400;">Сімейна</p>
+                    <p class="price-value" style="color: #2f264d; font-size: 20px; font-weight: 500;">{{ doctor.priceFamily }} <span class="currency" style="font-size: 14px; color: #9895a6; font-weight: 400;">грн.</span></p>
+                  </div>
+                </div>
+                <ion-button class="profile-button" (click)="goToProfile(doctor.id)">В профіль</ion-button>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </ion-content>
 
       <ion-footer>
         <ion-toolbar>
