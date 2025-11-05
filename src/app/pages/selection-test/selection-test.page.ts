@@ -182,25 +182,41 @@ export class SelectionTestPage implements OnInit {
   }
 
   buildPayload() {
-    const { type, city_id, child_age, min_price, max_price, ...rest } = this.answers; // Destructure min_price and max_price
-    const requests: any = {};
-    const filter_data: any = {};
-    Object.entries(rest).forEach(([k, v]) => {
-      if (k.startsWith('questions_')) {
-        requests[k] = v;
-      } else {
-        filter_data[k] = v;
-      }
-    });
-    // Add min_price and max_price to filter_data if they exist
-    if (min_price !== undefined) filter_data['min_price'] = min_price;
-    if (max_price !== undefined) filter_data['max_price'] = max_price;
+    const a = this.answers;
 
-    const body: any = { type, filter_data };
-    if (city_id) body.city_id = city_id;
-    if (child_age) body.child_age = child_age;
-    if (Object.keys(requests).length) body.requests = requests;
-    return body;
+    // зібрати питання та фільтри в один об’єкт filter_data
+    const filter_data: any = {
+      type: Number(a.type), // ПЕРЕНЕСТИ сюди!
+    };
+
+    Object.entries(a).forEach(([k, v]) => {
+      if (k === 'type') return;
+      if (k === 'price') return; // якщо колись було одне поле
+
+      // конвертації чисел (де доречно)
+      const mustBeInt = new Set([
+        'city_id','doctor_age','language','gender','client_age','child_age','when','min_price','max_price'
+      ]);
+
+      if (mustBeInt.has(k) && v !== undefined && v !== null && v !== '') {
+        if (Array.isArray(v)) {
+          filter_data[k] = v.map(n => Number(n));
+        } else {
+          filter_data[k] = Number(v);
+        }
+        return;
+      }
+
+      // інші ключі як є (format, specific, questions_10/11/12/13 тощо)
+      filter_data[k] = v;
+    });
+
+    // якщо формат offline — переконайся, що є city_id
+    if (filter_data.format === 'offline' && !filter_data.city_id) {
+      // підстав власну валідацію перед сабмітом
+    }
+
+    return { filter_data };
   }
 
   async showErr() {
