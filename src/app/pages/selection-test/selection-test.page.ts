@@ -191,14 +191,20 @@ export class SelectionTestPage implements OnInit {
 
     Object.entries(a).forEach(([k, v]) => {
       if (k === 'type') return;
-      if (k === 'price') return; // якщо колись було одне поле
+      if (k === 'price') return; // if there was ever a single price field
+      if (k.endsWith('_texts')) return; // Exclude _texts keys
 
-      // конвертації чисел (де доречно)
+      // convert numbers where appropriate
       const mustBeInt = new Set([
-        'city_id','doctor_age','language','gender','client_age','child_age','when','min_price','max_price'
+        'city_id','doctor_age','language','gender','client_age','child_age','when','min_price','max_price',
+        'specific', // specific is an array of numbers
+        'questions_10', 'questions_11', 'questions_12', 'questions_13' // question arrays are numbers
       ]);
 
-      if (mustBeInt.has(k) && v !== undefined && v !== null && v !== '') {
+      // Check if the key starts with 'requests' (e.g., requests10) and treat as questions
+      const isQuestionKey = k.startsWith('requests') && !k.endsWith('_texts');
+
+      if ((mustBeInt.has(k) || isQuestionKey) && v !== undefined && v !== null && v !== '') {
         if (Array.isArray(v)) {
           filter_data[k] = v.map(n => Number(n));
         } else {
@@ -207,7 +213,7 @@ export class SelectionTestPage implements OnInit {
         return;
       }
 
-      // інші ключі як є (format, specific, questions_10/11/12/13 тощо)
+      // other keys as is (format, etc.)
       filter_data[k] = v;
     });
 
