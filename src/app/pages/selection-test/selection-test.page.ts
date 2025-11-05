@@ -44,6 +44,7 @@ type Answers = {
 export class SelectionTestPage implements OnInit {
   view = signal<View>('type');
   currentStep = signal<number>(0);
+  visualStep = signal<number>(0); // New signal for visual pagination
   schema: TestSchemaResponse | null = null;
   answers: Answers = { type: null as any }; // Initialize with type as null, will be set by pickType
   loading = signal<boolean>(false);
@@ -75,6 +76,7 @@ export class SelectionTestPage implements OnInit {
 
   pickType(id: number) {
     this.answers = { type: id };
+    this.visualStep.set(1); // Set visualStep to 1 for the 'info' view
     this.view.set('info');
     console.log('Selected Consultation Type:', id);
     console.log('Current Answers:', this.answers);
@@ -82,6 +84,7 @@ export class SelectionTestPage implements OnInit {
 
   startTest() {
     this.currentStep.set(1);
+    this.visualStep.set(2); // Set visualStep to 2 for the first actual test step
     this.view.set('step');
     console.log('Starting Test. Current Step:', this.currentStep());
     console.log('Current Answers:', this.answers);
@@ -172,13 +175,19 @@ export class SelectionTestPage implements OnInit {
     // пропускаємо неіснуючі кроки для цього type
     while (this.schema?.step?.[s] && !this.schema.step[s][this.answers.type]) { s++; }
     this.currentStep.set(s);
+    this.visualStep.set(this.visualStep() + 1); // Increment visualStep
   }
 
   prevStep() {
     let s = this.currentStep() - 1;
     while (s > 0 && this.schema?.step?.[s] && !this.schema.step[s][this.answers.type]) { s--; }
-    if (s <= 0) { this.view.set('type'); return; } // Go back to type selection if step is 0 or less
+    if (s <= 0) {
+      this.visualStep.set(0); // Reset visualStep to 0 for the 'type' view
+      this.view.set('type');
+      return;
+    }
     this.currentStep.set(s);
+    this.visualStep.set(this.visualStep() - 1); // Decrement visualStep
   }
 
   async submit() {
@@ -254,6 +263,7 @@ export class SelectionTestPage implements OnInit {
     this.results = [];
     this.meta = { doctor_counts: 0, test_token: '', is_doctor: false };
     this.currentStep.set(0);
+    this.visualStep.set(0); // Reset visualStep
     this.view.set('type');
   }
 
