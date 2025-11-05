@@ -5,6 +5,13 @@ import { catchError, map } from 'rxjs/operators';
 import { DoctorCardView } from '../models/doctor-card-view.model';
 import { environment } from '../../environments/environment';
 
+interface PostResultsResponse {
+  doctors?: any[]; // Array of doctors
+  doctor_counts?: number;
+  test_token?: string;
+  is_doctor?: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -26,9 +33,9 @@ export class DoctorService {
     );
   }
 
-  postResults(body: any): Observable<any[]> {
+  postResults(body: any): Observable<PostResultsResponse> {
     const params = new HttpParams().set('action', 'get_test_results');
-    return this.http.post<any[]>(this.apiUrl, body, { params }).pipe(
+    return this.http.post<PostResultsResponse>(this.apiUrl, body, { params }).pipe(
       map(response => {
         console.log('API Response (get_test_results):', response);
         return response;

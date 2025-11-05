@@ -87,7 +87,7 @@
 
         <!-- radio -->
         <ion-radio-group *ngIf="node.type==='radio' && node.options && !('min' in node.options)" [value]="answers[node.step_type]" (ionChange)="setRadio(node.step_type, $event.detail.value)">
-          <ion-item *ngFor="let o of node.options">
+          <ion-item *ngFor="let o of getOptionsAsArray(node)">
             <ion-label>{{ o.text || o.name }}</ion-label>
             <ion-radio slot="end" [value]="(o.id ?? o.value)"></ion-radio>
           </ion-item>
@@ -95,7 +95,7 @@
 
         <!-- checkbox -->
         <ng-container *ngIf="node.type==='checkbox' && node.options && !('min' in node.options)">
-          <ion-item *ngFor="let o of node.options">
+          <ion-item *ngFor="let o of getOptionsAsArray(node)">
             <ion-checkbox slot="start"
               [checked]="(answers[node.step_type] || []).includes(o.id ?? o.value)"
               (ionChange)="toggleCheckbox(node.step_type, (o.id ?? o.value))">

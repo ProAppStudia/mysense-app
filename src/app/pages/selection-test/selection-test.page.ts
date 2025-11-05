@@ -47,6 +47,11 @@ export class SelectionTestPage implements OnInit {
   answers: Answers = { type: null as any }; // Initialize with type as null, will be set by pickType
   loading = signal<boolean>(false);
   results: any[] = [];
+  meta: {
+    doctor_counts: number;
+    test_token: string;
+    is_doctor: boolean;
+  } = { doctor_counts: 0, test_token: '', is_doctor: false };
 
   constructor(
     private api: DoctorService,
@@ -139,6 +144,10 @@ export class SelectionTestPage implements OnInit {
     return (node.options && 'max' in node.options) ? node.options.max : undefined;
   }
 
+  getOptionsAsArray(node: TestStepNode): TestOption[] {
+    return (node.options && !('min' in node.options)) ? (node.options as TestOption[]) : [];
+  }
+
   validate(node: TestStepNode): boolean {
     if (!node) return false;
     const v = this.answers[node.step_type];
@@ -175,10 +184,18 @@ export class SelectionTestPage implements OnInit {
     console.log('Submitting Payload:', payload); // Log the final payload
     this.loading.set(true);
     try {
-      this.results = (await this.api.postResults(payload).toPromise()) ?? [];
+      const res = await this.api.postResults(payload).toPromise();
+      this.results = Array.isArray(res?.doctors) ? res.doctors : [];  // <-- лише масив
+      this.meta = {
+        doctor_counts: res?.doctor_counts ?? 0,
+        test_token: res?.test_token ?? '',
+        is_doctor: !!res?.is_doctor
+      };
       this.view.set('results');
     } catch (e) { this.showErr(); }
-    finally { this.loading.set(false); }
+    finally {
+      this.loading.set(false);
+    }
   }
 
   buildPayload() {
@@ -233,6 +250,7 @@ export class SelectionTestPage implements OnInit {
   resetAll() {
     this.answers = { type: null as any };
     this.results = [];
+    this.meta = { doctor_counts: 0, test_token: '', is_doctor: false };
     this.currentStep.set(0);
     this.view.set('type');
   }
