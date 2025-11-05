@@ -15,6 +15,18 @@ export class DoctorService {
 
   constructor(private http: HttpClient) { }
 
+  // New methods for the test flow
+  loadTestSchema(): Observable<any> {
+    const params = new HttpParams().set('action', 'get_test_questions');
+    return this.http.get<any>(this.apiUrl, { params });
+  }
+
+  postResults(body: any): Observable<any[]> {
+    const params = new HttpParams().set('action', 'get_test_results');
+    return this.http.post<any[]>(this.apiUrl, body, { params });
+  }
+
+  // Original methods (restored)
   getTestQuestions(): Observable<any> {
     const params = new HttpParams().set('action', 'get_test_questions');
     return this.http.get(this.apiUrl, { params }).pipe(
@@ -159,7 +171,7 @@ export class DoctorService {
       worksWith: worksWith,
       doNotWorkWith: data.do_not_work_with || [],
       worksWithMilitary: data.work_with_military === 1 || data.work_with_military === '1' || data.work_with_military === true,
-worksWithLgbt:     data.work_with_lgbt     === 1 || data.work_with_lgbt     === '1' || data.work_with_lgbt     === true,
+      worksWithLgbt:     data.work_with_lgbt     === 1 || data.work_with_lgbt     === '1' || data.work_with_lgbt     === true,
       languages: data.languages || [],
       description: data.description,
       universities: data.universities || [],

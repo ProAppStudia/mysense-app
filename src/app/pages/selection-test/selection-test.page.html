@@ -1,24 +1,13 @@
-
-
-<ion-content class="ion-padding">
-  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-  <div *ngIf="isLoading" class="ion-text-center">
+<ion-content [fullscreen]="true">
+  <div *ngIf="loading()" class="ion-text-center">
     <ion-spinner></ion-spinner>
-    <p>Завантаження питань...</p>
+    <p>Завантаження...</p>
   </div>
 
-  <div *ngIf="error" class="ion-text-center ion-padding">
-    <ion-text color="danger">
-      <h2>Помилка</h2>
-      <p>{{ error }}</p>
-    </ion-text>
-  </div>
+  <ng-container [ngSwitch]="view()">
 
-  <div *ngIf="!isLoading && !error">
-    <!-- Step 0: Consultation Type Selection -->
-    <div *ngIf="currentStep() === 0">
+    <!-- Вибір типу -->
+    <ng-container *ngSwitchCase="'type'">
       <div class="progress-dots">
         <span class="dot" [class.active]="currentStep() >= 0"></span>
         <span class="dot" [class.active]="currentStep() >= 1"></span>
@@ -33,30 +22,30 @@
       </div>
       <h1 class="ion-text-center ion-padding-top">Для кого ви шукаєте підтримку?</h1>
 
-      <div class="selection-card" (click)="selectConsultationType(1)" [class.selected]="selectedConsultationType === 1">
+      <div class="selection-card" (click)="pickType(1)" [class.selected]="answers.type === 1">
           <div class="card-content-wrapper individual">
             <span class="card-text">Для себе</span>
             <img src="assets/icon/Union.svg" alt="Individual" class="card-image">
           </div>
       </div>
 
-      <div class="selection-card" (click)="selectConsultationType(2)" [class.selected]="selectedConsultationType === 2">
+      <div class="selection-card" (click)="pickType(2)" [class.selected]="answers.type === 2">
           <div class="card-content-wrapper family">
             <span class="card-text">Для пари / сім'ї</span>
             <img src="assets/icon/Union2.svg" alt="Family" class="card-image">
           </div>
       </div>
 
-      <div class="selection-card" (click)="selectConsultationType(3)" [class.selected]="selectedConsultationType === 3">
+      <div class="selection-card" (click)="pickType(3)" [class.selected]="answers.type === 3">
           <div class="card-content-wrapper child">
             <span class="card-text">Для дитини / підлітка</span>
             <img src="assets/icon/Union3.svg" alt="Child" class="card-image">
           </div>
       </div>
-    </div>
+    </ng-container>
 
-    <!-- Step 1: Introduction Screen -->
-    <div *ngIf="currentStep() === 1">
+    <!-- Інфо сторінка -->
+    <ng-container *ngSwitchCase="'info'">
       <div class="progress-dots">
         <span class="dot" [class.active]="currentStep() >= 0"></span>
         <span class="dot" [class.active]="currentStep() >= 1"></span>
@@ -80,162 +69,108 @@
 </svg>
           <p>Ми гарантуємо конфіденційність та надійний захист всіх даних, які ви залишаєте на платформі.</p>
         </div>
-        <ion-button expand="block" class="ion-margin-top" (click)="nextStep()">Далі</ion-button>
+        <ion-button expand="block" class="ion-margin-top" (click)="startTest()">Далі</ion-button>
       </div>
-    </div>
+    </ng-container>
 
-    <!-- Step 2: Consultation Format Selection -->
-    <div *ngIf="currentStep() === 2">
-      <div class="progress-dots">
-        <span class="dot" [class.active]="currentStep() >= 0"></span>
-        <span class="dot" [class.active]="currentStep() >= 1"></span>
-        <span class="dot" [class.active]="currentStep() >= 2"></span>
-        <span class="dot" [class.active]="currentStep() >= 3"></span>
-        <span class="dot" [class.active]="currentStep() >= 4"></span>
-        <span class="dot" [class.active]="currentStep() >= 5"></span>
-        <span class="dot" [class.active]="currentStep() >= 6"></span>
-        <span class="dot" [class.active]="currentStep() >= 7"></span>
-        <span class="dot" [class.active]="currentStep() >= 8"></span>
-        <span class="dot" [class.active]="currentStep() >= 9"></span>
-      </div>
-      <h1 class="ion-text-center ion-padding-top">Оберіть бажаний формат консультації</h1>
+    <!-- Крок тесту -->
+    <ng-container *ngSwitchCase="'step'">
+      <ion-header *ngIf="node">
+        <ion-toolbar>
+          <ion-buttons slot="start"><ion-back-button defaultHref="" (click)="prevStep()"></ion-back-button></ion-buttons>
+          <ion-title>{{ node.header }}</ion-title>
+        </ion-toolbar>
+      </ion-header>
 
-      <div class="selection" (click)="selectConsultationFormat('online')" [class.selected]="selectedConsultationFormat === 'online'">
-          <div class="selection-card-content">
-            <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path class="fl-icon" d="M10.5 0C8.52219 0 6.58879 0.58649 4.9443 1.6853C3.29981 2.78412 2.01809 4.3459 1.26121 6.17317C0.504333 8.00043 0.306299 10.0111 0.692152 11.9509C1.078 13.8907 2.03041 15.6725 3.42894 17.0711C4.82746 18.4696 6.60929 19.422 8.5491 19.8079C10.4889 20.1937 12.4996 19.9957 14.3268 19.2388C16.1541 18.4819 17.7159 17.2002 18.8147 15.5557C19.9135 13.9112 20.5 11.9778 20.5 10C20.4971 7.34871 19.4426 4.80684 17.5679 2.9321C15.6932 1.05736 13.1513 0.00286757 10.5 0ZM17.7058 5.83333H15.0217C14.4208 4.44082 13.6297 3.1384 12.6708 1.96333C14.7929 2.54077 16.6019 3.93122 17.7058 5.83333ZM14.25 10C14.2432 10.8484 14.1095 11.6911 13.8533 12.5H7.14667C6.89055 11.6911 6.75685 10.8484 6.75 10C6.75685 9.15155 6.89055 8.3089 7.14667 7.5H13.8533C14.1095 8.3089 14.2432 9.15155 14.25 10ZM7.815 14.1667H13.185C12.4777 15.5631 11.5735 16.8507 10.5 17.99C9.42615 16.851 8.52187 15.5634 7.815 14.1667ZM7.815 5.83333C8.52231 4.43689 9.42654 3.1493 10.5 2.01C11.5739 3.14898 12.4781 4.43663 13.185 5.83333H7.815ZM8.33334 1.96333C7.37305 3.13815 6.58049 4.44058 5.97834 5.83333H3.29417C4.39905 3.93036 6.20972 2.5398 8.33334 1.96333ZM2.55084 7.5H5.41667C5.20064 8.31595 5.08864 9.15595 5.08334 10C5.08864 10.8441 5.20064 11.684 5.41667 12.5H2.55084C2.03862 10.8727 2.03862 9.12731 2.55084 7.5ZM3.29417 14.1667H5.97834C6.58049 15.5594 7.37305 16.8618 8.33334 18.0367C6.20972 17.4602 4.39905 16.0696 3.29417 14.1667ZM12.6708 18.0367C13.6297 16.8616 14.4208 15.5592 15.0217 14.1667H17.7058C16.6019 16.0688 14.7929 17.4592 12.6708 18.0367ZM18.4492 12.5H15.5833C15.7994 11.684 15.9114 10.8441 15.9167 10C15.9114 9.15595 15.7994 8.31595 15.5833 7.5H18.4475C18.9597 9.12731 18.9597 10.8727 18.4475 12.5H18.4492Z" fill="#A498D9"></path>
-</svg>
-            <span class="selection-card-text">Онлайн</span>
-          </div>
-      </div>
+      <ion-list *ngIf="node">
+        <p *ngIf="node.subheader">{{ node.subheader }}</p>
 
-      <div class="selection" (click)="selectConsultationFormat('in-person')" [class.selected]="selectedConsultationFormat === 'in-person'">
-          <div class="selection-card-content">
-           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path class="fl-icon" d="M16.3333 5.33333H15.4158C15.0283 3.43417 13.345 2 11.3333 2H4.66667C2.36917 2 0.5 3.86917 0.5 6.16667V16.8783C0.5 17.54 0.8625 18.145 1.445 18.4567C1.71 18.5992 2.00083 18.6692 2.29083 18.6692C2.6375 18.6692 2.98333 18.5683 3.2825 18.3692L5.74083 16.73C6.31667 18.3425 7.85833 19.5 9.66667 19.5H14.4142L17.7175 21.7025C18.0175 21.9025 18.3625 22.0033 18.7092 22.0033C18.9992 22.0033 19.2892 21.9325 19.555 21.79C20.1383 21.4783 20.5 20.8733 20.5 20.2117V9.5C20.5 7.2025 18.6308 5.33333 16.3333 5.33333ZM2.35833 16.9825C2.3425 16.9925 2.29583 17.0225 2.23167 16.9883C2.16583 16.9533 2.16583 16.8975 2.16583 16.8792V6.16667C2.16583 4.78833 3.2875 3.66667 4.66583 3.66667H11.3325C12.7108 3.66667 13.8325 4.78833 13.8325 6.16667V12C13.8325 13.3783 12.7108 14.5 11.3325 14.5H6.3325C6.06 14.5 5.88167 14.6325 5.86167 14.6458L2.35833 16.9825ZM18.8333 20.2125C18.8333 20.23 18.8333 20.2867 18.7675 20.3217C18.7017 20.3558 18.6567 20.3258 18.6417 20.3158L15.1292 17.9733C14.9925 17.8825 14.8317 17.8333 14.6667 17.8333H9.66667C8.58 17.8333 7.65417 17.1367 7.31 16.1667H11.3333C13.6308 16.1667 15.5 14.2975 15.5 12V7H16.3333C17.7117 7 18.8333 8.12167 18.8333 9.5V20.2125Z" fill="#795BDA"></path>                                        </svg>
-            <span class="selection-card-text">Очно</span>
-          </div>
-      </div>
-
-      <div class="selection" (click)="selectConsultationFormat('any')" [class.selected]="selectedConsultationFormat === 'any'">
-          <div class="selection-card-content">
-           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path class="fl-icon" d="M15 12.75C15.4142 12.75 15.75 12.4142 15.75 12C15.75 11.5858 15.4142 11.25 15 11.25H9C8.58579 11.25 8.25 11.5858 8.25 12C8.25 12.4142 8.58579 12.75 9 12.75H15Z" fill="#795BDA"></path>
-<path class="fl-icon" fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C6.06294 1.25 1.25 6.06294 1.25 12C1.25 17.9371 6.06294 22.75 12 22.75C17.9371 22.75 22.75 17.9371 22.75 12C22.75 6.06294 17.9371 1.25 12 1.25ZM2.75 12C2.75 6.89137 6.89137 2.75 12 2.75C17.1086 2.75 21.25 6.89137 21.25 12C21.25 17.1086 17.1086 21.25 12 21.25C6.89137 21.25 2.75 17.1086 2.75 12Z" fill="#795BDA"></path>
-</svg>
-            <span class="selection-card-text">Неважливо</span>
-          </div>
-      </div>
-
-      <div class="buttons-next-prev ion-padding-top">
-        <button class="btn-prev" fill="clear" (click)="prevStep()">
-         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path class="arrow-icon" d="M15.5 8H1.5M1.5 8L8.5 15M1.5 8L8.5 1" stroke="#795BDA" stroke-width="1.5"></path>
-                        </svg>
-        </button>
-        <button class="btn-next" (click)="nextStep()" [disabled]="selectedConsultationFormat === null">Далі <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M0.5 8H14.5M14.5 8L7.5 15M14.5 8L7.5 1" stroke="white" stroke-width="1.5"></path>
-</svg></button>
-      </div>
-    </div>
-
-    <!-- Step 3: Gender Selection -->
-    <div *ngIf="currentStep() === 3">
-      <div class="progress-dots">
-        <span class="dot" [class.active]="currentStep() >= 0"></span>
-        <span class="dot" [class.active]="currentStep() >= 1"></span>
-        <span class="dot" [class.active]="currentStep() >= 2"></span>
-        <span class="dot" [class.active]="currentStep() >= 3"></span>
-        <span class="dot" [class.active]="currentStep() >= 4"></span>
-        <span class="dot" [class.active]="currentStep() >= 5"></span>
-        <span class="dot" [class.active]="currentStep() >= 6"></span>
-        <span class="dot" [class.active]="currentStep() >= 7"></span>
-        <span class="dot" [class.active]="currentStep() >= 8"></span>
-        <span class="dot" [class.active]="currentStep() >= 9"></span>
-      </div>
-      <h1 class="ion-text-center ion-padding-top">З ким вам буде комфортніше працювати?</h1>
-
-      <ion-card class="selection-card" (click)="selectGender('female')" [class.selected]="selectedGender === 'female'">
-        <ion-card-content>
-          <div class="card-content-wrapper">
-            <ion-icon name="woman-outline" class="card-icon"></ion-icon>
-            <span class="card-text">Жінка</span>
-          </div>
-        </ion-card-content>
-      </ion-card>
-
-      <ion-card class="selection-card" (click)="selectGender('male')" [class.selected]="selectedGender === 'male'">
-        <ion-card-content>
-          <div class="card-content-wrapper">
-            <ion-icon name="man-outline" class="card-icon"></ion-icon>
-            <span class="card-text">Чоловік</span>
-          </div>
-        </ion-card-content>
-      </ion-card>
-
-      <ion-card class="selection-card" (click)="selectGender('any')" [class.selected]="selectedGender === 'any'">
-        <ion-card-content>
-          <div class="card-content-wrapper">
-            <ion-icon name="people-outline" class="card-icon"></ion-icon>
-            <span class="card-text">Неважливо</span>
-          </div>
-        </ion-card-content>
-      </ion-card>
-
-      <div class="ion-text-center ion-padding-top">
-        <ion-button fill="clear" (click)="prevStep()">
-          <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
-        </ion-button>
-        <ion-button (click)="nextStep()" [disabled]="selectedGender === null">Далі <ion-icon slot="end" name="arrow-forward-outline"></ion-icon></ion-button>
-      </div>
-    </div>
-
-    <!-- Dynamic Questions -->
-    <div *ngIf="currentStep() > 3 && currentQuestions">
-      <div class="progress-dots">
-        <ng-container *ngFor="let dot of [].constructor(10); let i = index">
-          <span class="dot" [class.active]="i < currentStep()"></span>
-        </ng-container>
-      </div>
-      <div *ngFor="let question of currentQuestions; let i = index">
-        <h2 class="ion-text-center ion-padding-top">{{ question.question }}</h2>
-        <ion-list *ngIf="question.type === 'radio'">
-          <ion-radio-group [value]="answers[question.id]" (ionChange)="answerQuestion(question.id, $event.detail.value)">
-            <ion-item *ngFor="let option of question.options">
-              <ion-radio [value]="option.value">{{ option.text }}</ion-radio>
-            </ion-item>
-          </ion-radio-group>
-        </ion-list>
-        <ion-list *ngIf="question.type === 'checkbox'">
-          <ion-item *ngFor="let option of question.options">
-            <ion-checkbox [checked]="answers[question.id] && answers[question.id].includes(option.value)"
-                          (ionChange)="onCheckboxChange(question.id, option.value, $event.detail.checked)">
-              {{ option.text }}
-            </ion-checkbox>
+        <!-- radio -->
+        <ion-radio-group *ngIf="node.type==='radio' && node.options && !('min' in node.options)" [value]="answers[node.step_type]" (ionChange)="setRadio(node.step_type, $event.detail.value)">
+          <ion-item *ngFor="let o of node.options">
+            <ion-label>{{ o.text || o.name }}</ion-label>
+            <ion-radio slot="end" [value]="(o.id ?? o.value)"></ion-radio>
           </ion-item>
-        </ion-list>
-        <ion-item *ngIf="question.type === 'text'">
-          <ion-input [value]="answers[question.id]" (ionChange)="answerQuestion(question.id, $event.detail.value)" placeholder="Ваша відповідь"></ion-input>
-        </ion-item>
-      </div>
-      <div class="ion-text-center ion-padding-top">
-        <ion-button fill="clear" (click)="prevStep()">
-          <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
-        </ion-button>
-        <ion-button (click)="nextStep()">Далі <ion-icon slot="end" name="arrow-forward-outline"></ion-icon></ion-button>
-      </div>
-    </div>
+        </ion-radio-group>
 
-    <!-- End of Test / Submit -->
-    <div *ngIf="currentStep() > 3 && !currentQuestions">
-      <h1 class="ion-text-center ion-padding-top">Тест завершено!</h1>
-      <p class="ion-text-center">Натисніть "Завершити", щоб знайти відповідних психологів.</p>
-      <ion-button expand="block" class="ion-margin-top" (click)="submitTest()">Завершити</ion-button>
-      <div class="ion-text-center ion-padding-top">
-        <ion-button fill="clear" (click)="prevStep()">
-          <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
-        </ion-button>
-      </div>
-    </div>
-  </div>
+        <!-- checkbox -->
+        <ng-container *ngIf="node.type==='checkbox' && node.options && !('min' in node.options)">
+          <ion-item *ngFor="let o of node.options">
+            <ion-checkbox slot="start"
+              [checked]="(answers[node.step_type] || []).includes(o.id ?? o.value)"
+              (ionChange)="toggleCheckbox(node.step_type, (o.id ?? o.value))">
+            </ion-checkbox>
+            <ion-label>{{ o.text || o.name }}</ion-label>
+          </ion-item>
+        </ng-container>
+
+        <!-- range -->
+        <ng-container *ngIf="node.type==='range' && node.options && ('min' in node.options)">
+          <ion-item>
+            <ion-range [min]="getRangeMin(node)" [max]="getRangeMax(node)"
+                       [value]="answers[node.step_type]"
+                       (ionChange)="setRange(node.step_type, $event.detail.value)"></ion-range>
+          </ion-item>
+        </ng-container>
+
+        <!-- text -->
+        <ng-container *ngIf="node.type==='text'">
+          <ion-item>
+            <ion-input placeholder="Введіть відповідь" [value]="answers[node.step_type]"
+                       (ionInput)="setText(node.step_type, $any($event.target).value)"></ion-input>
+          </ion-item>
+        </ng-container>
+
+        <!-- city select для offline -->
+        <ng-container *ngIf="node.step_type==='format' && answers['format']==='offline' && node.cities">
+          <ion-item>
+            <ion-select placeholder="Оберіть місто" [value]="answers.city_id" (ionChange)="setCity($event.detail.value)">
+              <ion-select-option *ngFor="let c of node.cities" [value]="c.city_id">{{ c.name }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ng-container>
+      </ion-list>
+
+      <ion-footer>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="prevStep()">Назад</ion-button>
+          </ion-buttons>
+          <ion-buttons slot="end" *ngIf="node && !node.is_final">
+            <ion-button [disabled]="!validate(node)" (click)="nextStep()">Далі</ion-button>
+          </ion-buttons>
+          <ion-buttons slot="end" *ngIf="node && node.is_final">
+            <ion-button color="primary" [disabled]="!validate(node)" (click)="submit()">Отримати результат</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-container>
+
+    <!-- Результати -->
+    <ng-container *ngSwitchCase="'results'">
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Підібрані психологи</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-list>
+        <ion-item *ngFor="let d of results">
+          <ion-label>
+            <h2>{{ d.fullname || d.name }}</h2>
+            <p *ngIf="d.city">{{ d.city }}</p>
+            <p *ngIf="d.price">Вартість: {{ d.price }} грн</p>
+          </ion-label>
+          <ion-button *ngIf="d.url" [href]="d.url" target="_blank" slot="end">Профіль</ion-button>
+        </ion-item>
+      </ion-list>
+
+      <ion-footer>
+        <ion-toolbar>
+          <ion-button expand="block" (click)="resetAll()">Спробувати ще раз</ion-button>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-container>
+
+  </ng-container>
 </ion-content>

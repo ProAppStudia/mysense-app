@@ -1,154 +1,176 @@
-import { Component, OnInit, signal, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonicModule, RefresherCustomEvent } from '@ionic/angular';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
 import { DoctorService } from '../../services/doctor.service';
-import { Router } from '@angular/router';
 
-interface TestOption {
-  value: any;
-  text: string;
+type View = 'type' | 'info' | 'step' | 'results';
+
+interface TestOption { id?: string | number; value?: any; text?: string; name?: string; }
+interface TestStepNode {
+  header?: string;
+  subheader?: string;
+  required?: 0 | 1;
+  type: 'radio' | 'checkbox' | 'range' | 'text';
+  step_type: string;          // ключ у answers
+  options?: TestOption[] | {min:number; max:number};
+  cities?: Array<{city_id:number; name:string}>; // якщо є
+  next_step_need_id?: string; // умовні переходи
+  fill_field_request?: boolean;
+  is_final?: boolean;
+}
+type StepsTree = Record<number, Record<number, TestStepNode>>; // step[stepNumber][consultationType]
+
+interface TestSchemaResponse {
+  types: Record<number, string>;
+  step: StepsTree;
 }
 
-interface TestQuestion {
-  id: string;
-  question: string;
-  type: 'radio' | 'checkbox' | 'text';
-  options?: TestOption[];
-}
-
-interface TestStep {
-  [consultationType: number]: {
-    [questionId: string]: TestQuestion;
-  };
-}
-
-interface TestData {
-  step: {
-    [stepNumber: string]: TestStep;
-  };
-}
+type Answers = {
+  type: number;                 // 1|2|3
+  city_id?: number;             // коли формат = offline
+  child_age?: number;           // для типу 3
+  [step_type: string]: any;     // значення кожного кроку
+};
 
 @Component({
   selector: 'app-selection-test',
-  templateUrl: './selection-test.page.html',
-  styleUrls: ['./selection-test.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule],
+  templateUrl: './selection-test.page.html',
+  styleUrls: ['./selection-test.page.scss']
 })
 export class SelectionTestPage implements OnInit {
-  currentStep = signal(0);
-  testQuestions: TestData | null = null;
-  selectedConsultationType: number | null = null; // 1: individual, 2: family, 3: child
-  selectedConsultationFormat: string | null = null; // 'online', 'in-person', 'any'
-  selectedGender: string | null = null; // 'female', 'male', 'any'
-  answers: { [key: string]: any } = {};
-  isLoading: boolean = true;
-  error: string | null = null;
+  view = signal<View>('type');
+  currentStep = signal<number>(0);
+  schema: TestSchemaResponse | null = null;
+  answers: Answers = { type: null as any }; // Initialize with type as null, will be set by pickType
+  loading = signal<boolean>(false);
+  results: any[] = [];
 
-  constructor(private doctorService: DoctorService, private router: Router) { }
+  constructor(
+    private api: DoctorService,
+    private toast: ToastController,
+    private loadingCtrl: LoadingController
+  ) {}
 
-  ngOnInit() {
-    this.loadTestQuestions();
+  async ngOnInit() {
+    await this.loadSchema();
   }
 
-  loadTestQuestions() {
-    this.doctorService.getTestQuestions().subscribe({
-      next: (data) => {
-        if (data && data.step) {
-          this.testQuestions = data;
-          this.isLoading = false;
-        } else {
-          this.error = 'Failed to load test questions.';
-          this.isLoading = false;
-        }
-      },
-      error: (err) => {
-        this.error = 'Error fetching test questions.';
-        this.isLoading = false;
-        console.error(err);
-      }
-    });
+  async loadSchema() {
+    this.loading.set(true);
+    try {
+      this.schema = await this.api.loadTestSchema().toPromise();
+    } catch (e) { this.showErr(); }
+    finally { this.loading.set(false); }
   }
 
-  selectConsultationType(type: number) {
-    this.selectedConsultationType = type;
-    this.currentStep.update(value => value + 1);
+  pickType(id: number) {
+    this.answers = { type: id };
+    this.view.set('info');
   }
 
-  selectConsultationFormat(format: string) {
-    this.selectedConsultationFormat = format;
+  startTest() {
+    this.currentStep.set(1);
+    this.view.set('step');
   }
 
-  selectGender(gender: string) {
-    this.selectedGender = gender;
-    this.currentStep.update(value => value + 1);
+  get node(): TestStepNode | null {
+    const step = this.currentStep();
+    const type = this.answers.type;
+    return this.schema?.step?.[step]?.[type] ?? null;
   }
 
-  answerQuestion(questionId: string, answer: any) {
-    this.answers[questionId] = answer;
-    this.currentStep.update(value => value + 1);
+  setRadio(stepType: string, value: any) { this.answers[stepType] = value; }
+  toggleCheckbox(stepType: string, value: any) {
+    const arr = this.answers[stepType] ?? [];
+    const idx = arr.indexOf(value);
+    if (idx === -1) arr.push(value); else arr.splice(idx, 1);
+    this.answers[stepType] = [...arr];
+  }
+
+  setRange(stepType: string, value: number | { lower: number, upper: number }) {
+    this.answers[stepType] = typeof value === 'number' ? value : value.upper; // Assuming single value for range, taking upper if dual
+  }
+  setText(stepType: string, value: string) { this.answers[stepType] = value; }
+
+  setCity(value: number) { this.answers.city_id = value; }
+  setChildAge(value: number) { this.answers.child_age = value; }
+
+  getRangeMin(node: TestStepNode): number | undefined {
+    return (node.options && 'min' in node.options) ? node.options.min : undefined;
+  }
+
+  getRangeMax(node: TestStepNode): number | undefined {
+    return (node.options && 'max' in node.options) ? node.options.max : undefined;
+  }
+
+  validate(node: TestStepNode): boolean {
+    if (!node) return false;
+    const v = this.answers[node.step_type];
+    if (node.required) {
+      if (node.type === 'checkbox') return Array.isArray(v) && v.length > 0;
+      if (node.type === 'text') return typeof v === 'string' && v.trim().length > 0;
+      return v !== undefined && v !== null && v !== '';
+    }
+    // додаткова перевірка для offline
+    if (node.step_type === 'format' && this.answers['format'] === 'offline') {
+      return !!this.answers.city_id;
+    }
+    return true;
   }
 
   nextStep() {
-    this.currentStep.update(value => value + 1);
-    // Logic to determine if test is complete and navigate to results
-    // For now, just incrementing step
-    if (this.currentStep() > 3 && this.testQuestions && this.selectedConsultationType !== null) {
-      const stepKey = (this.currentStep() - 3).toString();
-      const currentTypeQuestions = this.testQuestions.step[stepKey]?.[this.selectedConsultationType];
-
-      if (!currentTypeQuestions || Object.keys(currentTypeQuestions).length === 0) {
-        this.submitTest();
-      }
-    } else if (this.currentStep() > 3 && (!this.testQuestions || this.selectedConsultationType === null)) {
-      this.submitTest();
-    }
+    // якщо фінальний
+    if (this.node?.is_final) { this.submit(); return; }
+    let s = this.currentStep() + 1;
+    // пропускаємо неіснуючі кроки для цього type
+    while (this.schema?.step?.[s] && !this.schema.step[s][this.answers.type]) { s++; }
+    this.currentStep.set(s);
   }
 
   prevStep() {
-    this.currentStep.update(value => value - 1);
+    let s = this.currentStep() - 1;
+    while (s > 0 && this.schema?.step?.[s] && !this.schema.step[s][this.answers.type]) { s--; }
+    if (s <= 0) { this.view.set('type'); return; } // Go back to type selection if step is 0 or less
+    this.currentStep.set(s);
   }
 
-  submitTest() {
-    // Here you would gather all answers and selected criteria
-    // and make an API call to get matching psychologists
-    console.log('Test submitted!', {
-      consultationType: this.selectedConsultationType,
-      consultationFormat: this.selectedConsultationFormat,
-      gender: this.selectedGender,
-      answers: this.answers
+  async submit() {
+    const payload = this.buildPayload();
+    this.loading.set(true);
+    try {
+      this.results = (await this.api.postResults(payload).toPromise()) ?? [];
+      this.view.set('results');
+    } catch (e) { this.showErr(); }
+    finally { this.loading.set(false); }
+  }
+
+  buildPayload() {
+    const { type, city_id, child_age, ...rest } = this.answers;
+    const requests: any = {};
+    const filter_data: any = {};
+    Object.entries(rest).forEach(([k, v]) => {
+      if (k.startsWith('questions_')) requests[k] = v;
+      else filter_data[k] = v;
     });
-    // Navigate to a results page or display results directly
-    this.router.navigate(['/tabs/tab1']); // Placeholder navigation
+    const body: any = { type, filter_data };
+    if (city_id) body.city_id = city_id;
+    if (child_age) body.child_age = child_age;
+    if (Object.keys(requests).length) body.requests = requests;
+    return body;
   }
 
-  onCheckboxChange(questionId: string, optionValue: any, isChecked: boolean) {
-    if (!this.answers[questionId]) {
-      this.answers[questionId] = [];
-    }
-    if (isChecked) {
-      this.answers[questionId].push(optionValue);
-    } else {
-      this.answers[questionId] = this.answers[questionId].filter((value: any) => value !== optionValue);
-    }
+  async showErr() {
+    const t = await this.toast.create({ message: 'Сталася помилка, спробуйте пізніше', duration: 2500, color: 'danger' });
+    t.present();
   }
 
-  get currentQuestions() {
-    if (this.currentStep() <= 3 || !this.testQuestions || this.selectedConsultationType === null) {
-      return null;
-    }
-    const stepKey = (this.currentStep() - 3).toString();
-    const questionsForType = this.testQuestions.step[stepKey]?.[this.selectedConsultationType];
-    if (questionsForType) {
-      return Object.values(questionsForType);
-    }
-    return null;
-  }
-
-  handleRefresh(event: RefresherCustomEvent) {
-    window.location.reload(); // Perform a full page reload
-    event.detail.complete(); // Complete the refresher animation
+  resetAll() {
+    this.answers = { type: null as any };
+    this.results = [];
+    this.currentStep.set(0);
+    this.view.set('type');
   }
 }
