@@ -69,11 +69,15 @@ export class SelectionTestPage implements OnInit {
   pickType(id: number) {
     this.answers = { type: id };
     this.view.set('info');
+    console.log('Selected Consultation Type:', id);
+    console.log('Current Answers:', this.answers);
   }
 
   startTest() {
     this.currentStep.set(1);
     this.view.set('step');
+    console.log('Starting Test. Current Step:', this.currentStep());
+    console.log('Current Answers:', this.answers);
   }
 
   get node(): TestStepNode | null {
@@ -82,21 +86,41 @@ export class SelectionTestPage implements OnInit {
     return this.schema?.step?.[step]?.[type] ?? null;
   }
 
-  setRadio(stepType: string, value: any) { this.answers[stepType] = value; }
+  setRadio(stepType: string, value: any) {
+    this.answers[stepType] = value;
+    console.log(`Answered ${stepType}:`, value);
+    console.log('Current Answers:', this.answers);
+  }
   toggleCheckbox(stepType: string, value: any) {
     const arr = this.answers[stepType] ?? [];
     const idx = arr.indexOf(value);
     if (idx === -1) arr.push(value); else arr.splice(idx, 1);
     this.answers[stepType] = [...arr];
+    console.log(`Toggled ${stepType}:`, value);
+    console.log('Current Answers:', this.answers);
   }
 
   setRange(stepType: string, value: number | { lower: number, upper: number }) {
     this.answers[stepType] = typeof value === 'number' ? value : value.upper; // Assuming single value for range, taking upper if dual
+    console.log(`Set Range for ${stepType}:`, this.answers[stepType]);
+    console.log('Current Answers:', this.answers);
   }
-  setText(stepType: string, value: string) { this.answers[stepType] = value; }
+  setText(stepType: string, value: string) {
+    this.answers[stepType] = value;
+    console.log(`Set Text for ${stepType}:`, value);
+    console.log('Current Answers:', this.answers);
+  }
 
-  setCity(value: number) { this.answers.city_id = value; }
-  setChildAge(value: number) { this.answers.child_age = value; }
+  setCity(value: number) {
+    this.answers.city_id = value;
+    console.log('Selected City ID:', value);
+    console.log('Current Answers:', this.answers);
+  }
+  setChildAge(value: number) {
+    this.answers.child_age = value;
+    console.log('Set Child Age:', value);
+    console.log('Current Answers:', this.answers);
+  }
 
   getRangeMin(node: TestStepNode): number | undefined {
     return (node.options && 'min' in node.options) ? node.options.min : undefined;
