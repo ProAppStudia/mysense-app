@@ -1,4 +1,6 @@
 <ion-content [fullscreen]="true">
+  <div class="test-container">
+    
   <div *ngIf="loading()" class="ion-text-center">
     <ion-spinner></ion-spinner>
     <p>Завантаження...</p>
@@ -8,19 +10,19 @@
 
     <!-- Вибір типу -->
     <ng-container *ngSwitchCase="'type'">
-      <div class="progress-dots">
-        <span class="dot" [class.active]="visualStep() >= 0"></span>
-        <span class="dot" [class.active]="visualStep() >= 1"></span>
-        <span class="dot" [class.active]="visualStep() >= 2"></span>
-        <span class="dot" [class.active]="visualStep() >= 3"></span>
-        <span class="dot" [class.active]="visualStep() >= 4"></span>
-        <span class="dot" [class.active]="visualStep() >= 5"></span>
-        <span class="dot" [class.active]="visualStep() >= 6"></span>
-        <span class="dot" [class.active]="visualStep() >= 7"></span>
-        <span class="dot" [class.active]="visualStep() >= 8"></span>
-        <span class="dot" [class.active]="visualStep() >= 9"></span>
+      <div class="progress-bars">
+        <span class="bar" [class.active]="visualStep() >= 0"></span>
+        <span class="bar" [class.active]="visualStep() >= 1"></span>
+        <span class="bar" [class.active]="visualStep() >= 2"></span>
+        <span class="bar" [class.active]="visualStep() >= 3"></span>
+        <span class="bar" [class.active]="visualStep() >= 4"></span>
+        <span class="bar" [class.active]="visualStep() >= 5"></span>
+        <span class="bar" [class.active]="visualStep() >= 6"></span>
+        <span class="bar" [class.active]="visualStep() >= 7"></span>
+        <span class="bar" [class.active]="visualStep() >= 8"></span>
+        <span class="bar" [class.active]="visualStep() >= 9"></span>
       </div>
-      <h1 class="ion-text-center ion-padding-top">Для кого ви шукаєте підтримку?</h1>
+      <div class="test-heading ion-text-center ion-padding-top">Для кого ви шукаєте підтримку?</div>
 
       <div class="selection-card" (click)="pickType(1)" [class.selected]="answers.type === 1">
           <div class="card-content-wrapper individual">
@@ -46,17 +48,17 @@
 
     <!-- Інфо сторінка -->
     <ng-container *ngSwitchCase="'info'">
-      <div class="progress-dots">
-        <span class="dot" [class.active]="visualStep() >= 0"></span>
-        <span class="dot" [class.active]="visualStep() >= 1"></span>
-        <span class="dot" [class.active]="visualStep() >= 2"></span>
-        <span class="dot" [class.active]="visualStep() >= 3"></span>
-        <span class="dot" [class.active]="visualStep() >= 4"></span>
-        <span class="dot" [class.active]="visualStep() >= 5"></span>
-        <span class="dot" [class.active]="visualStep() >= 6"></span>
-        <span class="dot" [class.active]="visualStep() >= 7"></span>
-        <span class="dot" [class.active]="visualStep() >= 8"></span>
-        <span class="dot" [class.active]="visualStep() >= 9"></span>
+      <div class="progress-bars">
+        <span class="bar" [class.active]="visualStep() >= 0"></span>
+        <span class="bar" [class.active]="visualStep() >= 1"></span>
+        <span class="bar" [class.active]="visualStep() >= 2"></span>
+        <span class="bar" [class.active]="visualStep() >= 3"></span>
+        <span class="bar" [class.active]="visualStep() >= 4"></span>
+        <span class="bar" [class.active]="visualStep() >= 5"></span>
+        <span class="bar" [class.active]="visualStep() >= 6"></span>
+        <span class="bar" [class.active]="visualStep() >= 7"></span>
+        <span class="bar" [class.active]="visualStep() >= 8"></span>
+        <span class="bar" [class.active]="visualStep() >= 9"></span>
       </div>
       <div class="ion-text-center ion-padding-top">
         <img src="assets/icon/Frame1428.svg" alt="Intro" class="intro-image">
@@ -80,84 +82,95 @@
 
     <!-- Крок тесту -->
     <ng-container *ngSwitchCase="'step'">
-      <ion-header *ngIf="node">
-        <ion-toolbar>
-          <ion-buttons slot="start"><ion-back-button defaultHref="" (click)="prevStep()"></ion-back-button></ion-buttons>
-          <ion-title>{{ node.header }}</ion-title>
-        </ion-toolbar>
-      </ion-header>
+      <div class="progress-bars">
+        <span class="bar" [class.active]="visualStep() >= 0"></span>
+        <span class="bar" [class.active]="visualStep() >= 1"></span>
+        <span class="bar" [class.active]="visualStep() >= 2"></span>
+        <span class="bar" [class.active]="visualStep() >= 3"></span>
+        <span class="bar" [class.active]="visualStep() >= 4"></span>
+        <span class="bar" [class.active]="visualStep() >= 5"></span>
+        <span class="bar" [class.active]="visualStep() >= 6"></span>
+        <span class="bar" [class.active]="visualStep() >= 7"></span>
+        <span class="bar" [class.active]="visualStep() >= 8"></span>
+        <span class="bar" [class.active]="visualStep() >= 9"></span>
+      </div>
+      <div class="ion-text-center ion-padding-top">
+        <h1 *ngIf="node">{{ node.header }}</h1>
+        <p *ngIf="node && node.subheader">{{ node.subheader }}</p>
+      </div>
 
-      <ion-list *ngIf="node">
-        <p *ngIf="node.subheader">{{ node.subheader }}</p>
-
+      <div class="question-container" *ngIf="node">
         <!-- radio -->
-        <ion-radio-group *ngIf="node.type==='radio' && node.options && !('min' in node.options)" [value]="answers[node.step_type]" (ionChange)="setRadio(node.step_type, $event.detail.value)">
-          <ion-item *ngFor="let o of getOptionsAsArray(node)">
-            <ion-label>{{ o.text || o.name }}</ion-label>
-            <ion-radio slot="end" [value]="(o.id ?? o.value)"></ion-radio>
-          </ion-item>
-        </ion-radio-group>
+        <div *ngIf="node.type==='radio' && node.options && !('min' in node.options)" class="radio-group">
+          <div class="custom-item" *ngFor="let o of getOptionsAsArray(node); let i = index" (click)="setRadio(node.step_type, (o.id ?? o.value))" [class.selected]="answers[node.step_type] === (o.id ?? o.value)">
+            <ion-icon [name]="getIconForOption(node.step_type, i)"></ion-icon>
+            <label class="custom-label">{{ o.text || o.name }}</label>
+          </div>
+        </div>
 
         <!-- checkbox -->
         <ng-container *ngIf="node.type==='checkbox' && node.options && !('min' in node.options)">
-          <ion-item *ngFor="let o of getOptionsAsArray(node)">
-            <ion-checkbox slot="start"
-              [checked]="(answers[node.step_type] || []).includes(o.id ?? o.value)"
-              (ionChange)="toggleCheckbox(node.step_type, (o.id ?? o.value))">
-            </ion-checkbox>
-            <ion-label>{{ o.text || o.name }}</ion-label>
-          </ion-item>
+          <div class="custom-item" *ngFor="let o of getOptionsAsArray(node); let i = index" (click)="toggleCheckbox(node.step_type, (o.id ?? o.value))" [class.selected]="(answers[node.step_type] || []).includes(o.id ?? o.value)">
+            <ion-icon [name]="getIconForOption(node.step_type, i)"></ion-icon>
+            <label class="custom-label">{{ o.text || o.name }}</label>
+          </div>
         </ng-container>
 
         <!-- range -->
         <ng-container *ngIf="node.type==='range' && node.options && ('min' in node.options)">
-          <ion-item>
-            <ion-range *ngIf="node.step_type === 'price'"
-                       [min]="getRangeMin(node)" [max]="getRangeMax(node)"
-                       [value]="{lower: answers['min_price'] || getRangeMin(node), upper: answers['max_price'] || getRangeMax(node)}"
-                       (ionChange)="setRange(node.step_type, $event.detail.value)"
-                       dualKnobs="true">
-              <ion-label slot="start">{{ answers['min_price'] || getRangeMin(node) }}</ion-label>
-              <ion-label slot="end">{{ answers['max_price'] || getRangeMax(node) }}</ion-label>
-            </ion-range>
-            <ion-range *ngIf="node.step_type !== 'price'"
-                       [min]="getRangeMin(node)" [max]="getRangeMax(node)"
-                       [value]="answers[node.step_type]"
-                       (ionChange)="setRange(node.step_type, $event.detail.value)"></ion-range>
-          </ion-item>
+          <div class="custom-range-item">
+            <div *ngIf="node.step_type === 'price'" class="custom-range-price">
+              <div class="range-labels">
+                <span>{{ answers['min_price'] || getRangeMin(node) }}</span>
+                <span>{{ answers['max_price'] || getRangeMax(node) }}</span>
+              </div>
+              <input type="range"
+                     [min]="getRangeMin(node)" [max]="getRangeMax(node)"
+                     [value]="answers['min_price'] || getRangeMin(node)"
+                     (input)="setRange(node.step_type, {lower: $any($event.target).value, upper: answers['max_price'] || getRangeMax(node)})"
+                     class="custom-range-input">
+              <input type="range"
+                     [min]="getRangeMin(node)" [max]="getRangeMax(node)"
+                     [value]="answers['max_price'] || getRangeMax(node)"
+                     (input)="setRange(node.step_type, {lower: answers['min_price'] || getRangeMin(node), upper: $any($event.target).value})"
+                     class="custom-range-input">
+            </div>
+            <div *ngIf="node.step_type !== 'price'" class="custom-range-single">
+              <input type="range"
+                     [min]="getRangeMin(node)" [max]="getRangeMax(node)"
+                     [value]="answers[node.step_type]"
+                     (input)="setRange(node.step_type, $any($event.target).value)"
+                     class="custom-range-input">
+            </div>
+          </div>
         </ng-container>
 
         <!-- text -->
         <ng-container *ngIf="node.type==='text'">
-          <ion-item>
-            <ion-input placeholder="Введіть відповідь" [value]="answers[node.step_type]"
-                       (ionInput)="setText(node.step_type, $any($event.target).value)"></ion-input>
-          </ion-item>
+          <div class="custom-text-input">
+            <input type="text" placeholder="Введіть відповідь" [value]="answers[node.step_type]"
+                   (input)="setText(node.step_type, $any($event.target).value)">
+          </div>
         </ng-container>
 
         <!-- city select для offline -->
         <ng-container *ngIf="node.step_type==='format' && answers['format']==='offline' && node.cities">
-          <ion-item>
-            <ion-select placeholder="Оберіть місто" [value]="answers.city_id" (ionChange)="setCity($event.detail.value)">
-              <ion-select-option *ngFor="let c of node.cities" [value]="c.city_id">{{ c.name }}</ion-select-option>
-            </ion-select>
-          </ion-item>
+          <div class="custom-select">
+            <select [value]="answers.city_id" (change)="setCity($any($event.target).value)">
+              <option value="" disabled selected>Оберіть місто</option>
+              <option *ngFor="let c of node.cities" [value]="c.city_id">{{ c.name }}</option>
+            </select>
+          </div>
         </ng-container>
-      </ion-list>
+      </div>
 
-      <ion-footer>
-        <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-button (click)="prevStep()">Назад</ion-button>
-          </ion-buttons>
-          <ion-buttons slot="end" *ngIf="node && !node.is_final">
-            <ion-button [disabled]="!validate(node)" (click)="nextStep()">Далі</ion-button>
-          </ion-buttons>
-          <ion-buttons slot="end" *ngIf="node && node.is_final">
-            <ion-button color="primary" [disabled]="!validate(node)" (click)="submit()">Отримати результат</ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-footer>
+      <div class="ion-padding-horizontal ion-margin-top button-group">
+        <ion-button fill="outline" (click)="prevStep()" class="back-button">
+          <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-button expand="block" *ngIf="node && !node.is_final" [disabled]="!validate(node)" (click)="nextStep()" class="next-button">Далі</ion-button>
+        <ion-button expand="block" *ngIf="node && node.is_final" color="primary" [disabled]="!validate(node)" (click)="submit()" class="next-button">Отримати результат</ion-button>
+      </div>
     </ng-container>
 
     <!-- Результати -->
@@ -239,5 +252,5 @@
       </ion-footer>
     </ng-container>
 
-  </ng-container>
+  </ng-container></div>
 </ion-content>

@@ -270,4 +270,16 @@ export class SelectionTestPage implements OnInit {
   goToProfile(doctorId: string | number) {
     this.router.navigate(['/tabs/therapist-profile', doctorId]);
   }
+
+  getIconForOption(stepType: string, index: number): string {
+    if (stepType === 'format') {
+      switch (index) {
+        case 0: return 'globe-outline'; // For "Онлайн"
+        case 1: return 'chatbubble-outline'; // For "Очно"
+        case 2: return 'remove-outline'; // For "Неважливо"
+        default: return '';
+      }
+    }
+    return '';
+  }
 }
