@@ -11,6 +11,15 @@ ion-content {
     max-width: 300px;
     margin: 0 auto;
 }
+.test-heading-h2 {
+    font-size: 21px;
+    
+}
+p.intro-p-left {
+    text-align: left;
+    color: #1c1c1c;
+    margin-bottom: 0;
+}
 /* Styles for the initial 'type' and 'info' screens' pagination */
 .progress-dots {
   display: flex;
@@ -139,8 +148,8 @@ ion-content {
 }
 
 .intro-image {
-  width: 150px;
-  height: 150px;
+  width: 130px;
+  height: 130px;
   object-fit: contain;
 }
 .privacy-guarantee svg {
@@ -172,17 +181,16 @@ ion-content {
   justify-content: space-between;
   align-items: center;
   gap: 16px; /* Space between buttons */
-  padding: 20px; /* Add padding to the button group */
+  padding: 0px; /* Add padding to the button group */
+      margin-top: 46px;
 }
 
-.question-container {
-  padding: 0 20px; /* Add horizontal padding to the question container */
-}
+
 
 .radio-group, .checkbox-group {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Space between custom items */
+  gap: 16px; /* Space between custom items */
 }
 
 .custom-item {
@@ -191,14 +199,15 @@ ion-content {
   background-color: #f1edff; /* Default background color for options */
   border-radius: 10px;
   box-shadow: none; /* Remove box-shadow */
-  padding: 15px 20px; /* Adjust padding */
+  padding: 16px 20px; /* Adjust padding */
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
 }
 
 .custom-label {
   flex-grow: 1;
-  font-size: 1em;
+  font-size: 17px;
+  font-weight: 500;
   color: var(--ion-color-dark);
   text-align: left;
 }
@@ -302,8 +311,8 @@ ion-content {
 
 /* Style for the header h1 in step view */
 .ion-text-center.ion-padding-top h1 {
-  font-size: 28px; /* Adjust as needed */
-  font-weight: bold;
+  font-size: 24px; /* Adjust as needed */
+  font-weight: 400;
   color: var(--ion-color-dark);
   margin-bottom: 10px;
 }
@@ -316,7 +325,7 @@ ion-content {
 }
 
 .back-button {
-  --background: #f1edff;
+  background: none;
   --background-activated: #e0d9f5;
   --background-focused: #e0d9f5;
   --background-hover: #e0d9f5;
@@ -324,7 +333,7 @@ ion-content {
   width: 48px;
   height: 48px;
   border-radius: 8px;
-  --border-color: var(--ion-color-primary);
+  border:1.5px solid #795bda;
   --border-width: 1.5px;
   --box-shadow: none;
   flex-shrink: 0; /* Prevent button from shrinking */
