@@ -101,8 +101,17 @@ export class SelectionTestPage implements OnInit {
   }
 
   setRange(stepType: string, value: number | { lower: number, upper: number }) {
-    this.answers[stepType] = typeof value === 'number' ? value : value.upper; // Assuming single value for range, taking upper if dual
-    console.log(`Set Range for ${stepType}:`, this.answers[stepType]);
+    if (stepType === 'price') {
+      const lower = typeof value === 'number' ? value : value.lower;
+      const upper = typeof value === 'number' ? value : value.upper;
+      this.answers['min_price'] = String(lower);
+      this.answers['max_price'] = String(upper);
+      delete this.answers['price']; // Remove the 'price' object if it exists
+      console.log(`Set Range for ${stepType}: min_price="${this.answers['min_price']}", max_price="${this.answers['max_price']}"`);
+    } else {
+      this.answers[stepType] = typeof value === 'number' ? value : value.upper; // For other ranges, assume single value
+      console.log(`Set Range for ${stepType}:`, this.answers[stepType]);
+    }
     console.log('Current Answers:', this.answers);
   }
   setText(stepType: string, value: string) {
@@ -163,6 +172,7 @@ export class SelectionTestPage implements OnInit {
 
   async submit() {
     const payload = this.buildPayload();
+    console.log('Submitting Payload:', payload); // Log the final payload
     this.loading.set(true);
     try {
       this.results = (await this.api.postResults(payload).toPromise()) ?? [];
@@ -172,13 +182,20 @@ export class SelectionTestPage implements OnInit {
   }
 
   buildPayload() {
-    const { type, city_id, child_age, ...rest } = this.answers;
+    const { type, city_id, child_age, min_price, max_price, ...rest } = this.answers; // Destructure min_price and max_price
     const requests: any = {};
     const filter_data: any = {};
     Object.entries(rest).forEach(([k, v]) => {
-      if (k.startsWith('questions_')) requests[k] = v;
-      else filter_data[k] = v;
+      if (k.startsWith('questions_')) {
+        requests[k] = v;
+      } else {
+        filter_data[k] = v;
+      }
     });
+    // Add min_price and max_price to filter_data if they exist
+    if (min_price !== undefined) filter_data['min_price'] = min_price;
+    if (max_price !== undefined) filter_data['max_price'] = max_price;
+
     const body: any = { type, filter_data };
     if (city_id) body.city_id = city_id;
     if (child_age) body.child_age = child_age;

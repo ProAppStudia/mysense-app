@@ -107,7 +107,16 @@
         <!-- range -->
         <ng-container *ngIf="node.type==='range' && node.options && ('min' in node.options)">
           <ion-item>
-            <ion-range [min]="getRangeMin(node)" [max]="getRangeMax(node)"
+            <ion-range *ngIf="node.step_type === 'price'"
+                       [min]="getRangeMin(node)" [max]="getRangeMax(node)"
+                       [value]="{lower: answers['min_price'] || getRangeMin(node), upper: answers['max_price'] || getRangeMax(node)}"
+                       (ionChange)="setRange(node.step_type, $event.detail.value)"
+                       dualKnobs="true">
+              <ion-label slot="start">{{ answers['min_price'] || getRangeMin(node) }}</ion-label>
+              <ion-label slot="end">{{ answers['max_price'] || getRangeMax(node) }}</ion-label>
+            </ion-range>
+            <ion-range *ngIf="node.step_type !== 'price'"
+                       [min]="getRangeMin(node)" [max]="getRangeMax(node)"
                        [value]="answers[node.step_type]"
                        (ionChange)="setRange(node.step_type, $event.detail.value)"></ion-range>
           </ion-item>
