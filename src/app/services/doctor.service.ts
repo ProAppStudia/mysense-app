@@ -18,12 +18,22 @@ export class DoctorService {
   // New methods for the test flow
   loadTestSchema(): Observable<any> {
     const params = new HttpParams().set('action', 'get_test_questions');
-    return this.http.get<any>(this.apiUrl, { params });
+    return this.http.get<any>(this.apiUrl, { params }).pipe(
+      map(response => {
+        console.log('API Response (get_test_questions):', response);
+        return response;
+      })
+    );
   }
 
   postResults(body: any): Observable<any[]> {
     const params = new HttpParams().set('action', 'get_test_results');
-    return this.http.post<any[]>(this.apiUrl, body, { params });
+    return this.http.post<any[]>(this.apiUrl, body, { params }).pipe(
+      map(response => {
+        console.log('API Response (get_test_results):', response);
+        return response;
+      })
+    );
   }
 
   // Original methods (restored)
