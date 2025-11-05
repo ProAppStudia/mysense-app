@@ -118,73 +118,43 @@ ion-content {
   margin-right: 10px;
   color: var(--ion-color-success);
 }
-.selection {
-  background: rgba(241, 237, 255, 1);
-    margin-bottom: 16px;
-    position: relative;
-    font-size: 17px;
-    color: rgba(66, 63, 77, 1);
-    font-weight: 500;
-    border-radius: 8px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    padding: 18px 24px;
-    justify-content: flex-start;
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px; /* Space between buttons */
 }
-.selection-card-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+
+.back-button {
+  --background: #f1edff;
+  --background-activated: #e0d9f5;
+  --background-focused: #e0d9f5;
+  --background-hover: #e0d9f5;
+  --color: var(--ion-color-primary);
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  --border-color: var(--ion-color-primary);
+  --border-width: 1.5px;
+  --box-shadow: none;
+  flex-shrink: 0; /* Prevent button from shrinking */
 }
-.selection-card-text {
-    font-size: 17px;
-    color: rgba(66, 63, 77, 1);
-    font-weight: 500;
+
+.next-button {
+  --background: #795bda;
+  --background-activated: #6a4ecb;
+  --background-focused: #6a4ecb;
+  --background-hover: #6a4ecb;
+  --color: #fff;
+  flex-grow: 1; /* Allow button to grow and fill space */
+  height: 48px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  text-transform: none;
 }
-.selection-card-content svg path {
-fill: #A498D9;
-}
-.selection.selected {
-       background: #a498d9;
-}
-.selection.selected .selection-card-text {
-    color: #fff;
-}
-.selection.selected .selection-card-content svg path {
-    fill: #fff;
-}
-button.btn-next {
-    padding: 15px 24px 15px 24px;
-    border-radius: 8px;
-    background: #795bda;
-    color: #fff;
-    font-weight: 500;
-    font-size: 14px;
-    border: none;
-    min-width: 232px;
-    display: flex
-;
-    justify-content: center;
-}
-button.btn-prev {
-   width: 48px;
-    height: 48px;
-    border-radius: 8px;
-    border: 1.5px solid #795bda;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 40px;
-    background: none;
-}
-.buttons-next-prev {
-    display: flex;
-    justify-content: space-between;
-}
-button.btn-next svg {
-    margin-left: 10px;
-}
+
 ion-button {
   --border-radius: 10px;
   --box-shadow: none;

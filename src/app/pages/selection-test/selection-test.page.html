@@ -69,7 +69,12 @@
 </svg>
           <p>Ми гарантуємо конфіденційність та надійний захист всіх даних, які ви залишаєте на платформі.</p>
         </div>
-        <ion-button expand="block" class="ion-margin-top" (click)="startTest()">Далі</ion-button>
+        <div class="ion-padding-horizontal ion-margin-top button-group">
+          <ion-button fill="outline" (click)="prevStep()" class="back-button">
+            <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button expand="block" (click)="startTest()" class="next-button">Далі</ion-button>
+        </div>
       </div>
     </ng-container>
 
