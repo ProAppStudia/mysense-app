@@ -231,6 +231,14 @@ p.intro-p-left {
   color: #fff; /* White icon for selected item */
 }
 
+.custom-item svg .fl-icon {
+  fill: var(--ion-color-primary); /* Default fill color for SVG icon */
+}
+
+.custom-item.selected svg .fl-icon {
+  fill: #fff; /* White fill for SVG icon in selected item */
+}
+
 .custom-range-item {
   padding: 10px 0;
 }
