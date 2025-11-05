@@ -214,3 +214,269 @@ ion-radio {
 ion-checkbox {
   --checkbox-background-checked: var(--ion-color-primary);
 }
+
+.psychologist-cards-container {
+  padding: 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+ion-toolbar {
+    --background: var(--ion-color-mysense-light-purple);
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
+}
+ion-searchbar ion-icon {
+    top: 7px !important;
+    width: 1.3125rem;
+    height: 1.3125rem;
+}
+input.searchbar-input.sc-ion-searchbar-md {
+    height: 34px;
+    background: white;
+        border-radius: 8px;
+}
+ion-button.filter-btn {
+    font-size: 14px;
+    background: #ffffff;
+    border-radius: 8px;
+    text-transform: capitalize;
+}
+.filter-btn ion-icon {
+    --font-size: 2px;
+   
+}
+ion-content {
+  --background:var(--ion-color-mysense-light-purple); /* White background */
+  text-align: center;
+}
+.psychologist-card {
+  background-color: #fff;
+  border-radius: 16px;
+  
+  padding: 20px;
+ 
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.psychologist-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.online-offline-status {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.status-item {
+  font-size: 15px;
+  font-weight: 400;
+  color: #423f4d;
+  padding: 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center content horizontally */
+  gap: 5px; /* Space between icon and text */
+}
+
+.online {
+  /* color: #00bcd4; */ /* Cyan */
+}
+
+.offline {
+  /* color: #9c27b0; */ /* Purple */
+}
+
+.location {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 0;
+  margin-top: 5px;
+}
+
+.psychologist-name {
+  color: #423f4d;
+  margin-bottom: 0px;
+  font-size: 24px;
+  font-weight: 400;
+  margin-top: 5px;
+}
+
+.verified-specialist {
+  font-size: 14px;
+  font-weight: 400;
+  color: #9895a6;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+
+.specialization {
+  font-size: 15px;
+  color: #423f4d;
+  text-align: left;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.stats {
+  display: flex;
+  gap: 20px;
+  font-size: 15px;
+  color: #423f4d;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+
+.feedback-and-intro {
+  display: flex;
+  gap: 20px;
+  font-size: 15px;
+  color: #423f4d;
+}
+
+.feedback-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.feedback-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.intro-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #9895a6;
+}
+
+.pricing-and-profile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.pricing {
+  display: flex;
+  gap: 20px;
+}
+
+.price-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.price-item p {
+  margin: 0;
+  font-size: 14px;
+  color: #9895a6;
+  font-weight: 400;
+}
+
+.price-value {
+  color: #2f264d;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.currency {
+  font-size: 14px;
+  font-weight: 400;
+  color: #9895a6;
+}
+
+.profile-button {
+  --background: #795bda;
+  --background-activated: #795bda;
+  --background-focused: #795bda;
+  --background-hover: #795bda;
+  --color: #fff;
+  font-size: 16px;
+  height: 40px;
+  border-radius: 8px;
+  text-transform: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  --box-shadow: none;
+}
+
+ion-toolbar ion-buttons ion-button ion-icon {
+  font-size: 18px;
+    color: var(--ion-color-primary);
+    margin-right: 5px;
+}
+
+ion-searchbar {
+  --padding-start: 0;
+  --padding-end: 0;
+  --box-shadow: none;
+  --border-radius: 10px;
+  --background: #f0f0f0;
+  padding: 0 0 0 10px;
+}
+
+ion-searchbar::part(search-icon) {
+  color: var(--ion-color-primary);
+  order: 2;
+  padding-left: 10px;
+}
+
+:host ::ng-deep .searchbar-input.sc-ion-searchbar-md {
+  padding-inline-end: 5px !important;
+  background: white;
+    height: 34px;
+}
+
+.sort-select {
+  --padding-start: 10px;
+  --padding-end: 10px;
+  --placeholder-opacity: 0;
+  width: 40px;
+  height: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23795bda' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-arrow-up-down'%3E%3Cpath d='m21 16-4 4-4-4'%3E%3C/path%3E%3Cpath d='M17 20V4'%3E%3C/path%3E%3Cpath d='m3 8 4-4 4 4'%3E%3C/path%3E%3Cpath d='M7 4v16'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  justify-content: center;
+}
+
+.sort-select::part(icon) {
+  display: none;
+}
+ion-searchbar.searchbar-input.sc-ion-searchbar-md {
+    -webkit-padding-end: 0 !important;
+    padding-inline-end: 0 !important;
+}
