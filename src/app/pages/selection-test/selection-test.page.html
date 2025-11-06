@@ -144,8 +144,9 @@
                 [min]="getRangeMin(node)"
                 [max]="getRangeMax(node)"
                 [value]="{lower: answers().min_price ?? getRangeMin(node), upper: answers().max_price ?? getRangeMax(node)}"
-                (ionChange)="setRange(node.step_type, $event.detail.value)"
+                (ionInput)="setRange(node.step_type, $event.detail.value)"
                 dualKnobs="true"
+                [step]="100"
                 class="custom-ion-range"
               ></ion-range>
             </div>
@@ -153,7 +154,8 @@
               <ion-range
                      [min]="getRangeMin(node)" [max]="getRangeMax(node)"
                      [value]="answers()[node.step_type]"
-                     (ionChange)="setRange(node.step_type, $event.detail.value)"
+                     (ionInput)="setRange(node.step_type, $event.detail.value)"
+                     [step]="100"
                      class="custom-ion-range">
               </ion-range>
             </div>
