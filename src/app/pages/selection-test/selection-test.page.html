@@ -118,7 +118,7 @@
 </svg>
             </ng-container>
             <ng-container *ngIf="!(node.step_type === 'format' && i === 0 || node.step_type === 'format' && i === 1 || node.step_type === 'format' && i === 2 || node.step_type === 'gender' && i === 0 || node.step_type === 'gender' && i === 1 || node.step_type === 'gender' && i === 2 || node.step_type === 'language' && i === 0 || node.step_type === 'language' && i === 1 || node.step_type === 'language' && i === 2 || node.step_type === 'language' && i === 3)">
-              <ion-icon [name]="getIconForOption(node.step_type, i)"></ion-icon>
+              
             </ng-container>
             <label class="custom-label">{{ o.text || o.name }}</label>
           </div>
@@ -127,7 +127,7 @@
       <!-- checkbox -->
       <ng-container *ngIf="node.type==='checkbox' && node.options && !('min' in node.options)">
           <div class="custom-item" *ngFor="let o of getOptionsAsArray(node); let i = index" (click)="toggleCheckbox(node.step_type, (o.id ?? o.value))" [class.selected]="(answers()[node.step_type] || []).includes(o.id ?? o.value)">
-            <ion-icon [name]="getIconForOption(node.step_type, i)"></ion-icon>
+            
             <label class="custom-label">{{ o.text || o.name }}</label>
           </div>
       </ng-container>
