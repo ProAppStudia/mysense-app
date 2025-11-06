@@ -150,11 +150,12 @@
               ></ion-range>
             </div>
             <div *ngIf="node.step_type !== 'price'" class="custom-range-single">
-              <input type="range"
+              <ion-range
                      [min]="getRangeMin(node)" [max]="getRangeMax(node)"
                      [value]="answers()[node.step_type]"
-                     (input)="setRange(node.step_type, $any($event.target).value)"
-                     class="custom-range-input">
+                     (ionChange)="setRange(node.step_type, $event.detail.value)"
+                     class="custom-ion-range">
+              </ion-range>
             </div>
           </div>
       </ng-container>

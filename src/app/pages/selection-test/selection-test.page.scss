@@ -240,26 +240,31 @@ p.intro-p-left {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
 }
 
 .range-labels {
   display: flex;
   justify-content: space-between;
   font-size: 1em;
-  color: var(--ion-color-dark);
+  color: #2F264D; /* Darker color for labels */
+  font-weight: bold; /* Bold font for labels */
+  margin-bottom: 10px;
 }
 
 .custom-ion-range {
   padding: 0;
-  --bar-background: #e3e1e5;
-  --bar-background-active: #795bda;
-  --bar-height: 5px;
+  --bar-background: #e3e1e5; /* Inactive track color */
+  --bar-background-active: #6699FF; /* Active track color - lighter blue */
+  --bar-height: 10px;
   --bar-border-radius: 5px;
-  --knob-background: #795bda;
+  --knob-background: #ffffff; /* Knob background color */
   --knob-border-radius: 50%;
-  --knob-box-shadow: none;
-  --knob-size: 20px;
-  --height: 20px;
+  --knob-box-shadow: none; /* Remove knob shadow */
+  --knob-size: 30px; /* Fixed knob size */
+  --height: 30px; /* Adjust height to match knob size */
+  --knob-border: 2px solid #6699FF; /* Blue border for knob */
+  --knob-focus-shadow: none; /* Remove focus shadow */
 }
 
 .custom-ion-range::part(tick),
@@ -269,6 +274,26 @@ p.intro-p-left {
 
 .custom-ion-range::part(pin) {
   display: none;
+}
+
+.custom-ion-range::part(knob) {
+  transform: scale(1); /* Prevent scaling on interaction */
+  border: 2px solid #6699FF !important; /* Ensure blue border is applied */
+}
+
+.custom-ion-range::part(knob):hover,
+.custom-ion-range::part(knob):active,
+.custom-ion-range::part(knob):focus {
+  border: 2px solid #6699FF !important; /* Ensure blue border on hover, active, or focus */
+  box-shadow: none !important; /* Ensure no shadow on hover, active, or focus */
+}
+
+.custom-ion-range::part(bar) {
+  box-shadow: none; /* Remove shadow from the bar */
+}
+
+.custom-ion-range::part(bar-active) {
+  box-shadow: none; /* Remove shadow from the active bar */
 }
 
 .custom-text-input input {
@@ -549,7 +574,15 @@ ion-button.filter-btn {
   display: flex;
   gap: 20px;
 }
-
+.range-knob {
+    transform: none !important; /* Remove transform scale on interaction */
+    transition-duration: 120ms;
+    transition-property: transform, background-color, border, -webkit-transform;
+    transition-timing-function: ease;
+    z-index: 2;
+    border: none !important; /* Remove border from the knob */
+    box-shadow: none !important; /* Remove any lingering box-shadow on the knob */
+}
 .price-item {
   display: flex;
   flex-direction: column;
