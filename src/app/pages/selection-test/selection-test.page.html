@@ -1,5 +1,5 @@
 <ion-content [fullscreen]="true">
-  <div class="test-container">
+  
     <div *ngIf="loading()" class="ion-text-center">
       <ion-spinner></ion-spinner>
       <p>Завантаження...</p>
@@ -15,7 +15,7 @@
     </div>
 
     <ng-container *ngIf="schema" [ngSwitch]="view()">
-
+<div class="test-container">
     <!-- Вибір типу -->
     <ng-container *ngSwitchCase="'type'">
       <div class="test-heading ion-text-center ion-padding-top">Для кого ви шукаєте підтримку?</div>
@@ -195,7 +195,7 @@
         <ion-button expand="block" *ngIf="node && node.is_final" color="primary" [disabled]="!validate(node)" (click)="submit()" class="next-button">Отримати результат</ion-button>
     </div>
     </ng-container>
-
+</div>
     <!-- Результати -->
     <ng-container *ngSwitchCase="'results'">
       <div class="psychologist-cards-container">
@@ -267,5 +267,5 @@
       </ion-footer>
     </ng-container>
 
-  </ng-container></div>
+  </ng-container>
 </ion-content>
