@@ -172,7 +172,7 @@ p.intro-p-left {
   align-items: center;
   gap: 16px; /* Space between buttons */
   padding: 0px; /* Add padding to the button group */
-      margin-top: 46px;
+      margin-top: 16px;
 }
 
 
@@ -192,8 +192,11 @@ p.intro-p-left {
   padding: 16px 20px; /* Adjust padding */
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
+  min-height: 56px;
 }
-
+.custom-item svg {
+    margin-right: 10px;
+}
 .custom-label {
   flex-grow: 1;
   font-size: 17px;
@@ -222,7 +225,7 @@ p.intro-p-left {
 }
 
 .custom-item svg .fl-icon {
-  fill: var(--ion-color-primary); /* Default fill color for SVG icon */
+  fill: #A498D9; /* Default fill color for SVG icon */
 }
 
 .custom-item.selected svg .fl-icon {
