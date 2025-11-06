@@ -1,44 +1,40 @@
 <ion-content [fullscreen]="true">
   <div class="test-container">
-    
-  <div *ngIf="loading()" class="ion-text-center">
-    <ion-spinner></ion-spinner>
-    <p>Завантаження...</p>
-  </div>
+    <div *ngIf="loading()" class="ion-text-center">
+      <ion-spinner></ion-spinner>
+      <p>Завантаження...</p>
+    </div>
 
-  <ng-container [ngSwitch]="view()">
+    <div *ngIf="!loading() && !schema" class="ion-text-center ion-padding">
+      <p>Не вдалося завантажити тест. Будь ласка, спробуйте пізніше.</p>
+      <ion-button expand="block" (click)="loadSchema()">Спробувати ще раз</ion-button>
+    </div>
+
+    <div class="progress-bars" *ngIf="!loading()">
+      <span class="bar" *ngFor="let i of visualStepsArray(); let idx = index" [class.active]="visualStep() >= idx"></span>
+    </div>
+
+    <ng-container *ngIf="schema" [ngSwitch]="view()">
 
     <!-- Вибір типу -->
     <ng-container *ngSwitchCase="'type'">
-      <div class="progress-bars">
-        <span class="bar" [class.active]="visualStep() >= 0"></span>
-        <span class="bar" [class.active]="visualStep() >= 1"></span>
-        <span class="bar" [class.active]="visualStep() >= 2"></span>
-        <span class="bar" [class.active]="visualStep() >= 3"></span>
-        <span class="bar" [class.active]="visualStep() >= 4"></span>
-        <span class="bar" [class.active]="visualStep() >= 5"></span>
-        <span class="bar" [class.active]="visualStep() >= 6"></span>
-        <span class="bar" [class.active]="visualStep() >= 7"></span>
-        <span class="bar" [class.active]="visualStep() >= 8"></span>
-        <span class="bar" [class.active]="visualStep() >= 9"></span>
-      </div>
       <div class="test-heading ion-text-center ion-padding-top">Для кого ви шукаєте підтримку?</div>
 
-      <div class="selection-card" (click)="pickType(1)" [class.selected]="answers.type === 1">
+      <div class="selection-card" (click)="pickType(1)" [class.selected]="answers().type === 1">
           <div class="card-content-wrapper individual">
             <span class="card-text">Для себе</span>
             <img src="assets/icon/Union.svg" alt="Individual" class="card-image">
           </div>
       </div>
 
-      <div class="selection-card" (click)="pickType(2)" [class.selected]="answers.type === 2">
+      <div class="selection-card" (click)="pickType(2)" [class.selected]="answers().type === 2">
           <div class="card-content-wrapper family">
             <span class="card-text">Для пари / сім'ї</span>
             <img src="assets/icon/Union2.svg" alt="Family" class="card-image">
           </div>
       </div>
 
-      <div class="selection-card" (click)="pickType(3)" [class.selected]="answers.type === 3">
+      <div class="selection-card" (click)="pickType(3)" [class.selected]="answers().type === 3">
           <div class="card-content-wrapper child">
             <span class="card-text">Для дитини / підлітка</span>
             <img src="assets/icon/Union3.svg" alt="Child" class="card-image">
@@ -48,18 +44,6 @@
 
     <!-- Інфо сторінка -->
     <ng-container *ngSwitchCase="'info'">
-      <div class="progress-bars">
-        <span class="bar" [class.active]="visualStep() >= 0"></span>
-        <span class="bar" [class.active]="visualStep() >= 1"></span>
-        <span class="bar" [class.active]="visualStep() >= 2"></span>
-        <span class="bar" [class.active]="visualStep() >= 3"></span>
-        <span class="bar" [class.active]="visualStep() >= 4"></span>
-        <span class="bar" [class.active]="visualStep() >= 5"></span>
-        <span class="bar" [class.active]="visualStep() >= 6"></span>
-        <span class="bar" [class.active]="visualStep() >= 7"></span>
-        <span class="bar" [class.active]="visualStep() >= 8"></span>
-        <span class="bar" [class.active]="visualStep() >= 9"></span>
-      </div>
       <div class="ion-text-center">
         <img src="assets/icon/Frame1428.svg" alt="Intro" class="intro-image">
         <div class="test-heading-h2 ion-padding-top">Розкажіть нам про себе, щоб ми могли дати найкращу рекомендацію для вас.</div>
@@ -86,18 +70,6 @@
 
     <!-- Крок тесту -->
     <ng-container *ngSwitchCase="'step'">
-      <div class="progress-bars">
-        <span class="bar" [class.active]="visualStep() >= 0"></span>
-        <span class="bar" [class.active]="visualStep() >= 1"></span>
-        <span class="bar" [class.active]="visualStep() >= 2"></span>
-        <span class="bar" [class.active]="visualStep() >= 3"></span>
-        <span class="bar" [class.active]="visualStep() >= 4"></span>
-        <span class="bar" [class.active]="visualStep() >= 5"></span>
-        <span class="bar" [class.active]="visualStep() >= 6"></span>
-        <span class="bar" [class.active]="visualStep() >= 7"></span>
-        <span class="bar" [class.active]="visualStep() >= 8"></span>
-        <span class="bar" [class.active]="visualStep() >= 9"></span>
-      </div>
       <div class="ion-text-center" >
         <div class="test-heading" *ngIf="node">{{ node.header }}</div>
         <p *ngIf="node && node.subheader">{{ node.subheader }}</p>
@@ -106,7 +78,7 @@
       <div class="question-container" *ngIf="node">
         <!-- radio -->
         <div *ngIf="node.type==='radio' && node.options && !('min' in node.options)" class="radio-group">
-          <div class="custom-item" *ngFor="let o of getOptionsAsArray(node); let i = index" (click)="setRadio(node.step_type, (o.id ?? o.value))" [class.selected]="answers[node.step_type] === (o.id ?? o.value)">
+          <div class="custom-item" *ngFor="let o of getOptionsAsArray(node); let i = index" (click)="setRadio(node.step_type, (o.id ?? o.value))" [class.selected]="answers()[node.step_type] === (o.id ?? o.value)">
             <ng-container *ngIf="node.step_type === 'format' && i === 0">
               <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path class="fl-icon" d="M10.5 0C8.52219 0 6.58879 0.58649 4.9443 1.6853C3.29981 2.78412 2.01809 4.3459 1.26121 6.17317C0.504333 8.00043 0.306299 10.0111 0.692152 11.9509C1.078 13.8907 2.03041 15.6725 3.42894 17.0711C4.82746 18.4696 6.60929 19.422 8.54910 19.8079C10.4889 20.1937 12.4996 19.9957 14.3268 19.2388C16.1541 18.4819 17.7159 17.2002 18.8147 15.5557C19.9135 13.9112 20.5 11.9778 20.5 10C20.4971 7.34871 19.4426 4.80684 17.5679 2.9321C15.6932 1.05736 13.1513 0.00286757 10.5 0ZM17.7058 5.83333H15.0217C14.4208 4.44082 13.6297 3.1384 12.6708 1.96333C14.7929 2.54077 16.6019 3.93122 17.7058 5.83333ZM14.25 10C14.2432 10.8484 14.1095 11.6911 13.8533 12.5H7.14667C6.89055 11.6911 6.75685 10.8484 6.75 10C6.75685 9.15155 6.89055 8.3089 7.14667 7.5H13.8533C14.1095 8.3089 14.2432 9.15155 14.25 10ZM7.815 14.1667H13.185C12.4777 15.5631 11.5735 16.8507 10.5 17.99C9.42615 16.851 8.52187 15.5634 7.815 14.1667ZM7.815 5.83333C8.52231 4.43689 9.42654 3.1493 10.5 2.01C11.5739 3.14898 12.4781 4.43663 13.185 5.83333H7.815ZM8.33334 1.96333C7.37305 3.13815 6.58049 4.44058 5.97834 5.83333H3.29417C4.39905 3.93036 6.20972 2.5398 8.33334 1.96333ZM2.55084 7.5H5.41667C5.20064 8.31595 5.08864 9.15595 5.08334 10C5.08864 10.8441 5.20064 11.684 5.41667 12.5H2.55084C2.03862 10.8727 2.03862 9.12731 2.55084 7.5ZM3.29417 14.1667H5.97834C6.58049 15.5594 7.37305 16.8618 8.33334 18.0367C6.20972 17.4602 4.39905 16.0696 3.29417 14.1667ZM12.6708 18.0367C13.6297 16.8616 14.4208 15.5592 15.0217 14.1667H17.7058C16.6019 16.0688 14.7929 17.4592 12.6708 18.0367ZM18.4492 12.5H15.5833C15.7994 11.684 15.9114 10.8441 15.9167 10C15.9114 9.15595 15.7994 8.31595 15.5833 7.5H18.4475C18.9597 9.12731 18.9597 10.8727 18.4475 12.5H18.4492Z" fill="#A498D9"></path>
@@ -117,65 +89,65 @@
             </ng-container>
             <label class="custom-label">{{ o.text || o.name }}</label>
           </div>
-        </div>
+      </div>
 
-        <!-- checkbox -->
-        <ng-container *ngIf="node.type==='checkbox' && node.options && !('min' in node.options)">
-          <div class="custom-item" *ngFor="let o of getOptionsAsArray(node); let i = index" (click)="toggleCheckbox(node.step_type, (o.id ?? o.value))" [class.selected]="(answers[node.step_type] || []).includes(o.id ?? o.value)">
+      <!-- checkbox -->
+      <ng-container *ngIf="node.type==='checkbox' && node.options && !('min' in node.options)">
+          <div class="custom-item" *ngFor="let o of getOptionsAsArray(node); let i = index" (click)="toggleCheckbox(node.step_type, (o.id ?? o.value))" [class.selected]="(answers()[node.step_type] || []).includes(o.id ?? o.value)">
             <ion-icon [name]="getIconForOption(node.step_type, i)"></ion-icon>
             <label class="custom-label">{{ o.text || o.name }}</label>
           </div>
-        </ng-container>
+      </ng-container>
 
-        <!-- range -->
-        <ng-container *ngIf="node.type==='range' && node.options && ('min' in node.options)">
+      <!-- range -->
+      <ng-container *ngIf="node.type==='range' && node.options && ('min' in node.options)">
           <div class="custom-range-item">
             <div *ngIf="node.step_type === 'price'" class="custom-range-price">
               <div class="range-labels">
-                <span>{{ answers['min_price'] || getRangeMin(node) }}</span>
-                <span>{{ answers['max_price'] || getRangeMax(node) }}</span>
+                <span>{{ answers().min_price || getRangeMin(node) }}</span>
+                <span>{{ answers().max_price || getRangeMax(node) }}</span>
               </div>
               <input type="range"
                      [min]="getRangeMin(node)" [max]="getRangeMax(node)"
-                     [value]="answers['min_price'] || getRangeMin(node)"
-                     (input)="setRange(node.step_type, {lower: $any($event.target).value, upper: answers['max_price'] || getRangeMax(node)})"
+                     [value]="answers().min_price ?? getRangeMin(node)"
+                     (input)="setRange(node.step_type, {lower: $any($event.target).value, upper: answers().max_price ?? getRangeMax(node)})"
                      class="custom-range-input">
               <input type="range"
                      [min]="getRangeMin(node)" [max]="getRangeMax(node)"
-                     [value]="answers['max_price'] || getRangeMax(node)"
-                     (input)="setRange(node.step_type, {lower: answers['min_price'] || getRangeMin(node), upper: $any($event.target).value})"
+                     [value]="answers().max_price ?? getRangeMax(node)"
+                     (input)="setRange(node.step_type, {lower: answers().min_price ?? getRangeMin(node), upper: $any($event.target).value})"
                      class="custom-range-input">
             </div>
             <div *ngIf="node.step_type !== 'price'" class="custom-range-single">
               <input type="range"
                      [min]="getRangeMin(node)" [max]="getRangeMax(node)"
-                     [value]="answers[node.step_type]"
+                     [value]="answers()[node.step_type]"
                      (input)="setRange(node.step_type, $any($event.target).value)"
                      class="custom-range-input">
             </div>
           </div>
-        </ng-container>
+      </ng-container>
 
-        <!-- text -->
-        <ng-container *ngIf="node.type==='text'">
+      <!-- text -->
+      <ng-container *ngIf="node.type==='text'">
           <div class="custom-text-input">
-            <input type="text" placeholder="Введіть відповідь" [value]="answers[node.step_type]"
+            <input type="text" placeholder="Введіть відповідь" [value]="answers()[node.step_type]"
                    (input)="setText(node.step_type, $any($event.target).value)">
           </div>
-        </ng-container>
+      </ng-container>
 
-        <!-- city select для offline -->
-        <ng-container *ngIf="node.step_type==='format' && answers['format']==='offline' && node.cities">
+      <!-- city select для offline -->
+      <ng-container *ngIf="node.step_type==='format' && answers().format==='offline' && node.cities">
           <div class="custom-select">
-            <select [value]="answers.city_id" (change)="setCity($any($event.target).value)">
+            <select [value]="answers().city_id" (change)="setCity($any($event.target).value)">
               <option value="" disabled selected>Оберіть місто</option>
               <option *ngFor="let c of node.cities" [value]="c.city_id">{{ c.name }}</option>
             </select>
           </div>
-        </ng-container>
-      </div>
+      </ng-container>
+    </div>
 
-      <div class="ion-padding-horizontal ion-margin-top button-group">
+    <div class="ion-padding-horizontal ion-margin-top button-group">
         <button fill="outline" (click)="prevStep()" class="back-button">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path class="arrow-icon" d="M15.5 8H1.5M1.5 8L8.5 15M1.5 8L8.5 1" stroke="#795BDA" stroke-width="1.5"></path>
@@ -185,80 +157,72 @@
 <path d="M0.5 8H14.5M14.5 8L7.5 15M14.5 8L7.5 1" stroke="white" stroke-width="1.5"></path>
 </svg></ion-button>
         <ion-button expand="block" *ngIf="node && node.is_final" color="primary" [disabled]="!validate(node)" (click)="submit()" class="next-button">Отримати результат</ion-button>
-      </div>
+    </div>
     </ng-container>
 
     <!-- Результати -->
     <ng-container *ngSwitchCase="'results'">
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>Підібрані психологи</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
-      <ion-content class="ion-padding">
-        <div class="psychologist-cards-container">
-          <ng-container *ngFor="let doctor of results">
-            <div class="psychologist-card">
-              <div class="card-header">
-                <img [src]="doctor.avatarUrl || 'assets/img/IMG_1743.jpeg'" alt="Psychologist" class="psychologist-avatar">
-                <div class="header-info">
-                  <div class="online-offline-status">
-                    <span *ngIf="doctor.online" class="status-item online">
-                      <ion-icon src="assets/icon/onlain.svg"></ion-icon>
-                      Онлайн
-                    </span>
-                    <span *ngIf="doctor.inPerson" class="status-item offline">
-                      <ion-icon src="assets/icon/ochno.svg"></ion-icon>
-                      Очно
-                    </span>
-                  </div>
-                  <p *ngIf="doctor.city" class="location">{{ doctor.city }}</p>
-                  <h3 class="psychologist-name">{{ doctor.fullName }}</h3>
-                  <p *ngIf="doctor.verified" class="verified-specialist">
-                    <ion-icon src="assets/icon/verified.svg"></ion-icon>
-                    Перевірений фахівець
-                  </p>
+      <div class="psychologist-cards-container">
+        <ng-container *ngFor="let doctor of results">
+          <div class="psychologist-card">
+            <div class="card-header">
+              <img [src]="doctor.avatarUrl || 'assets/img/IMG_1743.jpeg'" alt="Psychologist" class="psychologist-avatar">
+              <div class="header-info">
+                <div class="online-offline-status">
+                  <span *ngIf="doctor.online" class="status-item online">
+                    <ion-icon src="assets/icon/onlain.svg"></ion-icon>
+                    Онлайн
+                  </span>
+                  <span *ngIf="doctor.inPerson" class="status-item offline">
+                    <ion-icon src="assets/icon/ochno.svg"></ion-icon>
+                    Очно
+                  </span>
                 </div>
-              </div>
-              <p *ngIf="doctor.specialization" class="specialization">{{ doctor.specialization }}</p>
-              <div class="stats">
-                <span *ngIf="doctor.experienceYears" class="stat-item">
-                  <ion-icon src="assets/icon/praktika.svg"></ion-icon>
-                  {{ doctor.experienceYears }} років практики
-                </span>
-                <span *ngIf="doctor.sessionsCount" class="stat-item">
-                  <ion-icon src="assets/icon/session.svg"></ion-icon>
-                  {{ doctor.sessionsCount }}+ сесій
-                </span>
-              </div>
-              <div class="feedback-and-intro">
-                <span *ngIf="doctor?.reviewsCountText" class="feedback-item">
-                  <ion-icon src="assets/icon/otzyv.svg"></ion-icon>
-                  {{ doctor?.reviewsCountText }}
-                </span>
-                <span *ngIf="doctor.introMinutes" class="intro-item">
-                  <ion-icon src="assets/icon/hello.svg"></ion-icon>
-                  Знайомство {{ doctor.introMinutes }} хв
-                </span>
-              </div>
-              <div class="pricing-and-profile">
-                <div class="pricing">
-                  <div *ngIf="doctor.priceIndividual" class="price-item">
-                    <p style="font-size: 14px; color: #9895a6; font-weight: 400;">Індивідуальна</p>
-                    <p class="price-value" style="color: #2f264d; font-size: 20px; font-weight: 500;">{{ doctor.priceIndividual }} <span class="currency" style="font-size: 14px; color: #9895a6; font-weight: 400;">грн.</span></p>
-                  </div>
-                  <div *ngIf="doctor.priceFamily" class="price-item">
-                    <p style="font-size: 14px; color: #9895a6; font-weight: 400;">Сімейна</p>
-                    <p class="price-value" style="color: #2f264d; font-size: 20px; font-weight: 500;">{{ doctor.priceFamily }} <span class="currency" style="font-size: 14px; color: #9895a6; font-weight: 400;">грн.</span></p>
-                  </div>
-                </div>
-                <ion-button class="profile-button" (click)="goToProfile(doctor.id)">В профіль</ion-button>
+                <p *ngIf="doctor.city" class="location">{{ doctor.city }}</p>
+                <h3 class="psychologist-name">{{ doctor.fullName }}</h3>
+                <p *ngIf="doctor.verified" class="verified-specialist">
+                  <ion-icon src="assets/icon/verified.svg"></ion-icon>
+                  Перевірений фахівець
+                </p>
               </div>
             </div>
-          </ng-container>
-        </div>
-      </ion-content>
+            <p *ngIf="doctor.specialization" class="specialization">{{ doctor.specialization }}</p>
+            <div class="stats">
+              <span *ngIf="doctor.experienceYears" class="stat-item">
+                <ion-icon src="assets/icon/praktika.svg"></ion-icon>
+                {{ doctor.experienceYears }} років практики
+              </span>
+              <span *ngIf="doctor.sessionsCount" class="stat-item">
+                <ion-icon src="assets/icon/session.svg"></ion-icon>
+                {{ doctor.sessionsCount }}+ сесій
+              </span>
+            </div>
+            <div class="feedback-and-intro">
+              <span *ngIf="doctor?.reviewsCountText" class="feedback-item">
+                <ion-icon src="assets/icon/otzyv.svg"></ion-icon>
+                {{ doctor?.reviewsCountText }}
+              </span>
+              <span *ngIf="doctor.introMinutes" class="intro-item">
+                <ion-icon src="assets/icon/hello.svg"></ion-icon>
+                Знайомство {{ doctor.introMinutes }} хв
+              </span>
+            </div>
+            <div class="pricing-and-profile">
+              <div class="pricing">
+                <div *ngIf="doctor.priceIndividual" class="price-item">
+                  <p style="font-size: 14px; color: #9895a6; font-weight: 400;">Індивідуальна</p>
+                  <p class="price-value" style="color: #2f264d; font-size: 20px; font-weight: 500;">{{ doctor.priceIndividual }} <span class="currency" style="font-size: 14px; color: #9895a6; font-weight: 400;">грн.</span></p>
+                </div>
+                <div *ngIf="doctor.priceFamily" class="price-item">
+                  <p style="font-size: 14px; color: #9895a6; font-weight: 400;">Сімейна</p>
+                  <p class="price-value" style="color: #2f264d; font-size: 20px; font-weight: 500;">{{ doctor.priceFamily }} <span class="currency" style="font-size: 14px; color: #9895a6; font-weight: 400;">грн.</span></p>
+                </div>
+              </div>
+              <ion-button class="profile-button" (click)="goToProfile(doctor.id)">В профіль</ion-button>
+            </div>
+          </div>
+        </ng-container>
+      </div>
 
       <ion-footer>
         <ion-toolbar>

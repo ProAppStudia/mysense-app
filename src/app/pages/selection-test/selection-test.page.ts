@@ -16,7 +16,7 @@ interface TestStepNode {
   step_type: string;          // ключ у answers
   options?: TestOption[] | {min:number; max:number};
   cities?: Array<{city_id:number; name:string}>; // якщо є
-  next_step_need_id?: string; // умовні переходи
+  next_step_need_id?: string; // условные переходы
   fill_field_request?: boolean;
   is_final?: boolean;
 }
@@ -29,9 +29,12 @@ interface TestSchemaResponse {
 
 type Answers = {
   type: number;                 // 1|2|3
-  city_id?: number;             // коли формат = offline
+  city_id?: number;             // когда формат = offline
   child_age?: number;           // для типу 3
-  [step_type: string]: any;     // значення кожного кроку
+  min_price?: number;           // Change to number
+  max_price?: number;           // Change to number
+  format?: string;              // Add format
+  [key: string]: any;           // Allow dynamic access for other properties
 };
 
 @Component({
@@ -46,7 +49,23 @@ export class SelectionTestPage implements OnInit {
   currentStep = signal<number>(0);
   visualStep = signal<number>(0); // New signal for visual pagination
   schema: TestSchemaResponse | null = null;
-  answers: Answers = { type: null as any }; // Initialize with type as null, will be set by pickType
+
+  totalVisualSteps = computed(() => {
+    const currentAnswers = this.answers(); // Access the signal's value
+    const type = currentAnswers.type;
+    let steps = 16; // Default
+    if (type === 3) { // Child type
+      steps = 12;
+    } else if (type === 2) { // Family type
+      steps = 13;
+    }
+    return steps;
+  });
+
+  visualStepsArray = computed(() => {
+    return Array(this.totalVisualSteps()).fill(0);
+  });
+  answers = signal<Answers>({ type: null as any }); // Initialize with type as null, will be set by pickType
   loading = signal<boolean>(false);
   results: any[] = [];
   meta: {
@@ -70,16 +89,20 @@ export class SelectionTestPage implements OnInit {
     this.loading.set(true);
     try {
       this.schema = await this.api.loadTestSchema().toPromise();
-    } catch (e) { this.showErr(); }
-    finally { this.loading.set(false); }
+    } catch (e) {
+      console.error('Error loading test schema:', e);
+      this.showErr();
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   pickType(id: number) {
-    this.answers = { type: id };
+    this.answers.update(ans => ({ ...ans, type: id })); // Update the signal
     this.visualStep.set(1); // Set visualStep to 1 for the 'info' view
     this.view.set('info');
     console.log('Selected Consultation Type:', id);
-    console.log('Current Answers:', this.answers);
+    console.log('Current Answers:', this.answers()); // Log the signal's value
   }
 
   startTest() {
@@ -87,66 +110,73 @@ export class SelectionTestPage implements OnInit {
     this.visualStep.set(2); // Set visualStep to 2 for the first actual test step
     this.view.set('step');
     console.log('Starting Test. Current Step:', this.currentStep());
-    console.log('Current Answers:', this.answers);
+    console.log('Current Answers:', this.answers()); // Log the signal's value
   }
 
   get node(): TestStepNode | null {
     const step = this.currentStep();
-    const type = this.answers.type;
+    const type = this.answers().type; // Access the signal's value
     return this.schema?.step?.[step]?.[type] ?? null;
   }
 
   setRadio(stepType: string, value: any) {
-    this.answers[stepType] = value;
+    this.answers.update(ans => ({ ...ans, [stepType]: value })); // Update the signal
     console.log(`Answered ${stepType}:`, value);
-    console.log('Current Answers:', this.answers);
+    console.log('Current Answers:', this.answers()); // Log the signal's value
   }
   toggleCheckbox(stepType: string, value: any) {
-    const arr = this.answers[stepType] ?? [];
+    const currentAnswers = this.answers(); // Access the signal's value
+    const arr = currentAnswers[stepType] ?? [];
     const idx = arr.indexOf(value);
     if (idx === -1) arr.push(value); else arr.splice(idx, 1);
-    this.answers[stepType] = [...arr];
+    this.answers.update(ans => ({ ...ans, [stepType]: [...arr] })); // Update the signal
     console.log(`Toggled ${stepType}:`, value);
-    console.log('Current Answers:', this.answers);
+    console.log('Current Answers:', this.answers()); // Log the signal's value
   }
 
   setRange(stepType: string, value: number | { lower: number, upper: number }) {
     if (stepType === 'price') {
-      const lower = typeof value === 'number' ? value : value.lower;
-      const upper = typeof value === 'number' ? value : value.upper;
-      this.answers['min_price'] = String(lower);
-      this.answers['max_price'] = String(upper);
-      delete this.answers['price']; // Remove the 'price' object if it exists
-      console.log(`Set Range for ${stepType}: min_price="${this.answers['min_price']}", max_price="${this.answers['max_price']}"`);
+      const lower = typeof value === 'number' ? Number(value) : Number(value.lower);
+      const upper = typeof value === 'number' ? Number(value) : Number(value.upper);
+      this.answers.update(ans => ({
+        ...ans,
+        min_price: lower,
+        max_price: upper,
+        price: undefined
+      }));
+      console.log(`Set Range for ${stepType}: min_price="${this.answers().min_price}", max_price="${this.answers().max_price}"`);
     } else {
-      this.answers[stepType] = typeof value === 'number' ? value : value.upper; // For other ranges, assume single value
-      console.log(`Set Range for ${stepType}:`, this.answers[stepType]);
+      this.answers.update(ans => ({
+        ...ans,
+        [stepType]: typeof value === 'number' ? Number(value) : Number(value.upper)
+      }));
+      console.log(`Set Range for ${stepType}:`, this.answers()[stepType]);
     }
-    console.log('Current Answers:', this.answers);
+    console.log('Current Answers:', this.answers());
   }
   setText(stepType: string, value: string) {
-    this.answers[stepType] = value;
+    this.answers.update(ans => ({ ...ans, [stepType]: value })); // Update the signal
     console.log(`Set Text for ${stepType}:`, value);
-    console.log('Current Answers:', this.answers);
+    console.log('Current Answers:', this.answers()); // Log the signal's value
   }
 
   setCity(value: number) {
-    this.answers.city_id = value;
+    this.answers.update(ans => ({ ...ans, city_id: value })); // Update the signal
     console.log('Selected City ID:', value);
-    console.log('Current Answers:', this.answers);
+    console.log('Current Answers:', this.answers()); // Log the signal's value
   }
   setChildAge(value: number) {
-    this.answers.child_age = value;
+    this.answers.update(ans => ({ ...ans, child_age: value })); // Update the signal
     console.log('Set Child Age:', value);
-    console.log('Current Answers:', this.answers);
+    console.log('Current Answers:', this.answers()); // Log the signal's value
   }
 
-  getRangeMin(node: TestStepNode): number | undefined {
-    return (node.options && 'min' in node.options) ? node.options.min : undefined;
+  getRangeMin(node: TestStepNode): number {
+    return (node.options && 'min' in node.options) ? node.options.min : 0; // Return 0 as default
   }
 
-  getRangeMax(node: TestStepNode): number | undefined {
-    return (node.options && 'max' in node.options) ? node.options.max : undefined;
+  getRangeMax(node: TestStepNode): number {
+    return (node.options && 'max' in node.options) ? node.options.max : 0; // Return 0 as default
   }
 
   getOptionsAsArray(node: TestStepNode): TestOption[] {
@@ -155,32 +185,33 @@ export class SelectionTestPage implements OnInit {
 
   validate(node: TestStepNode): boolean {
     if (!node) return false;
-    const v = this.answers[node.step_type];
+    const currentAnswers = this.answers(); // Access the signal's value
+    const v = currentAnswers[node.step_type];
     if (node.required) {
       if (node.type === 'checkbox') return Array.isArray(v) && v.length > 0;
       if (node.type === 'text') return typeof v === 'string' && v.trim().length > 0;
       return v !== undefined && v !== null && v !== '';
     }
-    // додаткова перевірка для offline
-    if (node.step_type === 'format' && this.answers['format'] === 'offline') {
-      return !!this.answers.city_id;
+    // дополнительная проверка для offline
+    if (node.step_type === 'format' && currentAnswers['format'] === 'offline') {
+      return !!currentAnswers.city_id;
     }
     return true;
   }
 
   nextStep() {
-    // якщо фінальний
+    // если финальный
     if (this.node?.is_final) { this.submit(); return; }
     let s = this.currentStep() + 1;
-    // пропускаємо неіснуючі кроки для цього type
-    while (this.schema?.step?.[s] && !this.schema.step[s][this.answers.type]) { s++; }
+    // пропускаем несуществующие шаги для этого type
+    while (this.schema?.step?.[s] && !this.schema.step[s][this.answers().type]) { s++; } // Access the signal's value
     this.currentStep.set(s);
     this.visualStep.set(this.visualStep() + 1); // Increment visualStep
   }
 
   prevStep() {
     let s = this.currentStep() - 1;
-    while (s > 0 && this.schema?.step?.[s] && !this.schema.step[s][this.answers.type]) { s--; }
+    while (s > 0 && this.schema?.step?.[s] && !this.schema.step[s][this.answers().type]) { s--; } // Access the signal's value
     if (s <= 0) {
       this.visualStep.set(0); // Reset visualStep to 0 for the 'type' view
       this.view.set('type');
@@ -210,11 +241,11 @@ export class SelectionTestPage implements OnInit {
   }
 
   buildPayload() {
-    const a = this.answers;
+    const a = this.answers(); // Access the signal's value
 
-    // зібрати питання та фільтри в один об’єкт filter_data
+    // собрать вопросы и фильтры в один объект filter_data
     const filter_data: any = {
-      type: Number(a.type), // ПЕРЕНЕСТИ сюди!
+      type: Number(a.type), // ПЕРЕНЕСТИ сюда!
     };
 
     Object.entries(a).forEach(([k, v]) => {
@@ -234,7 +265,7 @@ export class SelectionTestPage implements OnInit {
 
       if ((mustBeInt.has(k) || isQuestionKey) && v !== undefined && v !== null && v !== '') {
         if (Array.isArray(v)) {
-          filter_data[k] = v.map(n => Number(n));
+          filter_data[k] = v.map(n => Number(v));
         } else {
           filter_data[k] = Number(v);
         }
@@ -245,21 +276,21 @@ export class SelectionTestPage implements OnInit {
       filter_data[k] = v;
     });
 
-    // якщо формат offline — переконайся, що є city_id
+    // если формат offline — убедитесь, что есть city_id
     if (filter_data.format === 'offline' && !filter_data.city_id) {
-      // підстав власну валідацію перед сабмітом
+      // подставьте собственную валидацию перед сабмитом
     }
 
     return { filter_data };
   }
 
   async showErr() {
-    const t = await this.toast.create({ message: 'Сталася помилка, спробуйте пізніше', duration: 2500, color: 'danger' });
+    const t = await this.toast.create({ message: 'Произошла ошибка, попробуйте позже', duration: 2500, color: 'danger' });
     t.present();
   }
 
   resetAll() {
-    this.answers = { type: null as any };
+    this.answers.set({ type: null as any }); // Reset the signal
     this.results = [];
     this.meta = { doctor_counts: 0, test_token: '', is_doctor: false };
     this.currentStep.set(0);
@@ -282,4 +313,5 @@ export class SelectionTestPage implements OnInit {
     }
     return '';
   }
+
 }
