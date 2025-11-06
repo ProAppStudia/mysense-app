@@ -126,9 +126,11 @@
 
       <!-- checkbox -->
       <ng-container *ngIf="node.type==='checkbox' && node.options && !('min' in node.options)">
-          <div class="custom-item" *ngFor="let o of getOptionsAsArray(node); let i = index" (click)="toggleCheckbox(node.step_type, (o.id ?? o.value))" [class.selected]="(answers()[node.step_type] || []).includes(o.id ?? o.value)">
-            
-            <label class="custom-label">{{ o.text || o.name }}</label>
+          <div class="checkbox-group">
+            <div class="custom-item" *ngFor="let o of getOptionsAsArray(node); let i = index" (click)="toggleCheckbox(node.step_type, (o.id ?? o.value))" [class.selected]="(answers()[node.step_type] || []).includes(o.id ?? o.value)">
+              <label class="custom-label">{{ o.text || o.name }}</label>
+              <ion-checkbox [checked]="(answers()[node.step_type] || []).includes(o.id ?? o.value)" mode="md"></ion-checkbox>
+            </div>
           </div>
       </ng-container>
 

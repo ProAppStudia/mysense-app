@@ -193,6 +193,7 @@ p.intro-p-left {
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
   min-height: 56px;
+  justify-content: space-between; /* Distribute space between label and checkbox */
 }
 .custom-item svg {
     margin-right: 10px;
@@ -214,6 +215,11 @@ p.intro-p-left {
   color: #fff; /* White text for label in selected item */
 }
 
+.custom-item.selected ion-checkbox::part(container) {
+  border-color: #ffffff; /* Blue border when selected */
+  background: #a498d9; /* Blue background when selected */
+}
+
 .custom-item ion-icon {
   font-size: 24px; /* Icon size */
   margin-right: 15px; /* Space between icon and label */
@@ -230,6 +236,30 @@ p.intro-p-left {
 
 .custom-item.selected svg .fl-icon {
   fill: #fff; /* White fill for SVG icon in selected item */
+}
+
+ion-checkbox {
+  --border-color: #a498d9; /* Blue border for checkbox */
+  --border-color-checked: #a498d9; /* Blue border when checked */
+  --background-checked: #a498d9; /* Blue background when checked */
+  --checkmark-color: #fff; /* White checkmark */
+  --border-radius: 4px; /* Slightly rounded corners for the checkbox */
+  width: 24px;
+  height: 24px;
+}
+
+ion-checkbox::part(container) {
+  border-width: 2px; /* Make border thicker */
+  border-style: solid;
+  border-color: #a498d9; /* Blue border for unchecked state */
+  background: #f1edff; /* Light purple background for unchecked state */
+  width: 24px;
+  height: 24px;
+}
+
+ion-checkbox.checkbox-checked::part(container) {
+  border-color: #a498d9; /* Ensure border color is blue when checked */
+  background: #a498d9; /* Ensure background is blue when checked */
 }
 
 .custom-range-item {
@@ -278,7 +308,7 @@ p.intro-p-left {
 
 .custom-ion-range::part(knob) {
   transform: scale(1); /* Prevent scaling on interaction */
-  border: 2px solid #6699FF !important; /* Ensure blue border is applied */
+  border: 2px solid #6699FF !important; /* Re-add blue border */
 }
 
 .custom-ion-range::part(knob):hover,
