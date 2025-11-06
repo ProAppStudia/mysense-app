@@ -138,18 +138,16 @@
             <div *ngIf="node.step_type === 'price'" class="custom-range-price">
               <div class="range-labels">
                 <span>{{ answers().min_price || getRangeMin(node) }}</span>
-                <span>{{ answers().max_price || getRangeMax(node) }}</span>
+                <span>{{ answers().max_price || getRangeMax(node) }} грн.</span>
               </div>
-              <input type="range"
-                     [min]="getRangeMin(node)" [max]="getRangeMax(node)"
-                     [value]="answers().min_price ?? getRangeMin(node)"
-                     (input)="setRange(node.step_type, {lower: $any($event.target).value, upper: answers().max_price ?? getRangeMax(node)})"
-                     class="custom-range-input">
-              <input type="range"
-                     [min]="getRangeMin(node)" [max]="getRangeMax(node)"
-                     [value]="answers().max_price ?? getRangeMax(node)"
-                     (input)="setRange(node.step_type, {lower: answers().min_price ?? getRangeMin(node), upper: $any($event.target).value})"
-                     class="custom-range-input">
+              <ion-range
+                [min]="getRangeMin(node)"
+                [max]="getRangeMax(node)"
+                [value]="{lower: answers().min_price ?? getRangeMin(node), upper: answers().max_price ?? getRangeMax(node)}"
+                (ionChange)="setRange(node.step_type, $event.detail.value)"
+                dualKnobs="true"
+                class="custom-ion-range"
+              ></ion-range>
             </div>
             <div *ngIf="node.step_type !== 'price'" class="custom-range-single">
               <input type="range"

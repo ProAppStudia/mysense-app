@@ -249,34 +249,26 @@ p.intro-p-left {
   color: var(--ion-color-dark);
 }
 
-.custom-range-input {
-  width: 100%;
-  -webkit-appearance: none;
-  height: 5px;
-  background: #d3d3d3;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
-  border-radius: 5px;
+.custom-ion-range {
+  padding: 0;
+  --bar-background: #e3e1e5;
+  --bar-background-active: #795bda;
+  --bar-height: 5px;
+  --bar-border-radius: 5px;
+  --knob-background: #795bda;
+  --knob-border-radius: 50%;
+  --knob-box-shadow: none;
+  --knob-size: 20px;
+  --height: 20px;
 }
 
-.custom-range-input::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--ion-color-primary);
-  cursor: pointer;
+.custom-ion-range::part(tick),
+.custom-ion-range::part(tick-active) {
+  background: #e3e1e5;
 }
 
-.custom-range-input::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--ion-color-primary);
-  cursor: pointer;
+.custom-ion-range::part(pin) {
+  display: none;
 }
 
 .custom-text-input input {
