@@ -60,7 +60,7 @@ export class DoctorService {
       map(response => response),
       catchError(error => {
         console.error('Error fetching test questions:', error);
-        return of({ step: {} }); // Return an object with an empty 'step' to prevent errors
+        return of(null);
       })
     );
   }
@@ -135,34 +135,50 @@ export class DoctorService {
       if (filters.search) {
         body.search = filters.search;
       }
-    }
 
-    return this.http.get<any>(this.apiUrl, { params }).pipe(
-      map(response => {
-        if (response && Array.isArray(response.doctors)) {
-          return response.doctors.map((doc: any) => this.transformToDoctorCardView(doc));
-        }
-        return [];
-      }),
-      catchError(error => {
-        console.error('Error fetching psychologists:', error);
-        return of([]); // On error, return an empty array
-      })
-    );
+      console.log('DoctorService: POST Body for getPsychologists (with filters):', JSON.stringify(body, null, 2));
+
+      return this.http.post(this.apiUrl, body, { params, responseType: 'text' }).pipe(
+        map(response => {
+          console.log('DoctorService: API Response for getPsychologists:', response);
+          try {
+            const data = JSON.parse(response);
+            if (data && Array.isArray(data.doctors)) {
+              return data.doctors.map((doc: any) => this.transformToDoctorCardView(doc));
+            }
+            return [];
+          } catch (e) {
+            console.error('Error parsing API response for POST:', e);
+            return [];
+          }
+        }),
+        catchError(error => {
+          console.error('Error fetching psychologists with POST:', error);
+          return of([]);
+        })
+      );
+    }
   }
 
   getDoctorProfile(doctorId: number | string): Observable<DoctorCardView | { error: string }> {
     const params = new HttpParams().set('action', 'get_doctor_profile').set('doctor_id', doctorId.toString());
 
-    return this.http.get<any>(this.apiUrl, { params }).pipe(
+    return this.http.get(this.apiUrl, { params, responseType: 'text' }).pipe(
       map(response => {
-        if (response.error) {
-          return { error: response.error };
+        try {
+          const data = JSON.parse(response);
+          if (data.error) {
+            return { error: data.error };
+          }
+          return this.transformToDoctorCardView(data);
+        } catch (e) {
+          if (response.includes('error')) {
+            return { error: 'An error occurred while fetching the doctor profile.' };
+          }
+          return { error: 'Invalid response format.' };
         }
-        return this.transformToDoctorCardView(response);
       }),
       catchError(error => {
-        console.error('Error fetching doctor profile:', error);
         return of({ error: 'Failed to fetch doctor profile.' });
       })
     );
