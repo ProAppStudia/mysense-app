@@ -371,8 +371,8 @@ ion-checkbox.checkbox-checked::part(container) {
 }
 
 .options-dropdown {
-  position: absolute;
-  top: 100%;
+  position: relative;
+  
   left: 0;
   right: 0;
   background: #fff;
@@ -380,13 +380,14 @@ ion-checkbox.checkbox-checked::part(container) {
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   z-index: 10;
   max-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
   transition: max-height 0.3s ease-out;
 }
 
 .options-dropdown.open {
   max-height: 200px; /* Adjust as needed */
-  border: 1px solid #e0e0e0;
+  margin-top: 20px;
+  
 }
 
 .option-item {

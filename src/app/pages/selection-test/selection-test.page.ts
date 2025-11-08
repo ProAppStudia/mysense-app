@@ -205,6 +205,12 @@ export class SelectionTestPage implements OnInit {
     if (!node) return false;
     const currentAnswers = this.answers(); // Access the signal's value
     const v = currentAnswers[node.step_type];
+
+    // Explicitly make 'client_age', 'format', 'gender', 'language', and 'doctor_age' mandatory
+    if (node.step_type === 'client_age' || node.step_type === 'format' || node.step_type === 'gender' || node.step_type === 'language' || node.step_type === 'doctor_age') {
+      return v !== undefined && v !== null && v !== '';
+    }
+
     if (node.required) {
       if (node.type === 'checkbox') return Array.isArray(v) && v.length > 0;
       if (node.type === 'text') return typeof v === 'string' && v.trim().length > 0;
