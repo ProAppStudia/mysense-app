@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { chevronDownOutline } from 'ionicons/icons';
 
-type View = 'type' | 'info' | 'step' | 'results';
+type View = 'type' | 'info' | 'step' | 'processing' | 'results';
 
 interface TestOption { id?: string | number; value?: any; text?: string; name?: string; }
 interface TestStepNode {
@@ -224,12 +224,19 @@ export class SelectionTestPage implements OnInit {
   }
 
   nextStep() {
-    // если финальный
-    if (this.node?.is_final) { this.submit(); return; }
-    let s = this.currentStep() + 1;
+    let nextStepNumber = this.currentStep() + 1;
     // пропускаем несуществующие шаги для этого type
-    while (this.schema?.step?.[s] && !this.schema.step[s][this.answers().type]) { s++; } // Access the signal's value
-    this.currentStep.set(s);
+    while (this.schema?.step?.[nextStepNumber] && !this.schema.step[nextStepNumber][this.answers().type]) {
+      nextStepNumber++;
+    }
+
+    // Check if the next step is the final one
+    if (this.schema?.step?.[nextStepNumber]?.[this.answers().type]?.is_final) {
+      this.submit();
+      return;
+    }
+
+    this.currentStep.set(nextStepNumber);
     this.visualStep.set(this.visualStep() + 1); // Increment visualStep
   }
 
@@ -257,7 +264,10 @@ export class SelectionTestPage implements OnInit {
         test_token: res?.test_token ?? '',
         is_doctor: !!res?.is_doctor
       };
-      this.view.set('results');
+      this.view.set('processing'); // Set to processing view
+      setTimeout(() => {
+        this.view.set('results'); // After 5 seconds, show results
+      }, 5000);
     } catch (e) { this.showErr(); }
     finally {
       this.loading.set(false);

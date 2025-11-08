@@ -195,12 +195,27 @@
                             <path class="arrow-icon" d="M15.5 8H1.5M1.5 8L8.5 15M1.5 8L8.5 1" stroke="#795BDA" stroke-width="1.5"></path>
                         </svg>
         </button>
-        <ion-button expand="block" *ngIf="node && !node.is_final" [disabled]="!validate(node)" (click)="nextStep()" class="next-button">Далі <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ion-button expand="block" *ngIf="node" [disabled]="!validate(node)" (click)="nextStep()" class="next-button">Далі <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M0.5 8H14.5M14.5 8L7.5 15M14.5 8L7.5 1" stroke="white" stroke-width="1.5"></path>
 </svg></ion-button>
-        <ion-button expand="block" *ngIf="node && node.is_final" color="primary" [disabled]="!validate(node)" (click)="submit()" class="next-button">Отримати результат</ion-button>
     </div>
     </ng-container>
+
+    <!-- Обробка результатів -->
+    <ng-container *ngSwitchCase="'processing'">
+      <div class="ion-text-center ion-padding-top">
+        <div class="hearts-container">
+          <ion-icon name="heart" class="heart-icon pink"></ion-icon>
+          <ion-icon name="heart" class="heart-icon pink"></ion-icon>
+          <ion-icon name="heart" class="heart-icon pink"></ion-icon>
+          <ion-icon name="heart" class="heart-icon light-pink"></ion-icon>
+          <ion-icon name="heart" class="heart-icon light-pink"></ion-icon>
+        </div>
+        <div class="test-heading-h2 ion-padding-top">Ви пройшли опитування до кінця. Дякуємо за довіру!</div>
+        <p class="intro-p">Ми врахували кожну відповідь і зараз підбираємо психолога, який максимально підходить саме вам — за вашими запитами й побажаннями.</p>
+      </div>
+    </ng-container>
+
 </div>
     <!-- Результати -->
     <ng-container *ngSwitchCase="'results'">

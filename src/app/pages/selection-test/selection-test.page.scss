@@ -479,7 +479,26 @@ ion-checkbox {
   display: flex;
   flex-direction: column;
   gap: 20px;
-      background: #f1edff;
+  background: #f1edff;
+}
+
+.hearts-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.heart-icon {
+  font-size: 30px;
+  margin: 0 5px;
+}
+
+.heart-icon.pink {
+  color: #ff69b4; /* Hot pink */
+}
+
+.heart-icon.light-pink {
+  color: #ffb6c1; /* Light pink */
 }
 ion-toolbar {
     --background: var(--ion-color-mysense-light-purple);
