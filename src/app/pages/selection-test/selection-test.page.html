@@ -174,11 +174,17 @@
 
       <!-- city select для offline -->
       <ng-container *ngIf="node.step_type==='format' && answers().format==='offline' && node.cities">
-          <div class="custom-select">
-            <select [value]="answers().city_id" (change)="setCity($any($event.target).value)">
-              <option value="" disabled selected>Оберіть місто</option>
-              <option *ngFor="let c of node.cities" [value]="c.city_id">{{ c.name }}</option>
-            </select>
+          <div class="custom-select-wrapper">
+            <div class="select-display" (click)="toggleCityDropdown()">
+              <span *ngIf="answers().city_id">{{ getCityName(answers().city_id) }}</span>
+              <span *ngIf="!answers().city_id" class="placeholder">Оберіть місто</span>
+              <ion-icon name="chevron-down-outline" [class.rotated]="cityDropdownOpen"></ion-icon>
+            </div>
+            <div class="options-dropdown" [class.open]="cityDropdownOpen">
+              <div class="option-item" *ngFor="let city of node.cities" (click)="setCity(city.city_id)">
+                {{ city.name }}
+              </div>
+            </div>
           </div>
       </ng-container>
     </div>

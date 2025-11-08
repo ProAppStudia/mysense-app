@@ -1,9 +1,11 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
+import { IonicModule, ToastController, LoadingController, IonIcon } from '@ionic/angular';
 import { DoctorService } from '../../services/doctor.service';
 import { Router } from '@angular/router';
+import { addIcons } from 'ionicons';
+import { chevronDownOutline } from 'ionicons/icons';
 
 type View = 'type' | 'info' | 'step' | 'results';
 
@@ -49,6 +51,7 @@ export class SelectionTestPage implements OnInit {
   currentStep = signal<number>(0);
   visualStep = signal<number>(0); // New signal for visual pagination
   schema: TestSchemaResponse | null = null;
+  cityDropdownOpen = false; // New property for dropdown state
 
   totalVisualSteps = computed(() => {
     const currentAnswers = this.answers(); // Access the signal's value
@@ -79,7 +82,9 @@ export class SelectionTestPage implements OnInit {
     private toast: ToastController,
     private loadingCtrl: LoadingController,
     private router: Router
-  ) {}
+  ) {
+    addIcons({ chevronDownOutline });
+  }
 
   async ngOnInit() {
     await this.loadSchema();
@@ -162,6 +167,7 @@ export class SelectionTestPage implements OnInit {
 
   setCity(value: number) {
     this.answers.update(ans => ({ ...ans, city_id: value })); // Update the signal
+    this.cityDropdownOpen = false; // Close the dropdown after selection
     console.log('Selected City ID:', value);
     console.log('Current Answers:', this.answers()); // Log the signal's value
   }
@@ -169,6 +175,18 @@ export class SelectionTestPage implements OnInit {
     this.answers.update(ans => ({ ...ans, child_age: value })); // Update the signal
     console.log('Set Child Age:', value);
     console.log('Current Answers:', this.answers()); // Log the signal's value
+  }
+
+  toggleCityDropdown() {
+    this.cityDropdownOpen = !this.cityDropdownOpen;
+  }
+
+  getCityName(cityId: number | undefined): string {
+    if (cityId === undefined) {
+      return 'Оберіть місто';
+    }
+    const city = this.node?.cities?.find(c => c.city_id === cityId);
+    return city ? city.name : 'Оберіть місто';
   }
 
   getRangeMin(node: TestStepNode): number {
