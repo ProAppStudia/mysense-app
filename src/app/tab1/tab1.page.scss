@@ -7,8 +7,8 @@ ion-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 500px; /* Limit content width for better readability */
-
+  max-width: 500px; 
+  gap: 30px;
 }
 
 .section-1-block {
@@ -52,7 +52,7 @@ ion-content {
   background-color: #a498d9; /* Purple background */
   border-radius: 16px;
   padding: 30px 20px;
-  margin-top: 30px;
+  
   width: 100%;
   max-width: 500px;
   display: flex;
@@ -219,8 +219,6 @@ ion-content {
   text-align: center;
 }
 .section-11 { /* Added section-11 back as a separate block */
-  margin-top: 40px;
-
   border-radius: 8px;
   text-align: center;
 }
@@ -305,7 +303,7 @@ ion-content {
 }
 
 .reviews-slider-section {
-  margin-top: 40px;
+  
   border-radius: 8px;
   text-align: center;
   width: 100%; /* Ensure it takes full width of its container */
@@ -315,7 +313,7 @@ ion-content {
 .reviews-swiper {
   width: 100%;
   height: auto; /* Adjust height based on content */
-  padding: 20px 0 40px 0; /* Increased bottom padding to make space for pagination */
+  padding: 20px 0 0px 0; /* Increased bottom padding to make space for pagination */
   display: block;
   --swiper-pagination-color: var(--ion-color-primary); /* Color of active pagination dot */
   --swiper-pagination-bullet-inactive-color: #999; /* Color of inactive pagination dots */
@@ -563,7 +561,6 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
 
 /* Diary Block Styles */
 .diary-block {
-  margin-bottom: 30px;
   width: 100%;
   max-width: 500px;
   text-align: left;
@@ -580,7 +577,6 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
 .diary-card {
   background-color: #fff;
   border-radius: 16px;
-  margin-top: 30px;
   padding: 20px;
   display: flex;
   flex-direction: column;

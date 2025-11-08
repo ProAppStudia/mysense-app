@@ -234,7 +234,8 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     private http: HttpClient,
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) {
+      addIcons({calendarOutline,arrowForwardOutline,addCircleOutline,chatbubblesOutline,checkmarkCircleOutline,bookOutline,closeOutline});}
 
   // ---------- LIFECYCLE ----------
   ngOnInit() {
