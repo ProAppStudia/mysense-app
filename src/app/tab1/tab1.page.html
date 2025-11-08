@@ -141,6 +141,16 @@
         </div>
       <ion-button expand="block" class="free-psychologists-button" routerLink="/tabs/filter">В каталог</ion-button>
     </div>
+<div class="diary-block">
+      
+      <div class="diary-card">
+        <ion-icon name="book-outline"></ion-icon>
+        <h3>Заповніть свій щоденник</h3>
+        <p>Не забувайте вести свій особистий щоденник, відстежувати настрій та записувати свої думки.</p>
+        <ion-button expand="block" class="add-diary-button" routerLink="/tabs/diary">Додати запис</ion-button>
+      </div>
+    </div>
+
     <!-- Section 3 -->
     <div class="free-consultation-banner">
       <span class="free-tag">це безкоштовно ;)</span>
@@ -162,7 +172,7 @@
                 <p class="review-text-content" [class.expanded]="review.showFullText">
                   {{ review.text }}
                 </p>
-                <button class="rewiew-more" *ngIf="review.text.length > TRUNCATE_LENGTH" fill="clear" size="small" (click)="toggleText(review)">
+                <button class="rewiew-more" fill="clear" size="small" (click)="toggleText(review)">
                   {{ review.showFullText ? 'Згорнути' : 'Показати ще' }}
                 </button>
                 <p class="review-date">{{ review.date }}</p>
