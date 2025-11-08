@@ -265,6 +265,7 @@ export class SelectionTestPage implements OnInit {
         is_doctor: !!res?.is_doctor
       };
       this.view.set('processing'); // Set to processing view
+      this.visualStep.set(this.totalVisualSteps()); // Mark all visual steps as complete
       setTimeout(() => {
         this.view.set('results'); // After 5 seconds, show results
       }, 5000);
