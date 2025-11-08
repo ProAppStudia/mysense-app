@@ -153,6 +153,24 @@
     <div class="reviews-container">
       <div class="reviews-slider-section">
         <h3>{{ homepageData.section_9.heading }}</h3>
+        <div class="swiper-navigation-container">
+          <ion-icon class="swiper-button-prev-custom" src="assets/icon/sl-arrow-left.svg" (click)="slidePrevReviews()"></ion-icon>
+          <swiper-container class="reviews-swiper" #reviewsSwiper [navigation]="false" slides-per-view="1" centered-slides="true">
+            <swiper-slide *ngFor="let review of homepageData.section_9.reviews">
+              <div class="review-slide-content">
+                <h3>{{ review.user_name }}</h3>
+                <p class="review-text-content" [class.expanded]="review.showFullText">
+                  {{ review.text }}
+                </p>
+                <button class="rewiew-more" *ngIf="review.text.length > TRUNCATE_LENGTH" fill="clear" size="small" (click)="toggleText(review)">
+                  {{ review.showFullText ? 'Згорнути' : 'Показати ще' }}
+                </button>
+                <p class="review-date">{{ review.date }}</p>
+              </div>
+            </swiper-slide>
+          </swiper-container>
+          <ion-icon class="swiper-button-next-custom" src="assets/icon/sl-arrow-right.svg" (click)="slideNextReviews()"></ion-icon>
+        </div>
         <swiper-container class="reviews-swiper" #reviewsSwiper [navigation]="true" slides-per-view="1" centered-slides="true">
           <swiper-slide *ngFor="let review of homepageData.section_9.reviews">
             <div class="review-slide-content">

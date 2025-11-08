@@ -184,6 +184,8 @@ interface HomepageData {
 export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('articlesSwiper') articlesSwiper?: ElementRef;
   @ViewChild('reviewsSwiper') reviewsSwiper?: ElementRef;
+  @ViewChild('swiperButtonPrevCustom', { read: ElementRef }) swiperButtonPrevCustom?: ElementRef;
+  @ViewChild('swiperButtonNextCustom', { read: ElementRef }) swiperButtonNextCustom?: ElementRef;
 
   homepageData: HomepageData | null = null;
   readonly TRUNCATE_LENGTH = 100;

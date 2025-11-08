@@ -298,7 +298,7 @@ ion-content {
   width: 100%;
   
   margin: 0 auto; /* Center the container */
-  
+      padding-bottom: 70px;
   box-sizing: border-box;
 }
 
@@ -892,4 +892,43 @@ ion-list.login-inputs.md.list-md.hydrated {
 .login-inputs ion-item {
     --background: white !important;
     --padding-bottom: 0;
+}
+
+.swiper-navigation-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swiper-button-prev-custom,
+.swiper-button-next-custom {
+  position: absolute;
+  bottom: -75px;
+  transform: translateY(-50%);
+  z-index: 10;
+  font-size: 40px; /* Adjust size as needed */
+  color: var(--ion-color-primary); /* Use primary color for icons */
+  cursor: pointer;
+  background-color: transparent; /* No background */
+  border: none; /* No border */
+  padding: 0; /* No padding */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swiper-button-prev-custom {
+  left: 20px; /* Position at the very left edge */
+}
+
+.swiper-button-next-custom {
+  left: 70px; /* Position at the very right edge */
+}
+
+/* Hide default Swiper navigation buttons */
+.reviews-swiper .swiper-button-prev,
+.reviews-swiper .swiper-button-next {
+  display: none;
 }
