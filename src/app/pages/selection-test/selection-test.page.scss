@@ -482,6 +482,20 @@ ion-checkbox {
   background: #f1edff;
 }
 
+.load-more-button {
+  --background: #795bda;
+  --background-activated: #6a4ecb;
+  --background-focused: #6a4ecb;
+  --background-hover: #6a4ecb;
+  --color: #fff;
+  height: 48px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  text-transform: none;
+  margin-top: 20px;
+}
+
 .hearts-container {
   display: flex;
   justify-content: center;

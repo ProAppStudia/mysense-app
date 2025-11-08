@@ -220,7 +220,7 @@
     <!-- Результати -->
     <ng-container *ngSwitchCase="'results'">
       <div class="psychologist-cards-container">
-        <ng-container *ngFor="let doctor of results">
+        <ng-container *ngFor="let doctor of allResults.slice(0, displayedResultsCount()); let i = index">
           <div class="psychologist-card">
             <div class="card-header">
               <img [src]="doctor.avatarUrl || 'assets/img/IMG_1743.jpeg'" alt="Psychologist" class="psychologist-avatar">
@@ -279,6 +279,7 @@
             </div>
           </div>
         </ng-container>
+        <ion-button expand="block" *ngIf="showLoadMoreButton()" (click)="loadMoreResults()" class="load-more-button">Завантажити ще</ion-button>
       </div>
 
       <ion-footer>

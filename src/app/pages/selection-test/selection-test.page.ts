@@ -5,7 +5,7 @@ import { IonicModule, ToastController, LoadingController, IonIcon } from '@ionic
 import { DoctorService } from '../../services/doctor.service';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { chevronDownOutline } from 'ionicons/icons';
+import { chevronDownOutline, heart } from 'ionicons/icons';
 
 type View = 'type' | 'info' | 'step' | 'processing' | 'results';
 
@@ -70,7 +70,13 @@ export class SelectionTestPage implements OnInit {
   });
   answers = signal<Answers>({ type: null as any }); // Initialize with type as null, will be set by pickType
   loading = signal<boolean>(false);
-  results: any[] = [];
+  allResults: any[] = []; // Store all fetched results
+  displayedResultsCount = signal<number>(4); // Number of results currently displayed
+  
+  showLoadMoreButton = computed(() => {
+    return this.displayedResultsCount() < this.allResults.length;
+  });
+
   meta: {
     doctor_counts: number;
     test_token: string;
@@ -83,7 +89,7 @@ export class SelectionTestPage implements OnInit {
     private loadingCtrl: LoadingController,
     private router: Router
   ) {
-    addIcons({ chevronDownOutline });
+    addIcons({ chevronDownOutline, heart });
   }
 
   async ngOnInit() {
@@ -258,7 +264,8 @@ export class SelectionTestPage implements OnInit {
     this.loading.set(true);
     try {
       const res = await this.api.postResults(payload).toPromise();
-      this.results = Array.isArray(res?.doctors) ? res.doctors.map(doc => this.api.transformToDoctorCardView(doc)) : [];  // Map to DoctorCardView
+      this.allResults = Array.isArray(res?.doctors) ? res.doctors.map(doc => this.api.transformToDoctorCardView(doc)) : [];  // Map to DoctorCardView
+      this.displayedResultsCount.set(4); // Reset to show initial 4 results
       this.meta = {
         doctor_counts: res?.doctor_counts ?? 0,
         test_token: res?.test_token ?? '',
@@ -273,6 +280,10 @@ export class SelectionTestPage implements OnInit {
     finally {
       this.loading.set(false);
     }
+  }
+
+  loadMoreResults() {
+    this.displayedResultsCount.update(count => Math.min(count + 4, this.allResults.length));
   }
 
   buildPayload() {
@@ -326,7 +337,8 @@ export class SelectionTestPage implements OnInit {
 
   resetAll() {
     this.answers.set({ type: null as any }); // Reset the signal
-    this.results = [];
+    this.allResults = []; // Clear all results
+    this.displayedResultsCount.set(4); // Reset displayed count
     this.meta = { doctor_counts: 0, test_token: '', is_doctor: false };
     this.currentStep.set(0);
     this.visualStep.set(0); // Reset visualStep
