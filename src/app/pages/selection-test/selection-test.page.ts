@@ -1,9 +1,9 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, signal, computed, Inject, PLATFORM_ID } from '@angular/core'; // Import Inject and PLATFORM_ID
+import { isPlatformBrowser, CommonModule } from '@angular/common'; // Import isPlatformBrowser
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule, ToastController, LoadingController, IonIcon } from '@ionic/angular';
 import { DoctorService } from '../../services/doctor.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { chevronDownOutline, heart } from 'ionicons/icons';
 
@@ -87,13 +87,79 @@ export class SelectionTestPage implements OnInit {
     private api: DoctorService,
     private toast: ToastController,
     private loadingCtrl: LoadingController,
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute, // Inject ActivatedRoute
+    @Inject(PLATFORM_ID) private platformId: Object // Inject PLATFORM_ID
   ) {
     addIcons({ chevronDownOutline, heart });
   }
 
   async ngOnInit() {
-    await this.loadSchema();
+    this.activatedRoute.queryParams.subscribe(async (params: any) => {
+      const testToken = params['test_token'];
+      if (testToken) {
+        // If a test_token is present, try to load results from cache first
+        const cachedData = this.loadResultsFromCache(testToken);
+        if (cachedData) {
+          this.allResults = cachedData.allResults;
+          this.displayedResultsCount.set(cachedData.displayedResultsCount);
+          this.meta = cachedData.meta;
+          this.view.set('results');
+          this.visualStep.set(this.totalVisualSteps());
+          this.loading.set(false);
+        } else {
+          // If not in cache, fetch from API
+          await this.loadResultsFromToken(testToken);
+        }
+      } else {
+        // Otherwise, load the schema to start a new test
+        await this.loadSchema();
+      }
+    });
+  }
+
+  async loadResultsFromToken(token: string) {
+    this.loading.set(true);
+    try {
+      const res = await this.api.getResultsByToken(token).toPromise();
+      this.allResults = Array.isArray(res?.doctors) ? res.doctors.map((doc: any) => this.api.transformToDoctorCardView(doc)) : [];
+      this.displayedResultsCount.set(4);
+      this.meta = {
+        doctor_counts: res?.doctor_counts ?? 0,
+        test_token: res?.test_token ?? token,
+        is_doctor: !!res?.is_doctor
+      };
+      this.view.set('results');
+      this.visualStep.set(this.totalVisualSteps());
+      this.saveResultsToCache(); // Save to cache after successful fetch
+    } catch (e) {
+      console.error('Error loading results by token:', e);
+      this.showErr();
+      await this.loadSchema();
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  private saveResultsToCache() {
+    if (isPlatformBrowser(this.platformId)) {
+      const dataToCache = {
+        allResults: this.allResults,
+        displayedResultsCount: this.displayedResultsCount(),
+        meta: this.meta
+      };
+      localStorage.setItem(`testResults_${this.meta.test_token}`, JSON.stringify(dataToCache));
+    }
+  }
+
+  private loadResultsFromCache(token: string): { allResults: any[], displayedResultsCount: number, meta: any } | null {
+    if (isPlatformBrowser(this.platformId)) {
+      const cachedData = localStorage.getItem(`testResults_${token}`);
+      if (cachedData) {
+        return JSON.parse(cachedData);
+      }
+    }
+    return null;
   }
 
   async loadSchema() {
@@ -273,6 +339,7 @@ export class SelectionTestPage implements OnInit {
       };
       this.view.set('processing'); // Set to processing view
       this.visualStep.set(this.totalVisualSteps()); // Mark all visual steps as complete
+      this.saveResultsToCache(); // Save to cache after successful submission
       setTimeout(() => {
         this.view.set('results'); // After 5 seconds, show results
       }, 5000);
@@ -343,10 +410,14 @@ export class SelectionTestPage implements OnInit {
     this.currentStep.set(0);
     this.visualStep.set(0); // Reset visualStep
     this.view.set('type');
+    if (isPlatformBrowser(this.platformId) && this.meta.test_token) {
+      localStorage.removeItem(`testResults_${this.meta.test_token}`); // Clear cache for this token
+    }
   }
 
   goToProfile(doctorId: string | number) {
-    this.router.navigate(['/tabs/therapist-profile', doctorId]);
+    // Pass the current test_token as a query parameter
+    this.router.navigate(['/tabs/therapist-profile', doctorId], { queryParams: { test_token: this.meta.test_token } });
   }
 
   getIconForOption(stepType: string, index: number): string {

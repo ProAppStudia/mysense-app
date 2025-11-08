@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
+import { TherapistProfilePage } from '../pages/therapist-profile/therapist-profile.page';
 
 export const routes: Routes = [
   {
@@ -55,7 +56,13 @@ export const routes: Routes = [
             (m) => m.HowToUsePage
           ),
       },
-      
+      {
+        path: 'therapist-profile/:id',
+        loadComponent: () =>
+          import('../pages/therapist-profile/therapist-profile.page').then(
+            (m) => m.TherapistProfilePage
+          ),
+      },
     ],
   },
   {

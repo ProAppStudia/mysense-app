@@ -43,6 +43,16 @@ export class DoctorService {
     );
   }
 
+  getResultsByToken(token: string): Observable<PostResultsResponse> {
+    const params = new HttpParams().set('action', 'get_test_results').set('test_token', token);
+    return this.http.get<PostResultsResponse>(this.apiUrl, { params }).pipe(
+      map(response => {
+        console.log('API Response (get_test_results by token):', response);
+        return response;
+      })
+    );
+  }
+
   // Original methods (restored)
   getTestQuestions(): Observable<any> {
     const params = new HttpParams().set('action', 'get_test_questions');

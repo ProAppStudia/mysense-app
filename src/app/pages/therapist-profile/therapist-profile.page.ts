@@ -1,10 +1,10 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common'; // Import Location
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonBackButton, IonButtons, IonIcon, IonButton } from '@ionic/angular/standalone';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router'; // Import Router
 import { addIcons } from 'ionicons';
-import { calendarOutline, chatbubbleEllipsesOutline } from 'ionicons/icons';
+import { calendarOutline, chatbubbleEllipsesOutline, arrowBackOutline } from 'ionicons/icons'; // Import arrowBackOutline
 import { DoctorService } from '../../services/doctor.service';
 import { DoctorCardView } from '../../models/doctor-card-view.model';
 import { register } from 'swiper/element/bundle';
@@ -35,40 +35,55 @@ export class TherapistProfilePage implements OnInit {
   
   constructor(
     private route: ActivatedRoute,
-    private doctorService: DoctorService
+    private doctorService: DoctorService,
+    private location: Location, // Inject Location service
+    private router: Router // Inject Router
   ) {
-    addIcons({ calendarOutline, chatbubbleEllipsesOutline });
+    addIcons({ calendarOutline, chatbubbleEllipsesOutline, arrowBackOutline }); // Add arrowBackOutline
   }
 
   ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.doctorService.getDoctorProfile(id).subscribe(data => {
-        this.doctor = data;
-        if (this.isDoctorCardView(this.doctor)) {
-          // Apply specific logic for therapist-profile page
-          if (this.doctor.rawWorkType === 'both' || this.doctor.rawWorkType === 'online') {
-            this.doctor.online = true;
-          } else {
-            this.doctor.online = false;
-          }
-          if (this.doctor.rawWorkType === 'both' || this.doctor.rawWorkType === 'offline') {
-            this.doctor.inPerson = true;
-          } else {
-            this.doctor.inPerson = false;
-          }
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.doctorService.getDoctorProfile(id).subscribe(data => {
+          this.doctor = data;
+          if (this.isDoctorCardView(this.doctor)) {
+            // Apply specific logic for therapist-profile page
+            if (this.doctor.rawWorkType === 'both' || this.doctor.rawWorkType === 'online') {
+              this.doctor.online = true;
+            } else {
+              this.doctor.online = false;
+            }
+            if (this.doctor.rawWorkType === 'both' || this.doctor.rawWorkType === 'offline') {
+              this.doctor.inPerson = true;
+            } else {
+              this.doctor.inPerson = false;
+            }
 
-          if (this.doctor.calendar) {
-            this.weeks = Object.values(this.doctor.calendar.weeks);
-            this.currentWeekIndex = this.weeks.findIndex(w => w.active);
+            if (this.doctor.calendar) {
+              this.weeks = Object.values(this.doctor.calendar.weeks);
+              this.currentWeekIndex = this.weeks.findIndex(w => w.active);
+            }
           }
-        }
-      });
-    }
+        });
+      }
+    });
   }
 
   isDoctorCardView(doctor: any): doctor is DoctorCardView {
     return doctor && doctor.id !== undefined;
+  }
+
+  goBack() {
+    const testToken = this.route.snapshot.queryParamMap.get('test_token');
+    if (testToken) {
+      // If there's a test_token, navigate back to the selection-test page with the token
+      this.router.navigate(['/tabs/tests'], { queryParams: { test_token: testToken } });
+    } else {
+      // Otherwise, use the default back navigation
+      this.location.back();
+    }
   }
 
   toggleDescription() {

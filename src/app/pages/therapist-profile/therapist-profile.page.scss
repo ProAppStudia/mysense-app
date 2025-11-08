@@ -5,6 +5,13 @@
 ion-content {
   --background: var(--ion-color-mysense-light-purple);
 }
+
+.custom-back-button {
+  --color: #2f264d; /* Set color for the custom back button */
+  font-size: 24px; /* Adjust icon size if needed */
+  height: 44px; /* Match default Ionic header button height */
+  width: 44px; /* Match default Ionic header button width */
+}
 .video-container {
   
   border-radius: 16px;
