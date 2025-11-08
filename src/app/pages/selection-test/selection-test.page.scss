@@ -557,6 +557,12 @@ ion-checkbox {
 .heart-icon.light-pink {
   color: #ffb6c1; /* Light pink */
 }
+
+.no-results-image {
+  width: 150px; /* Adjust size as needed */
+  height: auto;
+  margin-bottom: 20px;
+}
 ion-toolbar {
     --background: var(--ion-color-mysense-light-purple);
     box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);

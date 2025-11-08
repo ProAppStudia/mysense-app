@@ -219,7 +219,7 @@
 </div>
     <!-- Результати -->
     <ng-container *ngSwitchCase="'results'">
-      <div class="psychologist-cards-container">
+      <div *ngIf="allResults.length > 0" class="psychologist-cards-container">
         <ng-container *ngFor="let doctor of allResults.slice(0, displayedResultsCount()); let i = index">
           <div class="psychologist-card">
             <div class="card-header">
@@ -282,7 +282,14 @@
         <ion-button expand="block" *ngIf="showLoadMoreButton()" (click)="loadMoreResults()" class="load-more-button">Завантажити ще</ion-button>
       </div>
 
-      <ion-footer>
+      <div *ngIf="allResults.length === 0" class="ion-text-center ion-padding">
+        <img src="assets/icon/icon_not_found_results.svg" alt="No results" class="no-results-image">
+        <div class="test-heading-h2 ion-padding-top">Нам дуже шкода, але ми не змогли знайти психолога, який відповідає вашим критеріям та запитам</div>
+        <p class="intro-p">Ви можете переглянути свої відповіді та змінити деякі параметри — це збільшить кількість доступних фахівців. Якщо потрібна допомога, наша служба підтримки завжди поруч</p>
+        <ion-button expand="block" (click)="resetAll()" class="next-button">Заповнити анкету ще раз</ion-button>
+      </div>
+
+      <ion-footer *ngIf="allResults.length > 0">
         <ion-toolbar>
           <ion-button expand="block" (click)="resetAll()">Спробувати ще раз</ion-button>
         </ion-toolbar>
