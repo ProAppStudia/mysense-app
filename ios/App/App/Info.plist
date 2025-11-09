@@ -45,30 +45,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-
-	<!-- App Transport Security (ATS) — точкові винятки для наших доменів -->
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<false/>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>mysense.care</key>
-			<dict>
-				<key>NSIncludesSubdomains</key><true/>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key><false/>
-				<key>NSExceptionRequiresForwardSecrecy</key><true/>
-				<key>NSRequiresCertificateTransparency</key><false/>
-			</dict>
-			<key>www.mysense.care</key>
-			<dict>
-				<key>NSIncludesSubdomains</key><false/>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key><false/>
-				<key>NSExceptionRequiresForwardSecrecy</key><true/>
-				<key>NSRequiresCertificateTransparency</key><false/>
-			</dict>
-		</dict>
-	</dict>
-
 </dict>
 </plist>
