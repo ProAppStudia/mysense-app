@@ -2,7 +2,6 @@
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-
   <div class="login-buttons" *ngIf="!isLoggedIn()">
     <button class="login-button" (click)="openLoginModal()">
       <ion-icon slot="start" src="assets/icon/sing-in.svg"></ion-icon>
@@ -35,18 +34,13 @@
               Перенести
               <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
             </ion-button>
-            <ion-button
-              fill="clear"
-              [ngClass]="{ 'pay-button': i === 0, 'cancel-button': i !== 0 }"
-              (click)="i === 0 ? paySession(session.id) : cancelSession(session.id)"
-            >
+            <ion-button fill="clear" [class]="i === 0 ? 'pay-button' : 'cancel-button'" (click)="i === 0 ? paySession(session.id) : cancelSession(session.id)">
               {{ i === 0 ? 'Оплатити' : 'Скасувати' }}
               <ion-icon slot="end" [name]="i === 0 ? 'wallet-outline' : 'close-outline'"></ion-icon>
             </ion-button>
           </div>
         </div>
       </div>
-
       <ion-button expand="block" class="book-session-button">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
         Забронювати сесію
@@ -59,42 +53,25 @@
 
     <!-- Tasks Block -->
     <div *ngIf="isLoggedIn()" class="diary-block">
+      
       <div class="diary-card">
-        <ion-icon name="checkmark-circle-outline"></ion-icon>
+       <ion-icon name="checkmark-circle-outline"></ion-icon>
         <h3>Мої завдання</h3>
         <p>Переглядайте та керуйте своїми завданнями, щоб залишатися організованими.</p>
         <ion-button expand="block" class="add-diary-button">Дивитись завдання</ion-button>
       </div>
     </div>
 
+   
+
     <div class="section-1-block">
       <h1 class="main-title">{{ homepageData.section_1.heading }}</h1>
       <p class="description-text">{{ homepageData.section_1.sub_heading }}</p>
-      <ion-button expand="block" class="select-psychologist-button" routerLink="/tabs/tests">
-        {{ homepageData.section_1.button_test_text }}
-      </ion-button>
-      <p class="or-text">{{ homepageData.section_1.text_choise_psyhologist }}</p>
-
-      <div class="doctor-list">
-        <div *ngFor="let doctor of homepageData.doctors | slice:0:6" class="doctor-card">
-          <img [src]="'https://mysense.care' + doctor.img" alt="{{ doctor.firstname }}">
-        </div>
-      </div>
-
-      <ion-button expand="block" class="free-psychologists-button" routerLink="/tabs/filter">
-        Вільні психологи
-      </ion-button>
+      <ion-button expand="block" class="select-psychologist-button" routerLink="/tabs/tests">{{ homepageData.section_1.button_test_text }}</ion-button>
+      
     </div>
-
-    <!-- Diary Block -->
-    <div class="diary-block">
-      <div class="diary-card">
-        <ion-icon name="book-outline"></ion-icon>
-        <h3>Заповніть свій щоденник</h3>
-        <p>Не забувайте вести свій особистий щоденник, відстежувати настрій та записувати свої думки.</p>
-        <ion-button expand="block" class="add-diary-button" routerLink="/tabs/diary">Додати запис</ion-button>
-      </div>
-    </div>
+ <!-- Diary Block -->
+    
 
    
     <!-- How It Works Section -->
@@ -103,30 +80,22 @@
       <div class="step">
         <p class="step-number">01</p>
         <h3 class="step-title">Пройдіть тест</h3>
-        <p class="step-description">
-          Пройдіть короткий, але ефективний тест і ми запропонуємо фахівців, які максимально підходять до вашого запиту
-        </p>
+        <p class="step-description">Пройдіть короткий, але ефективний тест і ми запропонуємо фахівців, які максимально підходять до вашого запиту</p>
       </div>
       <div class="step">
         <p class="step-number">02</p>
         <h3 class="step-title">Оберіть психолога</h3>
-        <p class="step-description">
-          Перегляньте профілі запропонованих психологів та оберіть того, хто вам найбільше сподобався
-        </p>
+        <p class="step-description">Перегляньте профілі запропонованих психологів та оберіть того, хто вам найбільше сподобався</p>
       </div>
       <div class="step">
         <p class="step-number">03</p>
         <h3 class="step-title">Забронюйте консультацію</h3>
-        <p class="step-description">
-          Оберіть зручний для вас час із графіка вільних годин, забронюйте цей час та здійсніть оплату через безпечну платіжну систему.
-        </p>
+        <p class="step-description">Оберіть зручний для вас час із графіка вільних годин, забронюйте цей час та здійсніть оплату через безпечну платіжну систему.</p>
       </div>
       <div class="step">
         <p class="step-number">04</p>
         <h3 class="step-title">Працюйте з психологом в обраному форматі</h3>
-        <p class="step-description">
-          Онлайн-зустрічі проходять за посиланням, які ви будете отримувати в чаті свого особистого профілю. Очні зустрічі проходять у кабінеті психолога.
-        </p>
+        <p class="step-description">Онлайн-зустрічі проходять за посиланням, які ви будете отримувати в чаті свого особистого профілю. Очні зустрічі проходять у кабінеті психолога.</p>
       </div>
     </div>
 <div class="section-1-block">
@@ -179,26 +148,6 @@
           </swiper-container>
           <ion-icon class="swiper-button-next-custom" src="assets/icon/sl-arrow-right.svg" (click)="slideNextReviews()"></ion-icon>
         </div>
-        <swiper-container class="reviews-swiper" #reviewsSwiper [navigation]="true" slides-per-view="1" centered-slides="true">
-          <swiper-slide *ngFor="let review of homepageData.section_9.reviews">
-            <div class="review-slide-content">
-              <h3>{{ review.user_name }}</h3>
-              <p class="review-text-content" [class.expanded]="review.showFullText">
-                {{ review.text }}
-              </p>
-              <button
-                class="rewiew-more"
-                *ngIf="review.text.length > TRUNCATE_LENGTH"
-                fill="clear"
-                size="small"
-                (click)="toggleText(review)"
-              >
-                {{ review.showFullText ? 'Згорнути' : 'Показати ще' }}
-              </button>
-              <p class="review-date">{{ review.date }}</p>
-            </div>
-          </swiper-slide>
-        </swiper-container>
       </div>
     </div>
 
@@ -206,7 +155,7 @@
     <div class="section-10">
       <h2>{{ homepageData.section_10.heading }}</h2>
       <ion-accordion-group>
-        <ion-accordion *ngFor="let item of homepageData.section_10.items" [value]="item.heading" toggleIcon="add-outline" toggleIconSlot="end">
+        <ion-accordion *ngFor="let item of homepageData.section_10.items" value="{{ item.heading }}" toggleIcon="add-outline" toggleIconSlot="end">
           <ion-item slot="header">
             <ion-label>{{ item.heading }}</ion-label>
           </ion-item>
@@ -215,7 +164,7 @@
           </div>
         </ion-accordion>
       </ion-accordion-group>
-      <!-- <ion-button expand="block">{{ homepageData.section_10.text_button }}</ion-button> -->
+     <!-- <ion-button expand="block">{{ homepageData.section_10.text_button }}</ion-button>-->
     </div>
  <!-- Tests Block -->
   <div class="tests-block">
@@ -228,20 +177,20 @@
         <div class="articles-slider-container">
           <swiper-container class="articles-swiper" #articlesSwiper [pagination]="true" slides-per-view="1" centered-slides="true">
             <swiper-slide *ngFor="let article of homepageData.section_11.articles">
-              <div class="article-card">
-                <img [src]="article.img" alt="{{ article.title }}">
-                <h3>{{ article.title }}</h3>
-                <p>{{ article.short_description }}</p>
-                <p class="article-date">{{ article.date }}</p>
-              </div>
+            <div class="article-card">
+              <img [src]="article.img" alt="{{ article.title }}">
+              <h3>{{ article.title }}</h3>
+              <p>{{ article.short_description }}</p>
+              <p class="article-date">{{ article.date }}</p>
+            </div>
             </swiper-slide>
           </swiper-container>
         </div>
       </div>
     </div>
+
   </div>
 
-  <!-- Login Modal -->
   <ion-modal [isOpen]="loginOpen()" (willDismiss)="closeLoginModal()">
     <ng-template>
       <ion-header>
@@ -259,7 +208,6 @@
             <h1 class="ion-text-center">Вхід в особистий кабінет</h1>
             <p class="ion-text-center">Увійдіть до свого облікового запису</p>
           </ion-text>
-
           <ion-list class="login-inputs">
             <ion-item>
               <ion-input
@@ -355,6 +303,14 @@
             <ion-text color="danger" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
               <p class="ion-padding-start" *ngIf="registerForm.get('email')?.errors?.['required']">Ел. адреса обов'язкова.</p>
               <p class="ion-padding-start" *ngIf="registerForm.get('email')?.errors?.['email']">Будь ласка, введіть дійсну ел. адресу.</p>
+            </ion-text>
+
+            <ion-item>
+              <ion-input label="Телефон" labelPlacement="floating" formControlName="phone" inputmode="tel" type="tel"></ion-input>
+            </ion-item>
+            <ion-text color="danger" *ngIf="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched">
+              <p class="ion-padding-start" *ngIf="registerForm.get('phone')?.errors?.['required']">Телефон обов'язковий.</p>
+              <p class="ion-padding-start" *ngIf="registerForm.get('phone')?.errors?.['pattern']">Будь ласка, введіть дійсний номер телефону.</p>
             </ion-text>
 
             <ion-item>
