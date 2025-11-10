@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, Inject, PLATFORM_ID } from '@angular/core'; // Import Inject and PLATFORM_ID
+import { Component, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, signal, computed, Inject, PLATFORM_ID } from '@angular/core'; // Import Inject and PLATFORM_ID
 import { isPlatformBrowser, CommonModule } from '@angular/common'; // Import isPlatformBrowser
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule, ToastController, LoadingController, IonIcon } from '@ionic/angular';
@@ -46,7 +46,9 @@ type Answers = {
   templateUrl: './selection-test.page.html',
   styleUrls: ['./selection-test.page.scss']
 })
-export class SelectionTestPage implements OnInit {
+export class SelectionTestPage implements OnInit, AfterViewInit {
+  @ViewChildren('rangeInput') rangeInputs!: QueryList<ElementRef<HTMLInputElement>>;
+
   view = signal<View>('type');
   currentStep = signal<number>(0);
   visualStep = signal<number>(0); // New signal for visual pagination
@@ -116,6 +118,37 @@ export class SelectionTestPage implements OnInit {
         await this.loadSchema();
       }
     });
+  }
+
+  ngAfterViewInit() {
+    // Ensure this runs only in the browser
+    if (isPlatformBrowser(this.platformId)) {
+      this.updateRangeBackground();
+      this.rangeInputs.forEach(input => {
+        input.nativeElement.addEventListener('input', () => this.updateRangeBackground());
+      });
+    }
+  }
+
+  updateRangeBackground() {
+    const node = this.node;
+    if (!node || node.step_type !== 'price' || !node.options || !('min' in node.options) || !this.rangeInputs) {
+      return;
+    }
+
+    const min = this.getRangeMin(node);
+    const max = this.getRangeMax(node);
+    const lower = this.answers().min_price ?? min;
+    const upper = this.answers().max_price ?? max;
+
+    const percent1 = ((lower - min) / (max - min)) * 100;
+    const percent2 = ((upper - min) / (max - min)) * 100;
+
+    // Assuming the parent div of the range inputs has the class 'range-slider'
+    const rangeSlider = this.rangeInputs.first?.nativeElement.parentElement as HTMLElement;
+    if (rangeSlider) {
+      rangeSlider.style.background = `linear-gradient(to right, #ddd ${percent1}%, rgb(113, 144, 249) ${percent1}%, rgb(113, 144, 249) ${percent2}%, #ddd ${percent2}%)`;
+    }
   }
 
   async loadResultsFromToken(token: string) {

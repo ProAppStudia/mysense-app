@@ -142,15 +142,10 @@
                 <span>{{ answers().min_price || getRangeMin(node) }}</span>
                 <span>{{ answers().max_price || getRangeMax(node) }} грн.</span>
               </div>
-              <ion-range
-                [min]="getRangeMin(node)"
-                [max]="getRangeMax(node)"
-                [value]="{lower: answers().min_price ?? getRangeMin(node), upper: answers().max_price ?? getRangeMax(node)}"
-                (ionInput)="setRange(node.step_type, $event.detail.value)"
-                dualKnobs="true"
-                [step]="100"
-                class="custom-ion-range"
-              ></ion-range>
+              <div class="range-slider">
+                <input #rangeInput type="range" [min]="getRangeMin(node)" [max]="getRangeMax(node)" [value]="answers().min_price ?? getRangeMin(node)" (input)="setRange(node.step_type, {lower: $any($event.target).value, upper: answers().max_price ?? getRangeMax(node)})" step="100">
+                <input #rangeInput type="range" [min]="getRangeMin(node)" [max]="getRangeMax(node)" [value]="answers().max_price ?? getRangeMax(node)" (input)="setRange(node.step_type, {lower: answers().min_price ?? getRangeMin(node), upper: $any($event.target).value})" step="100">
+              </div>
             </div>
             <div *ngIf="node.step_type !== 'price'" class="custom-range-single">
               <ion-range

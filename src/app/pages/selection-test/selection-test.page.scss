@@ -276,48 +276,61 @@ ion-checkbox.checkbox-checked::part(container) {
   margin-bottom: 10px;
 }
 
-.custom-ion-range {
-  padding: 0;
-  --bar-background: #e3e1e5; /* Inactive track color */
-  --bar-background-active: #6699FF; /* Active track color - lighter blue */
-  --bar-height: 10px;
-  --bar-border-radius: 5px;
-  --knob-background: #ffffff; /* Knob background color */
-  --knob-border-radius: 50%;
-  --knob-box-shadow: none; /* Remove knob shadow */
-  --knob-size: 30px; /* Fixed knob size */
-  --height: 30px; /* Adjust height to match knob size */
-  --knob-border: 2px solid #6699FF; /* Blue border for knob */
-  --knob-focus-shadow: none; /* Remove focus shadow */
+.custom-range-group {
+  margin-top: 20px;
 }
 
-.custom-ion-range::part(tick),
-.custom-ion-range::part(tick-active) {
-  background: #e3e1e5;
+.custom-range-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #2f264d;
 }
 
-.custom-ion-range::part(pin) {
-  display: none;
+.range-slider {
+  position: relative;
+  height: 10px;
+  background: #ddd;
+  border-radius: 5px;
+  margin-top: 20px;
 }
 
-.custom-ion-range::part(knob) {
-  transform: scale(1); /* Prevent scaling on interaction */
-  border: 2px solid #6699FF !important; /* Re-add blue border */
+.range-slider input[type="range"] {
+  position: absolute;
+  width: 100%;
+  height: 10px;
+  -webkit-appearance: none;
+  background: none;
+  pointer-events: none;
 }
 
-.custom-ion-range::part(knob):hover,
-.custom-ion-range::part(knob):active,
-.custom-ion-range::part(knob):focus {
-  border: 2px solid #6699FF !important; /* Ensure blue border on hover, active, or focus */
-  box-shadow: none !important; /* Ensure no shadow on hover, active, or focus */
+.range-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #7190f9;
+  cursor: pointer;
+  pointer-events: all;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.custom-ion-range::part(bar) {
-  box-shadow: none; /* Remove shadow from the bar */
-}
-
-.custom-ion-range::part(bar-active) {
-  box-shadow: none; /* Remove shadow from the active bar */
+.range-slider input[type="range"]::-moz-range-thumb {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #7190f9;
+  cursor: pointer;
+  pointer-events: all;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
 .custom-text-input input {
