@@ -28,11 +28,22 @@ export class FilterModalComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     // Initialize filters with defaults or values from initialFilters
+    let initialLanguage = this.initialFilters.language || null;
+    // If initialLanguage is an ID, convert it back to code for display
+    if (initialLanguage && typeof initialLanguage === 'number') {
+      const languageObj = this.languages.find(lang => lang.id === initialLanguage);
+      if (languageObj) {
+        initialLanguage = languageObj.code;
+      } else {
+        initialLanguage = null;
+      }
+    }
+
     this.filters = {
       type: this.initialFilters.type || null,
       format: this.initialFilters.format || null,
       gender: this.initialFilters.gender || null,
-      language: this.initialFilters.language || null,
+      language: initialLanguage,
       priceRange: this.initialFilters.priceRange || { lower: this.prices.min_price, upper: this.prices.max_price },
       city_id: this.initialFilters.city_id || null,
       direction_id: this.initialFilters.direction_id || null,
@@ -42,7 +53,7 @@ export class FilterModalComponent implements OnInit, AfterViewInit {
       type: null,
       format: null,
       gender: null,
-      language: null,
+      language: null, // Default language should be null or 'any' code, not ID
       priceRange: { lower: this.prices.min_price, upper: this.prices.max_price },
       city_id: null,
       direction_id: null,
