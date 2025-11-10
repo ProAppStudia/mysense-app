@@ -123,32 +123,34 @@ export class SelectionTestPage implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     // Ensure this runs only in the browser
     if (isPlatformBrowser(this.platformId)) {
-      this.updateRangeBackground();
+      // this.updateRangeBackground(); // No longer needed
       this.rangeInputs.forEach(input => {
-        input.nativeElement.addEventListener('input', () => this.updateRangeBackground());
+        input.nativeElement.addEventListener('input', () => {
+          // Trigger change detection or update relevant properties if needed
+          // For now, the template bindings will handle the updates
+        });
       });
     }
   }
 
   updateRangeBackground() {
-    const node = this.node;
-    if (!node || node.step_type !== 'price' || !node.options || !('min' in node.options) || !this.rangeInputs) {
-      return;
-    }
+    // This method is no longer needed as the styling is handled by CSS and Angular bindings
+    // The range-fill div in HTML will use getRangeFillLeft and getRangeFillWidth
+  }
 
+  getRangeFillLeft(node: TestStepNode): number {
+    const min = this.getRangeMin(node);
+    const max = this.getRangeMax(node);
+    const lower = this.answers().min_price ?? min;
+    return ((lower - min) / (max - min)) * 100;
+  }
+
+  getRangeFillWidth(node: TestStepNode): number {
     const min = this.getRangeMin(node);
     const max = this.getRangeMax(node);
     const lower = this.answers().min_price ?? min;
     const upper = this.answers().max_price ?? max;
-
-    const percent1 = ((lower - min) / (max - min)) * 100;
-    const percent2 = ((upper - min) / (max - min)) * 100;
-
-    // Assuming the parent div of the range inputs has the class 'range-slider'
-    const rangeSlider = this.rangeInputs.first?.nativeElement.parentElement as HTMLElement;
-    if (rangeSlider) {
-      rangeSlider.style.background = `linear-gradient(to right, #ddd ${percent1}%, rgb(113, 144, 249) ${percent1}%, rgb(113, 144, 249) ${percent2}%, #ddd ${percent2}%)`;
-    }
+    return ((upper - lower) / (max - min)) * 100;
   }
 
   async loadResultsFromToken(token: string) {

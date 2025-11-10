@@ -45,10 +45,12 @@
 
 html, body, ion-app {
   height: 100vh; /* Use viewport height to ensure full screen */
+  font-family: "Golos Text", sans-serif !important;
+  --ion-default-font: "Golos Text", sans-serif !important;
 }
 
 body {
-  font-family: "Golos Text", sans-serif;
+  font-family: "Golos Text", sans-serif !important;
 }
 
 ion-content {

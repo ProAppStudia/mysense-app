@@ -143,6 +143,7 @@
                 <span>{{ answers().max_price || getRangeMax(node) }} грн.</span>
               </div>
               <div class="range-slider">
+                <div class="range-fill" [style.left.%]="getRangeFillLeft(node)" [style.width.%]="getRangeFillWidth(node)"></div>
                 <input #rangeInput type="range" [min]="getRangeMin(node)" [max]="getRangeMax(node)" [value]="answers().min_price ?? getRangeMin(node)" (input)="setRange(node.step_type, {lower: $any($event.target).value, upper: answers().max_price ?? getRangeMax(node)})" step="100">
                 <input #rangeInput type="range" [min]="getRangeMin(node)" [max]="getRangeMax(node)" [value]="answers().max_price ?? getRangeMax(node)" (input)="setRange(node.step_type, {lower: answers().min_price ?? getRangeMin(node), upper: $any($event.target).value})" step="100">
               </div>

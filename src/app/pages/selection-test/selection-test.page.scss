@@ -89,7 +89,7 @@ p.intro-p-left {
 
 .selection-card.selected {
   
-  border: 1px solid #a498d9;
+  border: 2px solid #a498d9;
 }
 
 
@@ -109,7 +109,7 @@ p.intro-p-left {
 
 .card-text {
   font-size: 20px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--ion-color-dark);
 }
 
@@ -195,7 +195,7 @@ p.intro-p-left {
 .custom-label {
   flex-grow: 1;
   font-size: 17px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--ion-color-dark);
   text-align: left;
 }
@@ -295,6 +295,15 @@ ion-checkbox.checkbox-checked::part(container) {
   background: #ddd;
   border-radius: 5px;
   margin-top: 20px;
+  position: relative; /* Add position relative to contain the fill */
+}
+
+.range-fill {
+  position: absolute;
+  height: 100%;
+  background: #7190F9; /* Blue color for the fill */
+  border-radius: 5px;
+  z-index: 1; /* Ensure it's below the thumbs but above the track */
 }
 
 .range-slider input[type="range"] {
