@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@a
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonToolbar, IonContent, IonButton, IonIcon, IonButtons, ModalController, IonSearchbar, PopoverController, RefresherCustomEvent } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { filterCircleOutline, swapVerticalOutline, arrowUpOutline, arrowDownOutline, closeOutline, filterOutline } from 'ionicons/icons';
+import { filterCircleOutline, swapVerticalOutline, arrowUpOutline, arrowDownOutline, closeOutline, filterOutline, searchOutline } from 'ionicons/icons';
 import { DoctorService } from '../services/doctor.service';
 import { CityService } from '../services/city.service'; // Import CityService
 import { DoctorCardView } from '../models/doctor-card-view.model';
@@ -15,7 +15,7 @@ import { HttpClientModule } from '@angular/common/http'; // Import HttpClientMod
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
-  imports: [IonToolbar, IonContent, IonButton, IonIcon, IonButtons, CommonModule, IonSearchbar, HttpClientModule], // Add HttpClientModule
+  imports: [IonToolbar, IonContent, IonButton, IonIcon, IonButtons, CommonModule, HttpClientModule], // Removed IonSearchbar
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class Tab2Page implements OnInit {
@@ -41,7 +41,7 @@ export class Tab2Page implements OnInit {
     private modalController: ModalController,
     private popoverController: PopoverController
   ) {
-    addIcons({ filterCircleOutline, swapVerticalOutline, arrowUpOutline, arrowDownOutline, closeOutline, filterOutline });
+    addIcons({ filterCircleOutline, swapVerticalOutline, arrowUpOutline, arrowDownOutline, closeOutline, filterOutline, searchOutline });
   }
 
   ngOnInit() {

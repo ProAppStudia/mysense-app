@@ -8,16 +8,6 @@ ion-toolbar {
     --background: var(--ion-color-mysense-light-purple);
     box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
 }
-ion-searchbar ion-icon {
-    top: 7px !important;
-    width: 1.3125rem;
-    height: 1.3125rem;
-}
-input.searchbar-input.sc-ion-searchbar-md {
-    height: 34px;
-    background: white;
-        border-radius: 8px;
-}
 ion-button.filter-btn {
     font-size: 14px;
     background: #ffffff;
@@ -223,25 +213,33 @@ ion-toolbar ion-buttons ion-button ion-icon {
     margin-right: 5px;
 }
 
-ion-searchbar {
-  --padding-start: 0;
-  --padding-end: 0;
-  --box-shadow: none;
-  --border-radius: 10px;
-  --background: #f0f0f0;
-  padding: 0 0 0 10px;
+.custom-searchbar {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 0 10px;
+  height: 32px;
 }
 
-ion-searchbar::part(search-icon) {
-  color: var(--ion-color-primary);
-  order: 2;
-  padding-left: 10px;
+.custom-searchbar .search-icon {
+  font-size: 20px;
+  color: #9895a6;
+  margin-right: 8px;
 }
 
-:host ::ng-deep .searchbar-input.sc-ion-searchbar-md {
-  padding-inline-end: 5px !important;
-  background: white;
-    height: 34px;
+.custom-searchbar input {
+  flex-grow: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #423f4d;
+  background: transparent;
+}
+
+.custom-searchbar input::placeholder {
+  color: #9895a6;
 }
 
 .sort-select {
@@ -258,8 +256,4 @@ ion-searchbar::part(search-icon) {
 
 .sort-select::part(icon) {
   display: none;
-}
-ion-searchbar.searchbar-input.sc-ion-searchbar-md {
-    -webkit-padding-end: 0 !important;
-    padding-inline-end: 0 !important;
 }
