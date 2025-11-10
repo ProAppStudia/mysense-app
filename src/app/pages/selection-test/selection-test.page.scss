@@ -88,17 +88,11 @@ p.intro-p-left {
 }
 
 .selection-card.selected {
-  background: #a498d9;
-  color: #fff;
+  
+  border: 1px solid #a498d9;
 }
 
-.selection-card.selected .card-text {
-  color: #fff;
-}
 
-.selection-card.selected .card-image {
-  filter: brightness(0) invert(1);
-}
 
 .selection-card.selected .card-icon {
   color: #fff;
