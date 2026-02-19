@@ -252,6 +252,32 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  get bannerDescriptionRaw(): string {
+    const value = this.homepageData?.section_1.banner_description_for;
+
+    if (Array.isArray(value)) {
+      return value.map((item) => String(item).trim()).filter(Boolean).join(' • ');
+    }
+
+    return typeof value === 'string' ? value.trim() : '';
+  }
+
+  get bannerDescriptionItems(): string[] {
+    const rawDescription = this.bannerDescriptionRaw;
+
+    if (!rawDescription) {
+      return [];
+    }
+
+    const parsedItems = rawDescription
+      .replace(/\s{2,}/g, ' ')
+      .split(/\s*(?:•|·|●|\||\/|,|;)\s*/)
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
+
+    return parsedItems.length > 1 ? parsedItems : [];
+  }
+
   rescheduleSession(sessionId: number) {
     console.log('Reschedule session:', sessionId);
     // Add your reschedule logic here
