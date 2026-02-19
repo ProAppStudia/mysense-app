@@ -54,6 +54,42 @@ export interface DoctorStatsResponse {
   viewed_webinars?: number | string;
 }
 
+export interface WorkScheduleDayTime {
+  time: string;
+  time_int: number;
+  is_work: boolean;
+}
+
+export interface WorkScheduleDay {
+  day_name: string;
+  month_name: string;
+  day_no: string;
+  date: string;
+  is_today: boolean;
+  times: WorkScheduleDayTime[];
+}
+
+export interface WorkScheduleVariant {
+  value: number;
+  text: string;
+  selected: boolean;
+}
+
+export interface DoctorWorkScheduleResponse {
+  error?: string;
+  status?: number;
+  google_clandar?: string;
+  not_booking_time?: number;
+  status_variants?: Record<string, WorkScheduleVariant>;
+  not_booking_time_variants?: Record<string, WorkScheduleVariant>;
+  google_instruction?: string;
+  google_service_email?: string;
+  additional_calendars?: string[];
+  work_hours?: any[];
+  current_date?: string;
+  calendar?: Record<string, WorkScheduleDay>;
+}
+
 type RegisterPayload = {
   name: string;
   surname: string;
@@ -77,6 +113,7 @@ export class AuthService {
   private readonly PROFILE_URL = `${environment.baseUrl}/connector.php?action=get_my_profile`;
   private readonly UPDATE_PROFILE_URL = `${environment.baseUrl}/connector.php?action=set_my_profile`;
   private readonly DOCTOR_STATS_URL = `${environment.baseUrl}/connector.php?action=get_my_doctor_stats`;
+  private readonly DOCTOR_WORK_SCHEDULE_URL = `${environment.baseUrl}/connector.php?action=get_my_work_schedule`;
 
   constructor(
     private http: HttpClient,
@@ -238,5 +275,9 @@ export class AuthService {
   getMyDoctorStats(period: 'day' | 'week' | 'month' | 'half_year' = 'week'): Observable<DoctorStatsResponse> {
     const params = new HttpParams().set('period', period);
     return this.http.get<DoctorStatsResponse>(this.DOCTOR_STATS_URL, { params });
+  }
+
+  getMyWorkSchedule(): Observable<DoctorWorkScheduleResponse> {
+    return this.http.get<DoctorWorkScheduleResponse>(this.DOCTOR_WORK_SCHEDULE_URL);
   }
 }

@@ -10,7 +10,7 @@ import { addIcons } from 'ionicons';
 import {
   personCircleOutline, createOutline, calendarOutline, addCircleOutline, bookOutline, libraryOutline,
   informationCircleOutline, helpCircleOutline, notificationsOutline, headsetOutline, documentTextOutline,
-  logOutOutline, warningOutline, personOutline, videocamOutline, checkboxOutline } from 'ionicons/icons';
+  logOutOutline, warningOutline, personOutline, videocamOutline, checkboxOutline, statsChartOutline, timeOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-profile',
@@ -48,7 +48,7 @@ export class ProfilePage implements OnInit {
     private doctorService: DoctorService,
     private router: Router
   ) {
-    addIcons({personCircleOutline,createOutline,calendarOutline,addCircleOutline,bookOutline,checkboxOutline,libraryOutline,informationCircleOutline,helpCircleOutline,notificationsOutline,headsetOutline,documentTextOutline,warningOutline,logOutOutline,personOutline});
+    addIcons({personCircleOutline,createOutline,calendarOutline,addCircleOutline,bookOutline,checkboxOutline,libraryOutline,informationCircleOutline,helpCircleOutline,notificationsOutline,headsetOutline,documentTextOutline,warningOutline,logOutOutline,personOutline,statsChartOutline,timeOutline});
   }
 
   ngOnInit() {

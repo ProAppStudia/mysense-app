@@ -1,0 +1,87 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/profile"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Мій графік</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="schedule-page">
+  <div *ngIf="loading()" class="loading-wrap">
+    <ion-spinner name="lines"></ion-spinner>
+  </div>
+
+  <div *ngIf="!loading() && error()" class="error-wrap">
+    {{ error() }}
+  </div>
+
+  <ng-container *ngIf="!loading() && !error() && data() as schedule">
+    <section class="card">
+      <div class="week-top">
+        <h2>{{ weekLabel }}</h2>
+        <div class="week-nav">
+          <button type="button" (click)="prevWeek()" [disabled]="weekIndex === 0">←</button>
+          <button type="button" (click)="nextWeek()" [disabled]="weekIndex >= weeks.length - 1">→</button>
+        </div>
+      </div>
+
+      <div class="grid-wrap" *ngIf="currentWeek.length">
+        <div class="grid-row header">
+          <div class="time-cell empty"></div>
+          <div class="day-cell" *ngFor="let day of currentWeek">{{ day.day_name }}</div>
+        </div>
+
+        <div class="grid-row" *ngFor="let hour of hours">
+          <div class="time-cell">{{ hour }}:00</div>
+          <div
+            class="slot-cell"
+            *ngFor="let day of currentWeek"
+            [class.work]="isWork(day, hour)"
+          ></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card controls-card">
+      <div class="row">
+        <label>Статус</label>
+        <select [(ngModel)]="statusValue">
+          <option *ngFor="let option of statusOptions()" [value]="option.value">{{ option.text }}</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>Не бронювати час</label>
+        <select [(ngModel)]="notBookingValue">
+          <option [value]="null">Виберіть</option>
+          <option *ngFor="let option of notBookingOptions()" [value]="option.value">{{ option.text }}</option>
+        </select>
+      </div>
+
+      <p class="hint">Якщо ніхто не забронює сеанс за вказаний час, то він буде зникати з робочого графіку</p>
+
+      <div class="actions">
+        <button type="button" class="btn secondary">Зберегти</button>
+        <button type="button" class="btn primary">Редагувати</button>
+      </div>
+
+      <label class="checkbox-row">
+        <input type="checkbox" [(ngModel)]="isGoogleSyncEnabled">
+        <span>Синхронізувати з Google календарем</span>
+      </label>
+
+      <p class="description">
+        В налаштуваннях свого календаря дайте доступ на внесення змін користувачу
+        <b>{{ schedule.google_service_email }}</b>
+      </p>
+
+      <div class="instruction">{{ schedule.google_instruction }}</div>
+
+      <label class="checkbox-row">
+        <input type="checkbox" [(ngModel)]="hasAdditionalCalendar">
+        <span>У мене є додатковий календар</span>
+      </label>
+    </section>
+  </ng-container>
+</ion-content>

@@ -64,6 +64,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'doctor-work-schedule',
+        loadComponent: () =>
+          import('../pages/doctor-work-schedule/doctor-work-schedule.page').then(
+            (m) => m.DoctorWorkSchedulePage
+          ),
+      },
+      {
         path: 'therapist-profile/:id',
         loadComponent: () =>
           import('../pages/therapist-profile/therapist-profile.page').then(
