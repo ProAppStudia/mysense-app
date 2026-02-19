@@ -81,6 +81,7 @@ interface HomepageData {
 export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('articlesSwiper') articlesSwiper?: ElementRef;
   @ViewChild('reviewsSwiper') reviewsSwiper?: ElementRef;
+  @ViewChild('howItWorksSwiper') howItWorksSwiper?: ElementRef;
   @ViewChild('swiperButtonPrevCustom', { read: ElementRef }) swiperButtonPrevCustom?: ElementRef;
   @ViewChild('swiperButtonNextCustom', { read: ElementRef }) swiperButtonNextCustom?: ElementRef;
 
@@ -199,6 +200,14 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     }
+
+    if (this.howItWorksSwiper) {
+      this.howItWorksSwiper.nativeElement.addEventListener('swiperinit', () => {
+        if (this.howItWorksSwiper && this.howItWorksSwiper.nativeElement.swiper) {
+          this.howItWorksSwiper.nativeElement.swiper.update();
+        }
+      });
+    }
   }
 
   slidePrevReviews() {
@@ -210,6 +219,18 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   slideNextReviews() {
     if (this.reviewsSwiper && this.reviewsSwiper.nativeElement.swiper) {
       this.reviewsSwiper.nativeElement.swiper.slideNext();
+    }
+  }
+
+  slidePrevHowItWorks() {
+    if (this.howItWorksSwiper && this.howItWorksSwiper.nativeElement.swiper) {
+      this.howItWorksSwiper.nativeElement.swiper.slidePrev();
+    }
+  }
+
+  slideNextHowItWorks() {
+    if (this.howItWorksSwiper && this.howItWorksSwiper.nativeElement.swiper) {
+      this.howItWorksSwiper.nativeElement.swiper.slideNext();
     }
   }
 

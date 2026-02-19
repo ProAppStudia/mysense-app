@@ -98,11 +98,13 @@ ion-content {
 }
 
 .free-tag {
-  background-color: #ff69b4; /* Pink background */
+  
   color: #fff;
-  font-size: 14px;
+  font-size: 20px;
+    background: #ff5c8d;
+    padding: 9px 18px;
   font-weight: bold;
-  padding: 8px 15px;
+  
   border-radius: 20px;
   margin-bottom: 20px;
 }
@@ -133,9 +135,44 @@ ion-content {
   --border-radius: 8px;
   text-transform: none; /* Keep text as is */
   width: 100%;
-  max-width: 300px; /* Limit button width */
+  
   --box-shadow: none;
   font-weight: 600;
+}
+
+.banner__benefits {
+  display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    margin-top: -21px;
+    padding: 50px 38px 25px;
+    border: 1px solid #E3E1E5;
+    border-radius: 8px;
+    
+    max-width: 428px;
+}
+
+.banner__benefit {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+}
+
+.banner__benefit img {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  display: block;
+}
+
+.banner__benefit p {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.22;
+  color: #9895a6;
+  text-align: left;
+  font-weight: 500;
 }
 
 .free-psychologists-button {
@@ -165,37 +202,6 @@ ion-content {
   max-width: 300px; /* Limit button width */
   --box-shadow: none;
 }
-.how-it-works {
-  margin-top: 60px;
-  width: 100%;
-  text-align: left;
-}
-
-.step {
-  margin-bottom: 40px;
-}
-
-.step-number {
-  font-size: 24px;
-  font-weight: bold;
-  color: var(--ion-color-primary); /* Use primary color for numbers */
-  margin-bottom: 10px;
-}
-
-.step-title {
-  font-size: 22px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.step-description {
-  font-size: 16px;
-  color: #666;
-  line-height: 1.5;
-}
-
-
 .or-text {
   font-size: 16px;
   color: #999;
@@ -204,47 +210,245 @@ ion-content {
 }
 
 
-
 .how-it-works-section {
-
-  padding: 20px;
-  background-color: white;
+  padding: 24px 0 18px;
+  
   border-radius: 16px;
   text-align: left;
   width: 100%;
   max-width: 500px;
+  overflow: hidden;
 }
 
 .how-it-works-section h2 {
   font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #333;
+  font-weight: 600;
+  margin: 0 20px 20px;
+  color: #2f264d;
   text-align: center;
 }
 
-.how-it-works-section .step {
-  margin-bottom: 30px;
+.how-start__slider {
+  overflow: visible;
+  margin-left: 16px;
 }
 
-.how-it-works-section .step-number {
-  font-size: 28px;
-  font-weight: bold;
-  color: var(--ion-color-primary);
-  margin-bottom: 5px;
+.how-start__slide {
+  width: 100%;
 }
 
-.how-it-works-section .step-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
+.how-start__card {
+  background: #f7f7f7;
+  border-radius: 18px;
+  padding: 22px 18px;
+  min-height: 560px;
+  display: flex;
+  flex-direction: column;
 }
 
-.how-it-works-section .step-description {
+.how-start__card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.how-start__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 22px;
+  font-weight: 500;
+  color: #ff5c8d;
+  background:#FF5C8D1A;
+}
+
+.how-start__badge span {
   font-size: 16px;
-  color: #666;
-  line-height: 1.5;
+  margin-left: 6px;
+}
+
+.how-start__corner {
+  width: 45px;
+  height: 28px;
+  position: relative;
+}
+
+.how-start__corner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 45px;
+  height: 28px;
+  background-color: #ff5c8d;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg width='46' height='15' viewBox='0 0 46 15' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M45.7071 8.07106C46.0976 7.68054 46.0976 7.04737 45.7071 6.65685L39.3431 0.292885C38.9526 -0.0976396 38.3195 -0.0976396 37.9289 0.292885C37.5384 0.683409 37.5384 1.31657 37.9289 1.7071L43.5858 7.36395L37.9289 13.0208C37.5384 13.4113 37.5384 14.0445 37.9289 14.435C38.3195 14.8255 38.9526 14.8255 39.3431 14.435L45.7071 8.07106ZM0 7.36395V8.36395H45V7.36395V6.36395H0V7.36395Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg width='46' height='15' viewBox='0 0 46 15' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M45.7071 8.07106C46.0976 7.68054 46.0976 7.04737 45.7071 6.65685L39.3431 0.292885C38.9526 -0.0976396 38.3195 -0.0976396 37.9289 0.292885C37.5384 0.683409 37.5384 1.31657 37.9289 1.7071L43.5858 7.36395L37.9289 13.0208C37.5384 13.4113 37.5384 14.0445 37.9289 14.435C38.3195 14.8255 38.9526 14.8255 39.3431 14.435L45.7071 8.07106ZM0 7.36395V8.36395H45V7.36395V6.36395H0V7.36395Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.how-start__title {
+  margin: 0 0 24px;
+  font-size: 48px;
+  line-height: 1.08;
+  color: #2f264d;
+  font-weight: 500;
+}
+
+.how-start__media {
+  background: #f1edff;
+  border-radius: 16px;
+  padding: 10px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 255px;
+}
+
+.how-start__media img {
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+}
+
+.how-start__text {
+  margin: 0;
+  color: #464554;
+  line-height: 1.38;
+  font-size: 22px;
+}
+
+.how-start__nav {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.how-start__btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 2px solid #6f57d2;
+  background: transparent;
+  color: #6f57d2;
+  cursor: pointer;
+  position: relative;
+}
+
+.how-start__btn--next {
+  background: #6f57d2;
+  color: #fff;
+}
+
+.how-start__btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 21px;
+  height: 21px;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg width='21' height='21' viewBox='0 0 21 21' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10.0303H19M19 10.0303L9.5 19.5303M19 10.0303L9.5 0.530273' stroke='black' stroke-width='1.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg width='21' height='21' viewBox='0 0 21 21' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10.0303H19M19 10.0303L9.5 19.5303M19 10.0303L9.5 0.530273' stroke='black' stroke-width='1.5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.how-start__btn--prev::before {
+  transform: rotate(180deg);
+}
+
+@media (max-width: 768px) {
+  .banner__benefits {
+    gap: 24px;
+    padding: 42px 8px 20px;
+  }
+
+  .banner__benefit {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .banner__benefit img {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+  }
+
+  .banner__benefit p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.3;
+    color: #9895a6;
+    text-align: left;
+    font-weight: 500;
+  }
+
+  .how-it-works-section {
+    padding: 18px 0 14px;
+  }
+
+  .how-it-works-section h2 {
+    margin: 0 14px 16px;
+    font-size: 22px;
+  }
+
+  .how-start__slider {
+    margin-left: 0px;
+  }
+
+  .how-start__card {
+    padding: 16px 14px;
+    min-height: 440px;
+    border-radius: 14px;
+  }
+
+  .how-start__badge {
+    font-size: 20px;
+    padding: 8px 12px;
+    font-weight: 600;
+  }
+
+  .how-start__badge span {
+    font-size: 13px;
+  }
+
+  .how-start__corner {
+    width: 16px;
+    height: 16px;
+  }
+
+  .how-start__corner::before {
+    width: 16px;
+    height: 16px;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg width='16' height='15' viewBox='0 0 16 15' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.7071 8.07106C16.0976 7.68054 16.0976 7.04737 15.7071 6.65685L9.34315 0.292885C8.95262 -0.0976396 8.31946 -0.0976396 7.92893 0.292885C7.53841 0.683409 7.53841 1.31657 7.92893 1.7071L13.5858 7.36395L7.92893 13.0208C7.53841 13.4113 7.53841 14.0445 7.92893 14.435C8.31946 14.8255 8.95262 14.8255 9.34315 14.435L15.7071 8.07106ZM0 7.36395V8.36395H15V7.36395V6.36395H0V7.36395Z'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg width='16' height='15' viewBox='0 0 16 15' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.7071 8.07106C16.0976 7.68054 16.0976 7.04737 15.7071 6.65685L9.34315 0.292885C8.95262 -0.0976396 8.31946 -0.0976396 7.92893 0.292885C7.53841 0.683409 7.53841 1.31657 7.92893 1.7071L13.5858 7.36395L7.92893 13.0208C7.53841 13.4113 7.53841 14.0445 7.92893 14.435C8.31946 14.8255 8.95262 14.8255 9.34315 14.435L15.7071 8.07106ZM0 7.36395V8.36395H15V7.36395V6.36395H0V7.36395Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+
+  .how-start__title {
+            font-size: 24px;
+        margin-bottom: 14px;
+        min-height: 52px;
+  }
+
+  .how-start__media {
+    min-height: 213px;
+    border-radius: 12px;
+    padding: 8px;
+    margin-bottom: 16px;
+  }
+
+  .how-start__text {
+    font-size: 15px;
+    min-height: 88px;
+  }
+
+  .how-start__nav {
+    margin-top: 14px;
+  }
 }
 
 .doctors-section, .section-9 {
