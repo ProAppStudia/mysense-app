@@ -79,7 +79,7 @@
         </div>
       </div>
 
-      <ion-list class="profile-menu-group">
+      <ion-list *ngIf="!isDoctor()" class="profile-menu-group">
         <ion-item detail (click)="viewAllSessions()">
           <ion-icon slot="start" name="calendar-outline"></ion-icon>
           <ion-label>Мої сесії</ion-label>
@@ -90,12 +90,14 @@
         </ion-item>
       </ion-list>
 
-      <ion-list *ngIf="isDoctor()" class="profile-menu-group doctor-info-group">
-        <ion-item lines="none">
-          <ion-icon slot="start" name="person-outline"></ion-icon>
-          <ion-label>
-            Ви увійшли як психолог
-          </ion-label>
+      <ion-list *ngIf="isDoctor()" class="profile-menu-group doctor-links-group">
+        <ion-item button="true" detail routerLink="/tabs/chat">
+          <ion-icon slot="start" name="people-outline"></ion-icon>
+          <ion-label>Мої клієнти</ion-label>
+        </ion-item>
+        <ion-item detail (click)="viewAllSessions()">
+          <ion-icon slot="start" name="calendar-outline"></ion-icon>
+          <ion-label>Мої сесії</ion-label>
         </ion-item>
         <ion-item button="true" detail routerLink="/tabs/doctor-stats">
           <ion-icon slot="start" name="stats-chart-outline"></ion-icon>

@@ -128,11 +128,6 @@ ion-content {
   color: var(--ion-color-danger, #f46477) !important; /* Using Ionic's danger color variable */
 }
 
-.doctor-info-group ion-item {
-  --background: #f3efff;
-}
-
-.doctor-info-group ion-item ion-label {
-  color: #5f45c8;
-  font-weight: 500;
+.doctor-links-group ion-item {
+  --background: #fff;
 }
