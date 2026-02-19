@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/profile"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Моя статистика</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="doctor-stats-page">
+  <section class="stats-top">
+    <h2>Показувати статистику</h2>
+    <ion-select [(ngModel)]="period" interface="popover" (ionChange)="onPeriodChange()">
+      <ion-select-option value="day">За день</ion-select-option>
+      <ion-select-option value="week">За тиждень</ion-select-option>
+      <ion-select-option value="month">За місяць</ion-select-option>
+      <ion-select-option value="half_year">За пів року</ion-select-option>
+    </ion-select>
+  </section>
+
+  <div *ngIf="loading()" class="loading-wrap">
+    <ion-spinner name="lines"></ion-spinner>
+  </div>
+
+  <div *ngIf="!loading() && error()" class="error-wrap">
+    {{ error() }}
+  </div>
+
+  <ng-container *ngIf="!loading() && !error() && stats() as s">
+    <section class="stats-section">
+      <h3>Заробіток</h3>
+      <div class="stat-card">
+        <p class="card-title">Ваш прибуток</p>
+        <p class="card-value">{{ s.income || 0 }} ₴</p>
+      </div>
+      <div class="stat-card">
+        <p class="card-title">Нових клієнтів</p>
+        <p class="card-value">{{ s.clients || 0 }} <span>{{ s.clients_text || 'клієнтів' }}</span></p>
+      </div>
+    </section>
+
+    <section class="stats-section">
+      <h3>Сесії</h3>
+      <div class="stat-grid">
+        <div class="stat-card small">
+          <p class="card-title">Проведено</p>
+          <p class="card-value">{{ s.sessions || 0 }} <span>{{ s.sessions_text || 'сесій' }}</span></p>
+        </div>
+        <div class="stat-card small">
+          <p class="card-title">Годин</p>
+          <p class="card-value">{{ s.minutes || 0 }} <span>{{ s.minutes_text || 'годин' }}</span></p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <p class="card-title">Пакетні сесії</p>
+        <p class="card-value">{{ s.batch || 0 }} <span>{{ s.batch_text || 'сесій' }}</span></p>
+      </div>
+    </section>
+
+    <section class="stats-section">
+      <h3>Контент</h3>
+      <div class="stat-grid">
+        <div class="stat-card small">
+          <p class="card-title">Перегляди статей</p>
+          <p class="card-value">{{ s.viewed_articles || 0 }}</p>
+        </div>
+        <div class="stat-card small">
+          <p class="card-title">Перегляди вебінарів</p>
+          <p class="card-value">{{ s.viewed_webinars || 0 }}</p>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+</ion-content>

@@ -89,6 +89,19 @@
           <ion-label>Забронювати сесію</ion-label>
         </ion-item>
       </ion-list>
+
+      <ion-list *ngIf="isDoctor()" class="profile-menu-group doctor-info-group">
+        <ion-item lines="none">
+          <ion-icon slot="start" name="person-outline"></ion-icon>
+          <ion-label>
+            Ви увійшли як психолог
+          </ion-label>
+        </ion-item>
+        <ion-item button="true" detail routerLink="/tabs/doctor-stats">
+          <ion-icon slot="start" name="person-outline"></ion-icon>
+          <ion-label>Моя статистика</ion-label>
+        </ion-item>
+      </ion-list>
     </div>
 
     <ion-list class="profile-menu-group">
@@ -96,14 +109,14 @@
         <ion-icon slot="start" name="book-outline"></ion-icon>
         <ion-label>Мій щоденник</ion-label>
       </ion-item>
-      <ion-item button="true" detail routerLink="/tabs/tests">
+      <!--<ion-item button="true" detail routerLink="/tabs/tests">
         <ion-icon slot="start" name="checkbox-outline"></ion-icon>
         <ion-label>Мої тести</ion-label>
       </ion-item>
       <ion-item button="true" detail routerLink="/my-library">
         <ion-icon slot="start" name="library-outline"></ion-icon>
         <ion-label>Моя бібліотека</ion-label>
-      </ion-item>
+      </ion-item>-->
     </ion-list>
 
     <ion-list class="profile-menu-group">

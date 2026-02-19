@@ -25,6 +25,7 @@ import {
 })
 export class ProfilePage implements OnInit {
   isLoggedIn = signal(false);
+  isDoctor = signal(false);
 
   userSessions: any[] = [];
   doctors: DoctorCardView[] = [];
@@ -114,6 +115,11 @@ export class ProfilePage implements OnInit {
       next: (profile) => {
         if (profile.success) {
           this.userProfile.set(profile);
+          this.isDoctor.set(
+            profile.is_doctor === true ||
+            profile.is_doctor === 1 ||
+            profile.is_doctor === '1'
+          );
           this.profileForm.patchValue({
             name: profile.firstname,
             surname: profile.lastname,

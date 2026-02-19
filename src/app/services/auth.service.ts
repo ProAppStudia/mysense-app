@@ -19,6 +19,7 @@ export interface UserProfile {
   phone: string;
   success: boolean;
   user_id: number;
+  is_doctor?: boolean | number | string;
   error?: string;
 }
 
@@ -35,6 +36,22 @@ export interface UpdateProfilePayload {
 export interface UpdateProfileResponse {
     success?: string;
     error?: string;
+}
+
+export interface DoctorStatsResponse {
+  success?: boolean | number | string;
+  error?: string;
+  income?: number | string;
+  clients?: number | string;
+  clients_text?: string;
+  sessions?: number | string;
+  sessions_text?: string;
+  minutes?: number | string;
+  minutes_text?: string;
+  batch?: number | string;
+  batch_text?: string;
+  viewed_articles?: number | string;
+  viewed_webinars?: number | string;
 }
 
 type RegisterPayload = {
@@ -59,6 +76,7 @@ export class AuthService {
   private readonly REGISTER_URL = `${environment.baseUrl}/connector.php?action=register`;
   private readonly PROFILE_URL = `${environment.baseUrl}/connector.php?action=get_my_profile`;
   private readonly UPDATE_PROFILE_URL = `${environment.baseUrl}/connector.php?action=set_my_profile`;
+  private readonly DOCTOR_STATS_URL = `${environment.baseUrl}/connector.php?action=get_my_doctor_stats`;
 
   constructor(
     private http: HttpClient,
@@ -215,5 +233,10 @@ export class AuthService {
     });
 
     return this.http.post<UpdateProfileResponse>(this.UPDATE_PROFILE_URL, body.toString(), { headers });
+  }
+
+  getMyDoctorStats(period: 'day' | 'week' | 'month' | 'half_year' = 'week'): Observable<DoctorStatsResponse> {
+    const params = new HttpParams().set('period', period);
+    return this.http.get<DoctorStatsResponse>(this.DOCTOR_STATS_URL, { params });
   }
 }

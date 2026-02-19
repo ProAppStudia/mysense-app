@@ -57,6 +57,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'doctor-stats',
+        loadComponent: () =>
+          import('../pages/doctor-stats/doctor-stats.page').then(
+            (m) => m.DoctorStatsPage
+          ),
+      },
+      {
         path: 'therapist-profile/:id',
         loadComponent: () =>
           import('../pages/therapist-profile/therapist-profile.page').then(

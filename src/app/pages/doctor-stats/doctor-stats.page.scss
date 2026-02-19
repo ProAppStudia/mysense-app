@@ -1,0 +1,97 @@
+ion-content.doctor-stats-page {
+  --background: #f1edff;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 12px;
+  --padding-bottom: 24px;
+}
+
+.stats-top {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.stats-top h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #26304a;
+}
+
+.stats-section {
+  margin-top: 18px;
+}
+
+.stats-section h3 {
+  margin: 0 0 10px;
+  color: #26304a;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat-card {
+  background: #f7f7f9;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 10px;
+  min-height: 138px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.stat-card.small {
+  min-height: 130px;
+}
+
+.card-title {
+  margin: 0;
+  color: #26304a;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.card-value {
+  margin: 0;
+  color: #7058d6;
+  font-size: 60px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.card-value span {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.loading-wrap,
+.error-wrap {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px 16px;
+  text-align: center;
+  color: #26304a;
+}
+
+@media (max-width: 480px) {
+  .card-value {
+    font-size: 46px;
+  }
+
+  .card-title {
+    font-size: 18px;
+  }
+}
