@@ -311,6 +311,12 @@ export class SelectionTestPage implements OnInit, AfterViewInit {
   validate(node: TestStepNode): boolean {
     if (!node) return false;
     const currentAnswers = this.answers(); // Access the signal's value
+    // For price range, check min_price and max_price directly
+    if (node.step_type === 'price') {
+      return currentAnswers.min_price !== undefined && currentAnswers.min_price !== null &&
+             currentAnswers.max_price !== undefined && currentAnswers.max_price !== null;
+    }
+
     const v = currentAnswers[node.step_type];
 
     // Explicitly make 'client_age', 'format', 'gender', 'language', and 'doctor_age' mandatory
@@ -345,6 +351,19 @@ export class SelectionTestPage implements OnInit, AfterViewInit {
 
     this.currentStep.set(nextStepNumber);
     this.visualStep.set(this.visualStep() + 1); // Increment visualStep
+
+    // If the next step is the price range, set default min/max prices
+    const nextNode = this.schema?.step?.[nextStepNumber]?.[this.answers().type];
+    if (nextNode && nextNode.step_type === 'price' && nextNode.options && 'min' in nextNode.options && 'max' in nextNode.options) {
+      const min = nextNode.options.min;
+      const max = nextNode.options.max;
+      this.answers.update(ans => ({
+        ...ans,
+        min_price: ans.min_price ?? min,
+        max_price: ans.max_price ?? max,
+      }));
+      console.log('Price step encountered. Default min_price:', this.answers().min_price, 'max_price:', this.answers().max_price);
+    }
   }
 
   prevStep() {

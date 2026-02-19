@@ -38,6 +38,7 @@ interface HomepageData {
     sub_heading: string;
     button_test_text: string;
     text_choise_psyhologist: string;
+    banner_description_for: string;
   };
   doctors: Doctor[];
   section_3: {

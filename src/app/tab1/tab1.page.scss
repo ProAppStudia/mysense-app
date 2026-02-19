@@ -43,12 +43,15 @@ ion-content {
 }
 
 .description-text {
-      font-size: 15px;
-    color: #423f4d;
-  margin-bottom: 30px;
-  line-height: 1.5;
+        font-size: 20px;
+        margin-top: 10px;
+        margin-bottom: 16px;
 }
-
+    .banner__description__for {
+        color: #423F4D;
+        font-size: 16px;
+        margin-bottom: 24px;
+    }
 .free-consultation-banner {
   background-color: #a498d9; /* Purple background */
   border-radius: 16px;
