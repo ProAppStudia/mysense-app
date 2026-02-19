@@ -49,8 +49,17 @@
 <ion-footer *ngIf="selectedChat && isLoggedIn">
   <ion-toolbar>
     <div class="write__message">
-      <ion-input placeholder="Напишіть ваше повідомлення"></ion-input>
-      <button type="button" aria-label="Надіслати повідомлення">
+      <ion-input
+        [(ngModel)]="newMessage"
+        placeholder="Напишіть ваше повідомлення"
+        (keyup.enter)="sendMessage()"
+      ></ion-input>
+      <button
+        type="button"
+        aria-label="Надіслати повідомлення"
+        (click)="sendMessage()"
+        [disabled]="isSending || !newMessage.trim()"
+      >
         <img src="assets/icon/send_message_icon.svg" alt="Надіслати">
       </button>
     </div>

@@ -19,6 +19,8 @@ export class ChatPage implements OnInit {
   chats: any[] = [];
   selectedChat: any = null;
   messages: any[] = [];
+  newMessage = '';
+  isSending = false;
   isLoggedIn: boolean = false; // Add property to track login status
 
   constructor(private chatService: ChatService, private authService: AuthService) { // Inject AuthService
@@ -54,7 +56,14 @@ export class ChatPage implements OnInit {
 
   selectChat(chat: any) {
     this.selectedChat = chat;
-    this.chatService.getChatMessages(chat.from_user_id).subscribe({
+    this.newMessage = '';
+    const toUserId = this.getSelectedUserId(chat);
+    if (!toUserId) {
+      this.messages = [];
+      return;
+    }
+
+    this.chatService.getChatMessages(toUserId).subscribe({
       next: (data: any) => {
         if (data && data.messages) {
           this.messages = data.messages;
@@ -66,6 +75,90 @@ export class ChatPage implements OnInit {
         // Handle error appropriately in a real app
       }
     });
+  }
+
+  async sendMessage() {
+    const text = this.newMessage.trim();
+    if (!text || !this.selectedChat || this.isSending) {
+      return;
+    }
+
+    const toUserId = this.getSelectedUserId(this.selectedChat);
+    if (!toUserId) {
+      return;
+    }
+
+    this.isSending = true;
+
+    // Optimistic message for instant UI feedback.
+    const optimisticMessage = {
+      id: `tmp-${Date.now()}`,
+      text,
+      date: new Date().toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' }),
+      side: 'right'
+    };
+    this.messages = [...this.messages, optimisticMessage];
+    this.newMessage = '';
+
+    try {
+      const result = await this.chatService.sendChatMessage(toUserId, text);
+
+      if (!result.ok) {
+        console.error('Send message failed:', result);
+        this.messages = this.messages.filter((m: any) => m.id !== optimisticMessage.id);
+        this.isSending = false;
+        return;
+      } else {
+        // If backend returns created message object, replace optimistic one immediately.
+        const serverMessage = result?.response?.message;
+        if (serverMessage && typeof serverMessage === 'object') {
+          this.messages = this.messages.map((m: any) =>
+            m.id === optimisticMessage.id
+              ? {
+                  ...m,
+                  ...serverMessage,
+                  text: serverMessage.text ?? m.text,
+                  date: serverMessage.date ?? serverMessage.time ?? m.date,
+                  side: 'right'
+                }
+              : m
+          );
+        }
+      }
+
+      // Refresh thread from backend as source of truth.
+      this.chatService.getChatMessages(toUserId).subscribe({
+        next: (data: any) => {
+          const fetchedMessages = Array.isArray(data?.messages) ? data.messages : [];
+          if (!fetchedMessages.length) {
+            this.messages = this.messages.filter((m: any) => m.id !== optimisticMessage.id);
+            this.isSending = false;
+            return;
+          }
+
+          // Do not drop just-sent optimistic message if backend list is stale for a moment.
+          const hasJustSentInFetched = fetchedMessages.some((m: any) => String(m?.text ?? '').trim() === text);
+          this.messages = hasJustSentInFetched ? fetchedMessages : this.messages;
+          this.isSending = false;
+        },
+        error: () => {
+          this.isSending = false;
+        }
+      });
+    } catch (error) {
+      console.error('Send message error:', error);
+      this.isSending = false;
+    }
+  }
+
+  private getSelectedUserId(chat: any): number {
+    if (!chat) {
+      return 0;
+    }
+
+    const rawId = chat.from_user_id ?? chat.user_id ?? chat.to_user_id ?? chat.id;
+    const parsedId = Number(rawId);
+    return Number.isFinite(parsedId) && parsedId > 0 ? parsedId : 0;
   }
 
   handleRefresh(event: RefresherCustomEvent) {
