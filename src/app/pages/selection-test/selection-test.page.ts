@@ -200,7 +200,8 @@ export class SelectionTestPage implements OnInit, AfterViewInit {
   async loadSchema() {
     this.loading.set(true);
     try {
-      this.schema = await this.api.loadTestSchema().toPromise();
+      const rawSchema = await this.api.loadTestSchema().toPromise();
+      this.schema = this.normalizeSchema(rawSchema);
     } catch (e) {
       console.error('Error loading test schema:', e);
       this.showErr();
@@ -238,10 +239,24 @@ export class SelectionTestPage implements OnInit, AfterViewInit {
   }
   toggleCheckbox(stepType: string, value: any) {
     const currentAnswers = this.answers(); // Access the signal's value
-    const arr = currentAnswers[stepType] ?? [];
-    const idx = arr.indexOf(value);
-    if (idx === -1) arr.push(value); else arr.splice(idx, 1);
-    this.answers.update(ans => ({ ...ans, [stepType]: [...arr] })); // Update the signal
+    let arr = [...(currentAnswers[stepType] ?? [])];
+    const clickedIsZero = value === 0 || value === '0';
+    const currentHasZero = arr.includes(0) || arr.includes('0');
+
+    if (clickedIsZero) {
+      // "Неважливо/Пропустити" should be exclusive in multi-select lists.
+      arr = currentHasZero ? [] : [value];
+    } else {
+      arr = arr.filter(v => v !== 0 && v !== '0');
+      const idx = arr.indexOf(value);
+      if (idx === -1) {
+        arr.push(value);
+      } else {
+        arr.splice(idx, 1);
+      }
+    }
+
+    this.answers.update(ans => ({ ...ans, [stepType]: arr })); // Update the signal
     console.log(`Toggled ${stepType}:`, value);
     console.log('Current Answers:', this.answers()); // Log the signal's value
   }
@@ -432,7 +447,7 @@ export class SelectionTestPage implements OnInit, AfterViewInit {
 
       if ((mustBeInt.has(k) || isQuestionKey) && v !== undefined && v !== null && v !== '') {
         if (Array.isArray(v)) {
-          filter_data[k] = v.map(n => Number(v));
+          filter_data[k] = v.map((n) => Number(n));
         } else {
           filter_data[k] = Number(v);
         }
@@ -484,6 +499,33 @@ export class SelectionTestPage implements OnInit, AfterViewInit {
       }
     }
     return '';
+  }
+
+  private normalizeSchema(schema: TestSchemaResponse | null | undefined): TestSchemaResponse | null {
+    if (!schema?.step) {
+      return schema ?? null;
+    }
+
+    Object.values(schema.step).forEach((stepByType) => {
+      Object.values(stepByType).forEach((node) => {
+        if (!node || node.type !== 'checkbox' || node.step_type !== 'specific') {
+          return;
+        }
+
+        if (!node.options || 'min' in node.options) {
+          return;
+        }
+
+        const options = node.options as TestOption[];
+        const hasNotImportant = options.some((option) => option?.id === 0 || option?.id === '0');
+
+        if (!hasNotImportant) {
+          options.push({ id: '0', text: 'Неважливо' });
+        }
+      });
+    });
+
+    return schema;
   }
 
 }
