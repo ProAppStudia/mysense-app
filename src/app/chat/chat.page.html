@@ -25,6 +25,14 @@
         <div class="message-bubble">
           <p>{{ message.text }}</p>
           <span class="timestamp">{{ message.date }}</span>
+          <img
+            class="message-tail"
+            [class.message-tail-right]="message.side === 'right'"
+            [class.message-tail-left]="message.side !== 'right'"
+            [src]="message.side === 'right' ? 'assets/icon/chat-polygon.svg' : 'assets/icon/chat-polygon-grey.svg'"
+            alt=""
+            aria-hidden="true"
+          >
         </div>
       </div>
     </div>
@@ -40,11 +48,11 @@
 
 <ion-footer *ngIf="selectedChat && isLoggedIn">
   <ion-toolbar>
-    <ion-item lines="none">
+    <div class="write__message">
       <ion-input placeholder="Напишіть ваше повідомлення"></ion-input>
-      <ion-button fill="clear" slot="end">
-        <ion-icon slot="icon-only" name="send"></ion-icon>
-      </ion-button>
-    </ion-item>
+      <button type="button" aria-label="Надіслати повідомлення">
+        <img src="assets/icon/send_message_icon.svg" alt="Надіслати">
+      </button>
+    </div>
   </ion-toolbar>
 </ion-footer>

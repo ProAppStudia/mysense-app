@@ -13,7 +13,7 @@ ion-content {
     flex-direction: row;
     align-items: center;
     padding: 8px 8px;
-    border-radius: 10px;
+    border-radius: 6px;
         background-color: white;
     cursor: pointer;
     min-width: 180px;
@@ -47,6 +47,7 @@ ion-content {
     margin: 10px 10px 0px;
     border-top-right-radius: 8px;
     border-top-left-radius: 8px;
+    border-bottom: 1px solid rgba(227, 225, 229, 1);
 }
 .chat-actions button {
   flex: 1;
@@ -55,9 +56,9 @@ ion-content {
   font-size: 12px;
   color: #795bda;
   border: 1px solid #795bda;
-  border-radius: 4px;
+  
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 4px;
   background: white;
 }
 .chat-actions button.active-action {
@@ -68,7 +69,7 @@ button.btn-reserve {
     color: rgba(255, 92, 141, 1) !important;
 }
 .message-list {
-  padding: 10px;
+  padding: 15px 30px;
     display: flex
 ;
     flex-direction: column;
@@ -84,32 +85,103 @@ button.btn-reserve {
 
 .message-item.my-message {
   justify-content: flex-end;
+  
 }
 
 .message-bubble {
-  background-color: #f1f1f1;
-  border-radius: 10px;
-  padding: 10px;
-  max-width: 80%;
+  background-color: #f4f3f8;
+  border-radius: 8px 8px 8px 0px;
+  padding: 10px 16px;
+  width: 80%;
+  letter-spacing: -.01em;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 120%;
+  word-wrap: break-word;
+  position: relative;
+  overflow: visible;
+}
+
+.message-bubble p {
+  margin: 0;
 }
 
 .my-message .message-bubble {
+  border-radius: 8px 8px 0px 8px;
   background-color: var(--ion-color-primary);
   color: white;
 }
 
 .timestamp {
-  font-size: 0.8em;
-  color: #888;
+  font-size: 10px;
   display: block;
   text-align: right;
-  margin-top: 5px;
+  margin-top: 8px;
+  font-weight: 500;
+  color: #9895a6;
+}
+
+.my-message .timestamp {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.message-tail {
+  position: absolute;
+  bottom: 0;
+  width: 10px;
+  height: 17px;
+  display: block;
+  pointer-events: none;
+}
+
+.message-tail-right {
+  right: -10px;
+}
+
+.message-tail-left {
+  left: -10px;
 }
 .psychologist-text {
     font-size: 12px;
 }
-ion-footer ion-item {
-  --background: #f1f1f1;
-  border-radius: 20px;
-  margin: 5px;
+ion-footer ion-toolbar {
+  --background: #fff;
+  padding: 0;
+}
+
+.write__message {
+  background: rgba(241, 237, 255, 1);
+  border-radius: 8px;
+  justify-content: space-between;
+  align-items: center;
+  margin: 14px;
+  padding: 5px;
+  display: flex;
+  flex: 1;
+}
+
+.write__message ion-input {
+  --background: transparent;
+  --padding-start: 14px;
+  --padding-end: 10px;
+  --placeholder-color: #6f6f78;
+  --placeholder-opacity: 1;
+  color: #3f3f49;
+}
+
+.write__message button {
+  background: #795bda;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.write__message button img {
+  width: 20px;
+  height: 20px;
+  display: block;
 }
