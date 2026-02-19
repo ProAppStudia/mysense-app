@@ -5,6 +5,8 @@ import { Review } from './review.model';
 
 export interface DoctorCardView {
   id: number | string;
+  userId?: number | string;
+  hash?: string;
   fullName: string;
   city?: string;
   city_id?: number | string; // Add city_id

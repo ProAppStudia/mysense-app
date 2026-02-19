@@ -119,4 +119,22 @@ export class TherapistProfilePage implements OnInit {
       this.currentWeekIndex--;
     }
   }
+
+  openChat(type: '15min' | 'write') {
+    if (!this.isDoctorCardView(this.doctor)) {
+      return;
+    }
+
+    const queryParams: Record<string, string | number> = { type };
+
+    if (this.doctor.hash) {
+      queryParams['hash'] = this.doctor.hash;
+    }
+
+    if (this.doctor.userId) {
+      queryParams['to_user_id'] = this.doctor.userId;
+    }
+
+    this.router.navigate(['/tabs/chat'], { queryParams });
+  }
 }

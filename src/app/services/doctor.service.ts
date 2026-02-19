@@ -194,6 +194,8 @@ export class DoctorService {
 
     return {
       id: data.doctor_id,
+      userId: data.user_id,
+      hash: data.hash,
       fullName: data.fullname,
       city: data.city_name,
       avatarUrl: data.img,

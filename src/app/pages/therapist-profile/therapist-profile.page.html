@@ -71,7 +71,7 @@
         <video controls [src]="doctor.videoAppealUrl" width="100%"></video>
       </div>
 
-      <ion-button *ngIf="doctor.introMinutes" class="intro-button" expand="block" fill="outline">
+      <ion-button *ngIf="doctor.introMinutes" class="intro-button" expand="block" fill="outline" (click)="openChat('15min')">
         <ion-icon src="assets/icon/hello.svg" slot="start"></ion-icon>
         Домовитись про знайомство {{ doctor.introMinutes }} хв
       </ion-button>
@@ -243,7 +243,7 @@
       <ion-icon slot="start" name="calendar-outline"></ion-icon>
       Забронювати зустріч
     </ion-button>
-    <ion-button class="message-button" fill="outline">
+    <ion-button class="message-button" fill="outline" (click)="openChat('write')">
       <ion-icon slot="start" name="chatbubble-ellipses-outline"></ion-icon>
       Написати психологу
     </ion-button>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { firstValueFrom, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { TokenStorageService } from './token-storage.service';
@@ -17,12 +17,42 @@ export class ChatService {
     return this.http.get(`${this.apiUrl}?action=get_my_chats&token=${token}`);
   }
 
-  getChatMessages(userId: number): Observable<any> {
+  getChatMessages(userId: number, options?: { hash?: string; type?: string }): Observable<any> {
     const token = this.tokenStorage.getToken();
-    return this.http.get(`${this.apiUrl}?action=get_my_chat_messages&to_user_id=${userId}&token=${token}`);
+    let params = new HttpParams()
+      .set('action', 'get_my_chat_messages')
+      .set('to_user_id', String(userId))
+      .set('token', String(token ?? ''));
+
+    if (options?.hash) {
+      params = params.set('hash', options.hash);
+    }
+    if (options?.type) {
+      params = params.set('type', options.type);
+    }
+
+    return this.http.get(this.apiUrl, { params });
   }
 
-  async sendChatMessage(toUserId: number, text: string): Promise<{ ok: boolean; action?: string; response?: any; error?: any }> {
+  initChatByHash(hash: string, type?: string): Observable<any> {
+    const token = this.tokenStorage.getToken();
+    let params = new HttpParams()
+      .set('action', 'get_my_chat_messages')
+      .set('hash', hash)
+      .set('token', String(token ?? ''));
+
+    if (type) {
+      params = params.set('type', type);
+    }
+
+    return this.http.get(this.apiUrl, { params });
+  }
+
+  async sendChatMessage(
+    toUserId: number,
+    text: string,
+    options?: { hash?: string; type?: string; firstMessageType?: number }
+  ): Promise<{ ok: boolean; action?: string; response?: any; error?: any }> {
     const token = this.tokenStorage.getToken();
 
     if (!token) {
@@ -34,6 +64,15 @@ export class ChatService {
     body.set('message', text);
     body.set('text', text);
     body.set('token', token);
+    if (options?.hash) {
+      body.set('hash', options.hash);
+    }
+    if (options?.type) {
+      body.set('type', options.type);
+    }
+    if (options?.firstMessageType !== undefined) {
+      body.set('first_message_type', String(options.firstMessageType));
+    }
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'

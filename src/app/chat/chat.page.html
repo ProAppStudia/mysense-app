@@ -50,6 +50,7 @@
   <ion-toolbar>
     <div class="write__message">
       <ion-input
+        #messageInput
         [(ngModel)]="newMessage"
         placeholder="Напишіть ваше повідомлення"
         (keyup.enter)="sendMessage()"
