@@ -90,6 +90,47 @@ export interface DoctorWorkScheduleResponse {
   calendar?: Record<string, WorkScheduleDay>;
 }
 
+export interface MySessionItem {
+  fullname: string;
+  photo?: string;
+  session_time?: string;
+  session_date?: string;
+  session_type?: string;
+  session_time_period?: string;
+  client_user_id?: number;
+  doctor_id?: number;
+  doctor_user_id?: number;
+  order_id?: number;
+  meet_id?: number;
+}
+
+export interface MySessionsResponse {
+  success?: boolean;
+  error?: string;
+  empty_text?: string;
+  planned?: MySessionItem[];
+  past?: MySessionItem[];
+}
+
+export interface ChangeSessionResponse {
+  success?: string;
+  error?: string;
+  show_modal?: boolean;
+  confirm?: boolean;
+  date?: string;
+  time?: string;
+  client_name?: string;
+  return_money?: boolean;
+  return_money_text?: string;
+}
+
+export interface DeleteSessionResponse {
+  success?: string;
+  error?: string;
+  return_money?: boolean;
+  return_money_text?: string;
+}
+
 type RegisterPayload = {
   name: string;
   surname: string;
@@ -114,6 +155,9 @@ export class AuthService {
   private readonly UPDATE_PROFILE_URL = `${environment.baseUrl}/connector.php?action=set_my_profile`;
   private readonly DOCTOR_STATS_URL = `${environment.baseUrl}/connector.php?action=get_my_doctor_stats`;
   private readonly DOCTOR_WORK_SCHEDULE_URL = `${environment.baseUrl}/connector.php?action=get_my_work_schedule`;
+  private readonly MY_SESSIONS_URL = `${environment.baseUrl}/connector.php?action=get_my_sessions`;
+  private readonly CHANGE_SESSION_URL = `${environment.baseUrl}/connector.php?action=change_session`;
+  private readonly DELETE_SESSION_URL = `${environment.baseUrl}/connector.php?action=delete_session`;
 
   constructor(
     private http: HttpClient,
@@ -279,5 +323,40 @@ export class AuthService {
 
   getMyWorkSchedule(): Observable<DoctorWorkScheduleResponse> {
     return this.http.get<DoctorWorkScheduleResponse>(this.DOCTOR_WORK_SCHEDULE_URL);
+  }
+
+  getMySessions(): Observable<MySessionsResponse> {
+    return this.http.get<MySessionsResponse>(this.MY_SESSIONS_URL);
+  }
+
+  changeSession(payload: {
+    session_id: number;
+    date: string; // YYYY-MM-DD
+    time: number; // 24h integer
+    confirm_change?: 1;
+  }): Observable<ChangeSessionResponse> {
+    let body = new HttpParams()
+      .set('session_id', String(payload.session_id))
+      .set('date', payload.date)
+      .set('time', String(payload.time));
+
+    if (payload.confirm_change) {
+      body = body.set('confirm_change', '1');
+    }
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded'
+    });
+
+    return this.http.post<ChangeSessionResponse>(this.CHANGE_SESSION_URL, body.toString(), { headers });
+  }
+
+  deleteSession(sessionId: number): Observable<DeleteSessionResponse> {
+    const body = new HttpParams().set('session_id', String(sessionId));
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded'
+    });
+
+    return this.http.post<DeleteSessionResponse>(this.DELETE_SESSION_URL, body.toString(), { headers });
   }
 }
