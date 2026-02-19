@@ -8,27 +8,76 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <div class="how-it-works-section">
+  <div class="how-it-works-section how-start">
     <h2>Як це працює?</h2>
-    <div class="step">
-      <p class="step-number">01</p>
-      <h3 class="step-title">Пройдіть тест</h3>
-      <p class="step-description">Пройдіть короткий, але ефективний тест і ми запропонуємо фахівців, які максимально підходять до вашого запиту</p>
-    </div>
-    <div class="step">
-      <p class="step-number">02</p>
-      <h3 class="step-title">Оберіть психолога</h3>
-      <p class="step-description">Перегляньте профілі запропонованих психологів та оберіть того, хто вам найбільше сподобався</p>
-    </div>
-    <div class="step">
-      <p class="step-number">03</p>
-      <h3 class="step-title">Забронюйте консультацію</h3>
-      <p class="step-description">Оберіть зручний для вас час із графіка вільних годин, забронюйте цей час та здійсніть оплату через безпечну платіжну систему.</p>
-    </div>
-    <div class="step">
-      <p class="step-number">04</p>
-      <h3 class="step-title">Працюйте з психологом в обраному форматі</h3>
-      <p class="step-description">Онлайн-зустрічі проходять за посиланням, які ви будете отримувати в чаті свого особистого профілю. Очні зустрічі проходять у кабінеті психолога.</p>
+
+    <swiper-container
+      class="how-start__slider"
+      #howItWorksSwiper
+      slides-per-view="1.2"
+      space-between="14"
+      centered-slides="false"
+    >
+      <swiper-slide class="how-start__slide">
+        <article class="how-start__card">
+          <div class="how-start__card-top">
+            <span class="how-start__badge">1 <span>крок</span></span>
+            <span class="how-start__corner" aria-hidden="true"></span>
+          </div>
+          <h3 class="how-start__title">Пройдіть тест</h3>
+          <div class="how-start__media">
+            <img src="https://mysense.care/assets/files/1/test_680943e5d526f.png" alt="Пройдіть тест">
+          </div>
+          <p class="how-start__text">Пройдіть короткий, але ефективний тест і ми запропонуємо фахівців, які максимально підходять до вашого запиту</p>
+        </article>
+      </swiper-slide>
+
+      <swiper-slide class="how-start__slide">
+        <article class="how-start__card">
+          <div class="how-start__card-top">
+            <span class="how-start__badge">2 <span>крок</span></span>
+            <span class="how-start__corner" aria-hidden="true"></span>
+          </div>
+          <h3 class="how-start__title">Оберіть психолога</h3>
+          <div class="how-start__media">
+            <img src="https://mysense.care/assets/files/1/step_2_680945b39ef65.png" alt="Оберіть психолога">
+          </div>
+          <p class="how-start__text">Перегляньте профілі запропонованих психологів та оберіть того, хто вам найбільше сподобався</p>
+        </article>
+      </swiper-slide>
+
+      <swiper-slide class="how-start__slide">
+        <article class="how-start__card">
+          <div class="how-start__card-top">
+            <span class="how-start__badge">3 <span>крок</span></span>
+            <span class="how-start__corner" aria-hidden="true"></span>
+          </div>
+          <h3 class="how-start__title">Забронюйте консультацію</h3>
+          <div class="how-start__media">
+            <img src="https://mysense.care/assets/files/1/step_3_68094627397f4.png" alt="Забронюйте консультацію">
+          </div>
+          <p class="how-start__text">Оберіть зручний для вас час із графіка вільних годин, забронюйте цей час та здійсніть оплату через безпечну платіжну систему.</p>
+        </article>
+      </swiper-slide>
+
+      <swiper-slide class="how-start__slide">
+        <article class="how-start__card">
+          <div class="how-start__card-top">
+            <span class="how-start__badge">4 <span>крок</span></span>
+            <span class="how-start__corner" aria-hidden="true"></span>
+          </div>
+          <h3 class="how-start__title">Працюйте з психологом в обраному форматі</h3>
+          <div class="how-start__media">
+            <img src="https://mysense.care/assets/files/1/step_4_6809467347b70.png" alt="Працюйте з психологом в обраному форматі">
+          </div>
+          <p class="how-start__text">Онлайн-зустрічі проходять за посиланням, які ви будете отримувати в чаті свого особистого профілю. Очні зустрічі проходять у кабінеті психолога.</p>
+        </article>
+      </swiper-slide>
+    </swiper-container>
+
+    <div class="how-start__nav">
+      <button type="button" class="how-start__btn how-start__btn--prev" (click)="slidePrevHowItWorks()" aria-label="Попередній крок"></button>
+      <button type="button" class="how-start__btn how-start__btn--next" (click)="slideNextHowItWorks()" aria-label="Наступний крок"></button>
     </div>
   </div>
 </ion-content>

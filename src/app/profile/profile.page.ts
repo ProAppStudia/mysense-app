@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } 
 import { IonContent, IonButton, IonList, IonItem, IonIcon, IonLabel, IonInput, IonSpinner, IonText } from '@ionic/angular/standalone';
 import { AuthService, UserProfile, UpdateProfilePayload } from '../services/auth.service';
 import { DoctorService } from '../services/doctor.service';
-import { Router, NavigationExtras } from '@angular/router';
+import { Router, NavigationExtras, RouterLink } from '@angular/router';
 import { DoctorCardView } from '../models/doctor-card-view.model';
 import { addIcons } from 'ionicons';
 import {
@@ -20,7 +20,7 @@ import {
   imports: [
     IonContent, IonButton, IonList, IonItem, IonIcon, IonLabel,
     IonInput, IonSpinner, IonText,
-    CommonModule, FormsModule, ReactiveFormsModule
+    CommonModule, FormsModule, ReactiveFormsModule, RouterLink
   ]
 })
 export class ProfilePage implements OnInit {
@@ -201,7 +201,7 @@ export class ProfilePage implements OnInit {
   }
 
   goToHowToUse() {
-    this.router.navigate(['/how-to-use']);
+    this.router.navigate(['/tabs/how-to-use']);
   }
 
   goToMyDiary() {

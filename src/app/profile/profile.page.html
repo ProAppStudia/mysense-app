@@ -96,23 +96,21 @@
         <ion-icon slot="start" name="book-outline"></ion-icon>
         <ion-label>Мій щоденник</ion-label>
       </ion-item>
-      <ion-item detail routerLink="/tabs/tests">
+      <ion-item button="true" detail routerLink="/tabs/tests">
         <ion-icon slot="start" name="checkbox-outline"></ion-icon>
         <ion-label>Мої тести</ion-label>
       </ion-item>
-      <ion-item detail routerLink="/my-library">
+      <ion-item button="true" detail routerLink="/my-library">
         <ion-icon slot="start" name="library-outline"></ion-icon>
         <ion-label>Моя бібліотека</ion-label>
       </ion-item>
     </ion-list>
 
     <ion-list class="profile-menu-group">
-      <a href="/tabs/how-to-use" class="ion-item-link">
-        <ion-item detail="true">
-          <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-          <ion-label>Як користуватись додатком</ion-label>
-        </ion-item>
-      </a>
+      <ion-item button="true" detail routerLink="/tabs/how-to-use">
+        <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+        <ion-label>Як користуватись додатком</ion-label>
+      </ion-item>
       <ion-item detail (click)="goToFaq()">
         <ion-icon slot="start" name="help-circle-outline"></ion-icon>
         <ion-label>Питання/Відповіді</ion-label>
@@ -135,7 +133,7 @@
     </ion-list>
 
     <ion-list class="profile-menu-group">
-      <ion-item detail routerLink="/emergency-help">
+      <ion-item button="true" detail routerLink="/emergency-help">
         <ion-icon slot="start" name="warning-outline"></ion-icon>
         <ion-label>Термінова допомога</ion-label>
       </ion-item>
