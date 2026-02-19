@@ -1,3 +1,14 @@
 <ion-app>
+  <div
+    class="app-preloader"
+    [class.app-preloader--hide]="isPreloaderHiding"
+    [class.app-preloader--hidden]="isPreloaderHidden"
+  >
+    <div class="app-preloader__logo" aria-label="MySense">
+      <img class="app-preloader__logo-image" src="assets/icon/mysense-logo-white.png" alt="MySense">
+      <img class="app-preloader__heart" src="assets/icon/mysense-heart.png" alt="" aria-hidden="true">
+    </div>
+  </div>
+
   <ion-router-outlet></ion-router-outlet>
 </ion-app>
