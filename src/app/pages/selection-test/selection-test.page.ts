@@ -76,7 +76,7 @@ export class SelectionTestPage implements OnInit, AfterViewInit {
   displayedResultsCount = signal<number>(4); // Number of results currently displayed
   
   showLoadMoreButton = computed(() => {
-    return this.displayedResultsCount() < this.allResults.length;
+    return this.allResults.length > 4 && this.displayedResultsCount() < this.allResults.length;
   });
 
   meta: {
