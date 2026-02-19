@@ -222,10 +222,14 @@ ion-content {
 
 .how-it-works-section h2 {
   font-size: 24px;
-  font-weight: 600;
-  margin: 0 20px 20px;
-  color: #2f264d;
-  text-align: center;
+    font-weight: 400;
+    margin: 0;
+    color: #2f264d;
+}
+.how-it-works-description {
+  font-size: 16px;
+    color: #423f4d;
+    margin-top: 8px;  
 }
 
 .how-start__slider {
@@ -391,10 +395,11 @@ ion-content {
     padding: 18px 0 14px;
   }
 
-  .how-it-works-section h2 {
-    margin: 0 14px 16px;
-    font-size: 22px;
-  }
+  .reviews-slider-section h3 {
+    text-align: left;
+    font-size: 24px;
+}
+
 
   .how-start__slider {
     margin-left: 0px;
@@ -481,11 +486,13 @@ ion-content {
 
 .doctors-section h2, .section-9 h2, .section-10 h2, .section-11 h2 {
   font-size: 24px;
-  font-weight: bold;
+  
   margin-bottom: 20px;
   color: #333;
 }
-
+.section-10 h2 {
+  text-align: left;
+}
 .doctor-list {
   display: flex;
   flex-wrap: nowrap; /* Ensure items stay in a single row */
@@ -590,6 +597,16 @@ ion-content {
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* Distribute content vertically */
+  position: relative;
+}
+
+.review-quote-icon {
+  position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 42px;
+    height: 32px;
+    pointer-events: none;
 }
 
 .review-slide-content h3 {
@@ -769,6 +786,7 @@ button.rewiew-more {
   box-sizing: border-box;
   --box-shadow: none;
   --border-bottom: 0;
+  font-size: 15px;
 }
 
 
@@ -1173,7 +1191,7 @@ ion-list.login-inputs.md.list-md.hydrated {
   display: none;
 }
 .item.sc-ion-label-md-h, .item .sc-ion-label-md-h {
-    font-size: 20px !important;
+    font-size: 15px !important;
     font-weight: 400;
 }
 .tests-block {
