@@ -78,6 +78,99 @@ button.btn-reserve {
     margin: 0 10px;
 }
 
+.tasks-list {
+  padding: 15px 20px 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #fff;
+  margin: 0 10px;
+}
+
+.task-item {
+  background: #f4f3f8;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.task-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.task-text {
+  margin: 0;
+  font-size: 16px;
+  color: #2f264d;
+  font-weight: 600;
+}
+
+.task-time {
+  display: block;
+  margin-top: 10px;
+  color: #9ba0ad;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.task-delete {
+  border: 0;
+  background: transparent;
+  color: #9ba0ad;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-delete ion-icon {
+  font-size: 20px;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.task-edit {
+  border: 0;
+  background: transparent;
+  color: #9ba0ad;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-edit ion-icon {
+  font-size: 20px;
+}
+
+.task-files {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.task-file-link {
+  border: 1px solid #d8d2f2;
+  background: #fff;
+  color: #6c54d1;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+.tasks-empty {
+  text-align: center;
+  color: #9ba0ad;
+  padding: 28px 0;
+}
+
 .message-item {
   display: flex;
   width: 100%;
@@ -189,4 +282,34 @@ ion-footer ion-toolbar {
   width: 20px;
   height: 20px;
   display: block;
+}
+
+.tasks-write button {
+  width: 50px;
+  height: 42px;
+  padding: 0;
+}
+
+.tasks-write button ion-icon {
+  color: #fff;
+  font-size: 26px;
+}
+
+.task-file-input {
+  display: none;
+}
+
+.tasks-write .attach-btn {
+  background: #fff;
+  border: 1px solid #795bda;
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  padding: 0;
+  margin-right: 6px;
+}
+
+.tasks-write .attach-btn ion-icon {
+  color: #795bda;
+  font-size: 22px;
 }

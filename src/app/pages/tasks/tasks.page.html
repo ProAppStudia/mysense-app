@@ -8,7 +8,45 @@
 </ion-header>
 
 <ion-content class="tasks-page ion-padding">
-  <div class="tasks-empty">
-    Поки що немає активних завдань.
+  <div *ngIf="!isLoggedIn" class="tasks-empty">
+    Увійдіть у профіль, щоб переглянути завдання.
   </div>
+
+  <ng-container *ngIf="isLoggedIn">
+    <div class="chats-row" *ngIf="chats.length > 0">
+      <button
+        type="button"
+        class="chat-chip"
+        *ngFor="let chat of chats"
+        [class.active]="chat === selectedChat"
+        (click)="selectChat(chat)"
+      >
+        {{ chat.fullname || 'Психолог' }}
+      </button>
+    </div>
+
+    <div class="tasks-list" *ngIf="tasks.length > 0; else emptyTasks">
+      <div class="task-card" *ngFor="let task of tasks">
+        <div class="task-head">
+          <p class="task-text">{{ task.text }}</p>
+          <button type="button" class="delete-btn" (click)="deleteTask(task.id)" aria-label="Видалити завдання">🗑</button>
+        </div>
+        <span class="task-date">{{ task.date }}</span>
+        <div class="task-files" *ngIf="task.files?.length">
+          <button
+            type="button"
+            class="task-file-link"
+            *ngFor="let file of task.files"
+            (click)="openTaskFile(file.url)"
+          >
+            {{ file.name }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #emptyTasks>
+      <div class="tasks-empty">Поки що немає активних завдань.</div>
+    </ng-template>
+  </ng-container>
 </ion-content>

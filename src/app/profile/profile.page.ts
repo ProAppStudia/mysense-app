@@ -228,4 +228,15 @@ export class ProfilePage implements OnInit {
     console.log('Navigating to Legal Info page...');
     this.router.navigate(['/legal-info']);
   }
+
+  ionViewWillLeave() {
+    this.blurActiveElement();
+  }
+
+  private blurActiveElement() {
+    const active = document.activeElement as HTMLElement | null;
+    if (active && typeof active.blur === 'function') {
+      active.blur();
+    }
+  }
 }

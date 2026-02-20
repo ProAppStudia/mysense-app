@@ -15,12 +15,12 @@
     </div>
 
     <div class="chat-actions">
-      <button class="active-action">Чат</button>
-      <button fill="clear">Завдання</button>
+      <button [class.active-action]="activeTab === 'chat'" (click)="setActiveTab('chat')">Чат</button>
+      <button [class.active-action]="activeTab === 'tasks'" (click)="setActiveTab('tasks')">Завдання</button>
       <button class="btn-reserve" fill="clear">Забронювати сесію</button>
     </div>
 
-    <div class="message-list" *ngIf="selectedChat">
+    <div class="message-list" *ngIf="selectedChat && activeTab === 'chat'">
       <div *ngFor="let message of messages" class="message-item" [class.my-message]="message.side === 'right'">
         <div class="message-bubble">
           <p>{{ message.text }}</p>
@@ -36,6 +36,36 @@
         </div>
       </div>
     </div>
+
+    <div class="tasks-list" *ngIf="selectedChat && activeTab === 'tasks'">
+      <div class="task-item" *ngFor="let task of tasks">
+        <div class="task-content">
+          <div class="task-head">
+            <p class="task-text">{{ task.text }}</p>
+            <div class="task-actions">
+              <button type="button" class="task-edit" (click)="editTask(task)" aria-label="Редагувати завдання">
+                <ion-icon name="create-outline"></ion-icon>
+              </button>
+              <button type="button" class="task-delete" (click)="deleteTask(task.id)" aria-label="Видалити завдання">
+                <ion-icon name="trash-outline"></ion-icon>
+              </button>
+            </div>
+          </div>
+          <span class="task-time">{{ task.date }}</span>
+          <div class="task-files" *ngIf="task.files?.length">
+            <button
+              type="button"
+              class="task-file-link"
+              *ngFor="let file of task.files"
+              (click)="openTaskFile(file.url)"
+            >
+              {{ file.name }}
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="tasks-empty" *ngIf="tasks.length === 0">Поки що немає завдань</div>
+    </div>
   </div>
 
   <div *ngIf="!isLoggedIn || chats.length === 0" class="no-chats-container ion-padding">
@@ -48,7 +78,7 @@
 
 <ion-footer *ngIf="selectedChat && isLoggedIn">
   <ion-toolbar>
-    <div class="write__message">
+    <div class="write__message" *ngIf="activeTab === 'chat'">
       <ion-input
         #messageInput
         [(ngModel)]="newMessage"
@@ -62,6 +92,38 @@
         [disabled]="isSending || !newMessage.trim()"
       >
         <img src="assets/icon/send_message_icon.svg" alt="Надіслати">
+      </button>
+    </div>
+
+    <div class="write__message tasks-write" *ngIf="activeTab === 'tasks'">
+      <input
+        #taskFileInput
+        type="file"
+        class="task-file-input"
+        (change)="onTaskFilesSelected($event)"
+        multiple
+      >
+      <button
+        type="button"
+        class="attach-btn"
+        aria-label="Додати файли"
+        (click)="openTaskFilePicker()"
+        [disabled]="isSending"
+      >
+        <ion-icon name="attach-outline"></ion-icon>
+      </button>
+      <ion-input
+        [(ngModel)]="newMessage"
+        [placeholder]="selectedTaskFiles.length ? 'Файлів обрано: ' + selectedTaskFiles.length : 'Додати нове завдання'"
+        (keyup.enter)="sendTask()"
+      ></ion-input>
+      <button
+        type="button"
+        aria-label="Додати завдання"
+        (click)="sendTask()"
+        [disabled]="isSending || !newMessage.trim()"
+      >
+        <ion-icon name="add-outline"></ion-icon>
       </button>
     </div>
   </ion-toolbar>

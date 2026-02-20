@@ -7,4 +7,84 @@ ion-content.tasks-page {
   border-radius: 12px;
   padding: 20px;
   color: #2f264d;
+  margin-top: 10px;
+}
+
+.chats-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  margin-bottom: 12px;
+}
+
+.chat-chip {
+  border: 1px solid #7a5bda;
+  border-radius: 10px;
+  background: #fff;
+  color: #2f264d;
+  padding: 8px 14px;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.chat-chip.active {
+  background: #ece7ff;
+  color: #6b4fd1;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.task-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.task-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.task-text {
+  margin: 0;
+  font-size: 16px;
+  color: #2f264d;
+  font-weight: 600;
+}
+
+.task-date {
+  margin-top: 8px;
+  display: block;
+  color: #9ba0ad;
+  font-size: 14px;
+}
+
+.delete-btn {
+  border: 0;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.task-files {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.task-file-link {
+  border: 1px solid #d8d2f2;
+  background: #fff;
+  color: #6c54d1;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 13px;
 }
