@@ -52,7 +52,7 @@
     </div>
 
     <!-- Tasks Block -->
-    <div *ngIf="isLoggedIn()" class="diary-block">
+    <div *ngIf="isLoggedIn() && !isDoctor()" class="diary-block">
       
       <div class="diary-card">
        <ion-icon name="checkmark-circle-outline"></ion-icon>
@@ -64,7 +64,7 @@
 
    
 
-    <div class="section-1-block">
+    <div *ngIf="!isDoctor()" class="section-1-block">
       <h1 class="main-title">{{ homepageData.section_1.heading }}</h1>
       <p class="description-text">{{ homepageData.section_1.sub_heading }}</p>
       <p class="banner__description__for" *ngIf="bannerDescriptionItems.length > 0; else bannerDescriptionFallback">
@@ -92,7 +92,7 @@
 
    
     <!-- How It Works Section -->
-    <div class="how-it-works-section how-start">
+    <div *ngIf="!isDoctor()" class="how-it-works-section how-start">
       <h2>My Sense - це зручна і проста платформа</h2>
       <p class="how-it-works-description">Спробуйте і ви переконаєтеся в цьому самі</p>
       <swiper-container
@@ -164,7 +164,7 @@
         <button type="button" class="how-start__btn how-start__btn--next" (click)="slideNextHowItWorks()" aria-label="Наступний крок"></button>
       </div>
     </div>
-<div class="section-1-block">
+<div *ngIf="!isDoctor()" class="section-1-block">
       
       <h2>{{ homepageData.section_1.text_choise_psyhologist }}</h2>
       <div class="doctor-list">
@@ -185,7 +185,7 @@
     </div>
 
     <!-- Section 3 -->
-    <div class="free-consultation-banner">
+    <div *ngIf="!isDoctor()" class="free-consultation-banner">
       <span class="free-tag">це безкоштовно ;)</span>
       <h2 class="banner-title">{{ homepageData.section_3.heading_acquaintance }}</h2>
       <p class="banner-description">{{ homepageData.section_3.text_acquaintance }}</p>
@@ -219,7 +219,7 @@
     </div>
 
     <!-- Section 10 - Accordion for Questions and Answers -->
-    <div class="section-10">
+    <div *ngIf="!isDoctor()" class="section-10">
       <h2>{{ homepageData.section_10.heading }}</h2>
       <ion-accordion-group>
         <ion-accordion *ngFor="let item of homepageData.section_10.items" value="{{ item.heading }}" toggleIcon="add-outline" toggleIconSlot="end">

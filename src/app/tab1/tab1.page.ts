@@ -88,6 +88,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   homepageData: HomepageData | null = null;
   readonly TRUNCATE_LENGTH = 100; // Define a constant for truncation length
   isLoggedIn = signal(false);
+  isDoctor = signal(false);
   userSessions: Session[] = [];
 
   // Login Modal States
@@ -128,6 +129,9 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.getHomepageData(); // Fetch homepage data first
     this.isLoggedIn.set(this.authService.isAuthenticated());
+    if (this.isLoggedIn()) {
+      this.loadUserRole();
+    }
   }
 
   ngOnDestroy() {
@@ -356,6 +360,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
           this.loading.set(false);
           if (response.success) {
             this.isLoggedIn.set(true);
+            this.loadUserRole();
             this.closeLoginModal();
           } else {
             this.errorMsg.set(response.message || 'Login failed. Please try again.');
@@ -456,6 +461,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
             this.registerForm.get('code')?.setValue(''); // Clear code field for new input
           } else if (response.stage === 'done') {
             this.isLoggedIn.set(true);
+            this.loadUserRole();
             this.closeRegisterModal();
           } else if (response.stage === 'error') {
             this.registerErrorMsg.set(response.message);
@@ -524,5 +530,18 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   handleRefresh(event: RefresherCustomEvent) {
     window.location.reload(); // Perform a full page reload
     event.detail.complete(); // Complete the refresher animation
+  }
+
+  private loadUserRole() {
+    this.authService.getProfile().subscribe({
+      next: (profile) => {
+        this.isDoctor.set(
+          !!(profile?.is_doctor === true || profile?.is_doctor === 1 || profile?.is_doctor === '1')
+        );
+      },
+      error: () => {
+        this.isDoctor.set(false);
+      }
+    });
   }
 }
