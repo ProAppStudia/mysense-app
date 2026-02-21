@@ -238,14 +238,30 @@ ion-toolbar {
 
 .selected-datetime {
   height: 52px;
-  border: 1px solid #dfdde4;
-  border-radius: 8px;
-  background: #fff;
-  padding: 0 10px;
-  color: #50505a;
-  font-size: 24px;
-  display: flex;
-  align-items: center;
+    border: 1px solid #dfdde4;
+    border-radius: 8px;
+    background: #fff;
+    padding: 0 10px;
+    color: #2f264d;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.selected-datetime.placeholder {
+  color: #7d7d7d;
+}
+
+ion-modal.doctor-date-modal::part(content) {
+  --width: min(94vw, 520px);
+  --height: auto;
+  --max-height: 86vh;
+  border-radius: 14px;
+  overflow: hidden;
 }
 
 ion-datetime-button::part(native) {

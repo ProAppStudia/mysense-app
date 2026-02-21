@@ -6,7 +6,6 @@ import {
   IonButtons,
   IonContent,
   IonDatetime,
-  IonDatetimeButton,
   IonHeader,
   IonIcon,
   IonModal,
@@ -35,7 +34,6 @@ import { Week } from '../../models/calendar.model';
     IonBackButton,
     IonContent,
     IonIcon,
-    IonDatetimeButton,
     IonDatetime,
     IonModal,
     CommonModule,
@@ -63,7 +61,7 @@ export class SessionRequestPage implements OnInit {
     type: 1,
     format: 'online' as 'online' | 'offline',
     date: '',
-    time: 10
+    time: 0
   };
 
   readonly reserveTimeOptions = Array.from({ length: 17 }, (_, i) => i + 7);
@@ -72,6 +70,8 @@ export class SessionRequestPage implements OnInit {
   currentWeekIndex = 0;
   initialWeekIndex = 0;
   selectedDateTimeIso = '';
+  doctorDatePickerOpen = false;
+  doctorDateMinIso = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -84,8 +84,10 @@ export class SessionRequestPage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.form.date = this.getDefaultDate();
-    this.selectedDateTimeIso = `${this.form.date}T${String(this.form.time).padStart(2, '0')}:00:00`;
+    this.form.date = '';
+    this.form.time = 0;
+    this.selectedDateTimeIso = '';
+    this.doctorDateMinIso = this.getDoctorDateMinIso();
 
     this.route.queryParamMap.subscribe((params) => {
       this.targetUserId = Number(params.get('to_user_id') || 0);
@@ -427,7 +429,9 @@ export class SessionRequestPage implements OnInit {
     }
 
     if (this.isDoctor) {
-      this.selectedDateTimeIso = `${this.form.date}T${String(this.form.time).padStart(2, '0')}:00:00`;
+      this.selectedDateTimeIso = this.form.date && this.form.time
+        ? `${this.form.date}T${String(this.form.time).padStart(2, '0')}:00:00`
+        : '';
       return;
     }
 
@@ -483,6 +487,24 @@ export class SessionRequestPage implements OnInit {
     this.selectedDateTimeIso = iso;
     this.form.date = iso.slice(0, 10);
     this.form.time = Number(iso.slice(11, 13));
+  }
+
+  openDoctorDatePicker() {
+    this.doctorDatePickerOpen = true;
+  }
+
+  closeDoctorDatePicker() {
+    this.doctorDatePickerOpen = false;
+  }
+
+  private getDoctorDateMinIso(): string {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    return `${y}-${m}-${d}T${hh}:${mm}:00`;
   }
 
   onClientSlotSelect(dayKey: string, hour: number) {
@@ -559,7 +581,14 @@ export class SessionRequestPage implements OnInit {
   }
 
   get selectedDateTimeLabel(): string {
+    if (!this.form.date || !this.form.time) {
+      return 'Натисніть, щоб обрати дату та час';
+    }
     return `${this.form.date} ${String(this.form.time).padStart(2, '0')}:00`;
+  }
+
+  get hasSelectedDoctorDateTime(): boolean {
+    return !!(this.form.date && this.form.time);
   }
 
   get currentWeekLabel(): string {

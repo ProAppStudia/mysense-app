@@ -119,15 +119,23 @@
 
       <ng-template #doctorPicker>
         <div class="datetime-box">
-          <ion-datetime-button datetime="doctor-session-datetime"></ion-datetime-button>
-          <div class="selected-datetime">{{ selectedDateTimeLabel }}</div>
+          <button type="button" class="selected-datetime" [class.placeholder]="!hasSelectedDoctorDateTime" (click)="openDoctorDatePicker()">
+            {{ selectedDateTimeLabel }}
+          </button>
         </div>
-        <ion-modal [keepContentsMounted]="true">
+        <ion-modal
+          cssClass="doctor-date-modal"
+          [isOpen]="doctorDatePickerOpen"
+          (didDismiss)="closeDoctorDatePicker()"
+          [keepContentsMounted]="true"
+        >
           <ng-template>
             <ion-datetime
               id="doctor-session-datetime"
               presentation="date-time"
-              [value]="selectedDateTimeIso"
+              [value]="selectedDateTimeIso || undefined"
+              [min]="doctorDateMinIso"
+              [minuteValues]="[0]"
               (ionChange)="onDoctorDateTimeChange($event.detail.value)"
             ></ion-datetime>
           </ng-template>
@@ -154,9 +162,9 @@
       type="button"
       class="submit-btn"
       (click)="submit()"
-      [disabled]="loading() || !availableSessionTypes.length || !availableFormats.length"
+      [disabled]="loading() || !availableSessionTypes.length || !availableFormats.length || (isDoctor && !hasSelectedDoctorDateTime)"
     >
-      {{ loading() ? 'Створення...' : 'Підтвердити' }}
+      {{ loading() ? 'Створення...' : (isDoctor ? 'Підтвердити' : 'Перейти до оплати') }}
     </button>
   </section>
 </ion-content>
