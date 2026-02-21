@@ -158,6 +158,9 @@ ion-toolbar {
 .calendar-column {
   border-top: 1px solid #ddd7e9;
   padding-top: 8px;
+  display: grid;
+  grid-template-rows: auto repeat(13, 42px);
+  row-gap: 8px;
 }
 
 .calendar-day p {
@@ -187,9 +190,13 @@ ion-toolbar {
   color: #795bda;
   border-radius: 8px;
   height: 42px;
-  margin-top: 8px;
+  margin-top: 0;
   font-size: 16px;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  padding: 0 2px;
 }
 
 .slot-btn.unavailable {
@@ -205,6 +212,28 @@ ion-toolbar {
 .slot-btn.active {
   background: #6f57d2;
   color: #fff;
+}
+
+.calendar-grid.full-week {
+  gap: 6px;
+}
+
+.calendar-grid.full-week .calendar-day p:first-child {
+  font-size: 14px;
+}
+
+
+
+.calendar-grid.full-week .slot-btn {
+  height: 34px;
+  margin-top: 0;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+.calendar-grid.full-week .calendar-column {
+  grid-template-rows: auto repeat(13, 34px);
+  row-gap: 6px;
 }
 
 .selected-datetime {
@@ -231,7 +260,7 @@ ion-datetime-button::part(native) {
 .summary h3 {
   margin: 0 0 12px;
   color: #2f264d;
-  font-size: 22px;
+  font-size: 15px;
   font-weight: 500;
 }
 
@@ -244,14 +273,14 @@ ion-datetime-button::part(native) {
 }
 
 .summary .row span {
-  color: #4f4b61;
-  font-size: 20px;
+  color: rgba(66, 63, 77, 1);
+    font-size: 14px;
 }
 
 .summary .row strong {
-  color: #2f264d;
-  font-size: 22px;
   font-weight: 600;
+    font-size: 15px;
+    color: rgba(47, 38, 77, 1);
 }
 
 .hint-error {
@@ -271,14 +300,14 @@ ion-datetime-button::part(native) {
 
 .submit-btn {
   margin-top: 16px;
-  width: 100%;
-  height: 58px;
-  border: none;
-  border-radius: 10px;
-  background: #795bda;
-  color: #fff;
-  font-size: 22px;
-  font-weight: 600;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    background: #795bda;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 21px 24px;
 }
 
 .submit-btn:disabled {

@@ -431,7 +431,9 @@ export class SessionRequestPage implements OnInit {
       return;
     }
 
-    this.selectFirstAvailableSlot();
+    // Client should choose slot manually; no auto-selection.
+    this.form.date = '';
+    this.form.time = 0;
   }
 
   private getDefaultDate(): string {
@@ -454,14 +456,12 @@ export class SessionRequestPage implements OnInit {
   prevWeek() {
     if (this.canGoPrevWeek()) {
       this.currentWeekIndex--;
-      this.selectFirstAvailableSlot();
     }
   }
 
   nextWeek() {
     if (this.canGoNextWeek()) {
       this.currentWeekIndex++;
-      this.selectFirstAvailableSlot();
     }
   }
 
@@ -541,23 +541,6 @@ export class SessionRequestPage implements OnInit {
       return dayAny.date;
     }
     return this.form.date;
-  }
-
-  private selectFirstAvailableSlot() {
-    if (this.isDoctor) {
-      return;
-    }
-    const week = this.currentWeek;
-    if (!week) {
-      return;
-    }
-    for (const dayKey of Object.keys(week.days)) {
-      const slots = this.getAvailableSlotsForDay(dayKey);
-      if (slots.length > 0) {
-        this.onClientSlotSelect(dayKey, slots[0].time);
-        return;
-      }
-    }
   }
 
   private hasSelectedClientSlot(): boolean {

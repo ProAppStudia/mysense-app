@@ -89,6 +89,7 @@
 
         <div
           class="calendar-grid"
+          [class.full-week]="currentWeekDayKeys.length >= 7"
           *ngIf="currentWeekDayKeys.length; else noSlots"
           [style.grid-template-columns]="'repeat(' + currentWeekDayKeys.length + ', minmax(0, 1fr))'"
         >
