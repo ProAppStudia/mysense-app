@@ -5,8 +5,9 @@ import { IonContent, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLab
 import { HttpClient } from '@angular/common/http';
 import { register } from 'swiper/element/bundle';
 import { AuthService, MySessionItem } from '../services/auth.service'; // Import AuthService
+import { DiaryEntryNormalized, DiaryService } from '../services/diary.service';
 import { environment } from '../../environments/environment'; // Import environment for base URL
-import { Subscription, interval } from 'rxjs';
+import { forkJoin, Subscription, interval } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, checkmarkDoneOutline, heart, checkmarkCircleOutline, walletOutline } from 'ionicons/icons';
 import { Router, RouterLink, NavigationExtras } from '@angular/router';
@@ -104,6 +105,14 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   reservePickerOpen = signal(false);
   recentPsychologists: RecentPsychologist[] = [];
   selectedReserveDoctorUserId: number | null = null;
+  todayDiaryExists = signal(false);
+  todayDiaryEntry = signal<DiaryEntryNormalized | null>(null);
+  moodNameById: Record<string, string> = {};
+  moodTypeById: Record<string, string> = {};
+  moodIconById: Record<string, string> = {};
+  bodyNameById: Record<string, string> = {};
+  bodyIconById: Record<string, string> = {};
+  weekMoodDots = signal<Array<{ col: number; row: number }>>([]);
 
   // Login Modal States
   loginOpen = signal(false);
@@ -137,15 +146,37 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     code: new FormControl('', []) // Code field initially not required
   });
 
-  constructor(private http: HttpClient, private authService: AuthService, private router: Router) {
+  constructor(private http: HttpClient, private authService: AuthService, private diaryService: DiaryService, private router: Router) {
       addIcons({calendarOutline,arrowForwardOutline,closeOutline,addCircleOutline,chatbubblesOutline,checkmarkCircleOutline,bookOutline});}
 
   ngOnInit() {
     this.getHomepageData();
     this.isLoggedIn.set(this.authService.isAuthenticated());
+    this.diaryService.getDiaryQuestions().subscribe((response) => {
+      this.moodNameById = {};
+      this.moodTypeById = {};
+      this.moodIconById = {};
+      this.bodyNameById = {};
+      this.bodyIconById = {};
+      (response.mood?.items ?? []).forEach((item) => {
+        this.moodNameById[item.id] = item.name;
+        this.moodTypeById[item.id] = item.type;
+        this.moodIconById[item.id] = item.icon;
+      });
+      (response.body?.items ?? []).forEach((item) => {
+        this.bodyNameById[item.id] = item.name;
+        this.bodyIconById[item.id] = item.icon;
+      });
+      this.refreshDiaryState();
+    });
+    this.refreshDiaryState();
     if (this.isLoggedIn()) {
       this.loadUserRole();
     }
+  }
+
+  ionViewWillEnter() {
+    this.refreshDiaryState();
   }
 
   ngOnDestroy() {
@@ -716,5 +747,104 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     return Array.from(unique.values());
+  }
+
+  private refreshDiaryState() {
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    this.diaryService.getDiaryByDate(today).subscribe((entry) => {
+      this.todayDiaryEntry.set(entry);
+      this.todayDiaryExists.set(!!entry);
+    });
+    this.loadWeekMoodDots(now);
+  }
+
+  todayDiaryMoodLabel(): string {
+    const moodId = this.todayDiaryEntry()?.mood?.[0];
+    if (!moodId) {
+      return 'Запис готовий';
+    }
+    return this.moodNameById[moodId] ?? moodId;
+  }
+
+  todayDiaryBodyLabel(): string {
+    const bodyId = this.todayDiaryEntry()?.body?.[0];
+    if (!bodyId) {
+      return '';
+    }
+    return this.bodyNameById[bodyId] ?? bodyId;
+  }
+
+  todayDiaryMoodIcon(): string {
+    const moodId = this.todayDiaryEntry()?.mood?.[0];
+    return moodId ? (this.moodIconById[moodId] ?? '') : '';
+  }
+
+  todayDiaryBodyIcon(): string {
+    const bodyId = this.todayDiaryEntry()?.body?.[0];
+    return bodyId ? (this.bodyIconById[bodyId] ?? '') : '';
+  }
+
+  private resolveMoodRow(moodId: string): number {
+    if (!moodId) {
+      return 3;
+    }
+
+    const severeNegative = ['panicked', 'desperate', 'furious', 'awful', 'distressed'];
+    const mildNegative = ['indifferent', 'melancholic', 'worried', 'nervous', 'annoyed', 'anxious', 'frustrated', 'agitated', 'irritated', 'pessimistic'];
+    const highPositive = ['ecstatic', 'euphoric', 'amazing', 'joyful', 'excited', 'inspired'];
+    const calmPositive = ['happy', 'hopeful', 'calm', 'great', 'proud', 'motivated', 'confident', 'loved', 'energetic'];
+
+    if (severeNegative.includes(moodId)) {
+      return 5;
+    }
+    if (mildNegative.includes(moodId)) {
+      return 4;
+    }
+    if (highPositive.includes(moodId)) {
+      return 1;
+    }
+    if (calmPositive.includes(moodId)) {
+      return 2;
+    }
+
+    return this.moodTypeById[moodId] === 'negative' ? 4 : 2;
+  }
+
+  private loadWeekMoodDots(baseDate: Date): void {
+    const monday = this.startOfWeekMonday(baseDate);
+    const dayRequests = Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + index);
+      return this.diaryService.getDiaryByDate(this.toLocalDateString(date));
+    });
+
+    forkJoin(dayRequests).subscribe((entries) => {
+      const dots: Array<{ col: number; row: number }> = [];
+      entries.forEach((entry, col) => {
+        const moodId = entry?.mood?.[0] ?? '';
+        if (!moodId) {
+          return;
+        }
+        dots.push({ col, row: this.resolveMoodRow(moodId) });
+      });
+      this.weekMoodDots.set(dots);
+    });
+  }
+
+  private startOfWeekMonday(date: Date): Date {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    const day = d.getDay(); // 0=Sun, 1=Mon
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+    d.setDate(d.getDate() + diffToMonday);
+    return d;
+  }
+
+  private toLocalDateString(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 }

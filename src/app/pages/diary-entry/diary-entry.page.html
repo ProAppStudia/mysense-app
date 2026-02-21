@@ -4,7 +4,7 @@
       <ion-button (click)="previousStep()" *ngIf="step > 1 && step < 5">
         <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="header-back-icon">
       </ion-button>
-      <ion-button routerLink="/tabs/diary" *ngIf="step === 1">
+      <ion-button (click)="goBack()" *ngIf="step === 1">
         <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="header-back-icon">
       </ion-button>
     </ion-buttons>
@@ -50,18 +50,25 @@
   <!-- Step 3: Thoughts -->
   <div *ngIf="step === 3">
     <h2>Використовуйте цей простір, щоб записати свої думки.</h2>
-    <ion-textarea [(ngModel)]="diaryEntry.thoughts" rows="6"></ion-textarea>
+    <ion-textarea [(ngModel)]="thoughts" rows="6"></ion-textarea>
     <ion-button expand="block" (click)="nextStep()">Далі</ion-button>
   </div>
 
   <!-- Step 4: Therapeutic Questions -->
   <div *ngIf="step === 4 && diaryData">
-    <h2>{{ diaryData.questions.header }}</h2>
-    <div *ngFor="let question of diaryData.questions; let i = index">
+    <h2>{{ diaryData.questionsHeader || 'Запитання від нашого психотерапевта' }}</h2>
+    <div *ngFor="let question of questions">
       <ion-label>{{ question.title }}</ion-label>
-      <ion-input [(ngModel)]="diaryEntry.answers[i].answer" placeholder="{{ question.placeholder }}"></ion-input>
+      <ion-input
+        [(ngModel)]="answersMap[question.id]"
+        [placeholder]="question.placeholder"
+        [class.ion-invalid]="isQuestionMissing(question.id) && errorMessage"
+      ></ion-input>
     </div>
-    <ion-button expand="block" (click)="saveEntry()">Далі</ion-button>
+    <p class="ion-padding-top ion-text-danger" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <ion-button expand="block" (click)="saveEntry()" [disabled]="loading">
+      {{ loading ? 'Збереження...' : 'Далі' }}
+    </ion-button>
   </div>
 
   <!-- Step 5: Confirmation -->

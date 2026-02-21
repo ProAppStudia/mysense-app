@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button routerLink="/tabs/home">
+      <ion-button (click)="goBack()">
         <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="header-back-icon">
       </ion-button>
     </ion-buttons>
@@ -38,19 +38,29 @@
     </div>
   </div>
 
-  <div *ngIf="diaryEntry && diaryEntry.mood; else noEntry">
+  <div *ngIf="diaryEntry; else noEntry">
     <div class="entry-content">
-      <div class="moods">
-        <ion-chip>{{ diaryEntry.mood.name }}</ion-chip>
-        <ion-chip>{{ diaryEntry.body.name }}</ion-chip>
+      <div class="moods-row">
+        <span class="emotion-chip" *ngIf="displayMood()">
+          <img *ngIf="displayMoodIcon(); else moodFallback" [src]="displayMoodIcon()" alt="">
+          <ng-template #moodFallback>🙂</ng-template>
+          <span>{{ displayMood() }}</span>
+        </span>
+        <span class="emotion-chip" *ngIf="displayBody()">
+          <img *ngIf="displayBodyIcon(); else bodyFallback" [src]="displayBodyIcon()" alt="">
+          <ng-template #bodyFallback>🙂</ng-template>
+          <span>{{ displayBody() }}</span>
+        </span>
       </div>
-      <p>{{ diaryEntry.thoughts }}</p>
-      <h3>Therapeutic questions from our psychologists.</h3>
+      <p class="entry-text">{{ diaryEntry.text }}</p>
+      <h3>Запитання від нашого психотерапевта</h3>
       <div *ngFor="let answer of diaryEntry.answers" class="question-answer">
-        <h4>{{ answer.question_title }}</h4>
-        <p>{{ answer.answer }}</p>
+        <h4>{{ displayQuestionTitle(answer) }}</h4>
+        <p class="answer-text">{{ answer.answer }}</p>
       </div>
-      <ion-button expand="block" routerLink="/tabs/diary-entry" [queryParams]="{date: selectedDate}">Редагувати запис</ion-button>
+      <ion-button class="edit-entry-btn" expand="block" routerLink="/tabs/diary-entry" [queryParams]="{date: selectedDate}">
+        Редагувати запис
+      </ion-button>
     </div>
   </div>
 
