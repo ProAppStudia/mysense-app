@@ -168,7 +168,7 @@
 </div>
     
       <div class="psychologist-card">
-      <div class="booking-block" *ngIf="doctor.calendar">
+      <div #bookingBlock class="booking-block" *ngIf="doctor.calendar">
         <h3>Забронювати сесію</h3>
         <p class="timezone-info">Бронювання проводиться за київським часом</p>
 
@@ -178,30 +178,66 @@
         </div>
 
         <div class="booking-for-toggle">
-          <button *ngIf="doctor.priceIndividual" class="sessionbutton" [class.active]="bookingFor === 'me'" (click)="bookingFor = 'me'">Для мене</button>
-          <button *ngIf="doctor.priceFamily" class="sessionbutton" [class.active]="bookingFor === 'pair'" (click)="bookingFor = 'pair'">Для пари</button>
-          <button *ngIf="doctor.workWithTypes?.includes('Діти')" class="sessionbutton" [class.active]="bookingFor === 'child'" (click)="bookingFor = 'child'">Для дитини</button>
+          <button
+            *ngFor="let typeOption of availableBookingTypes"
+            class="sessionbutton"
+            [class.active]="bookingFor === typeOption.value"
+            (click)="bookingFor = typeOption.value"
+          >
+            {{ typeOption.label }}
+          </button>
         </div>
 
-        <div class="week-navigator">
-          <button (click)="prevWeek()" [disabled]="currentWeekIndex === 0">&larr;</button>
-          <span>{{ currentWeek?.week }}</span>
-          <button (click)="nextWeek()" [disabled]="currentWeekIndex === weeks.length - 1">&rarr;</button>
-        </div>
-
-        <div class="calendar-grid" *ngIf="currentWeek">
-          <div class="day-column" *ngFor="let dayKey of dayKeys">
-            <div class="day-header">
-              <p class="calendar-name">{{ currentWeek.days[dayKey].day_name }}</p>
-              <p class="calendar-no">{{ currentWeek.days[dayKey].day_no }}</p>
-            </div>
-            <div class="time-slots">
-              <button *ngFor="let slot of currentWeek.days[dayKey].times" [disabled]="slot.disabled">
-                {{ slot.time }}:00
+        <ng-container *ngIf="!showPairOnlineRequestBlock; else pairOnlineRequestBlock">
+          <div class="week-navigator">
+            <div class="week-nav-arrows">
+              <button type="button" (click)="prevWeek()" [disabled]="!canGoPrevWeek()">
+                <img
+                  [src]="canGoPrevWeek() ? 'assets/icon/arrow-left-color.svg' : 'assets/icon/arrow-left-grey.svg'"
+                  alt="Попередній тиждень"
+                >
+              </button>
+              <button type="button" (click)="nextWeek()" [disabled]="!canGoNextWeek()">
+                <img
+                  [src]="canGoNextWeek() ? 'assets/icon/arrow-left-color.svg' : 'assets/icon/arrow-left-grey.svg'"
+                  alt="Наступний тиждень"
+                  class="week-btn-icon-next"
+                >
               </button>
             </div>
+            <span class="week-title">{{ currentWeek?.week }}</span>
           </div>
-        </div>
+
+          <div class="calendar-grid" *ngIf="currentWeek">
+            <div class="day-column" *ngFor="let dayKey of dayKeys">
+              <div class="day-header">
+                <p class="calendar-name">{{ currentWeek.days[dayKey].day_name }}</p>
+                <p class="calendar-no">{{ currentWeek.days[dayKey].day_no }}</p>
+              </div>
+              <div class="time-slots">
+                <button
+                  *ngFor="let slot of currentWeek.days[dayKey].times"
+                  [disabled]="isSlotDisabled(slot)"
+                  [class.active]="isSlotSelected(dayKey, slot)"
+                  (click)="selectSlot(dayKey, slot)"
+                >
+                  {{ slot.time }}:00
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #pairOnlineRequestBlock>
+          <div class="pair-online-request">
+            <p class="pair-online-request__text">
+              Відправте запит і я звʼяжуся з вами найближчим часом, щоб домовитися про сесію
+            </p>
+            <button type="button" class="pair-online-request__btn" (click)="openChat('write')">
+              Домовитися про сесію
+            </button>
+          </div>
+        </ng-template>
       </div>
       </div>
       <div class="psychologist-card">
@@ -239,7 +275,7 @@
 
 <ion-footer>
   <div class="footer-buttons">
-    <ion-button class="book-button">
+    <ion-button class="book-button" (click)="openSessionRequest()">
       <ion-icon slot="start" name="calendar-outline"></ion-icon>
       Забронювати зустріч
     </ion-button>

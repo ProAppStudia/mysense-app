@@ -96,6 +96,20 @@ export class SessionRequestPage implements OnInit {
       this.doctorHash = String(params.get('hash') || '').trim();
       this.doctorUserId = Number(params.get('doctor_user_id') || 0);
       this.doctorIdFromQuery = Number(params.get('doctor_id') || 0);
+      const preType = Number(params.get('pre_type') || 0);
+      const preFormat = String(params.get('pre_format') || '').trim().toLowerCase();
+      const preDate = String(params.get('pre_date') || '').trim();
+      const preTime = Number(params.get('pre_time') || 0);
+      if ([1, 2, 3].includes(preType)) {
+        this.form.type = preType;
+      }
+      if (preFormat === 'online' || preFormat === 'offline') {
+        this.form.format = preFormat as 'online' | 'offline';
+      }
+      if (/^\d{4}-\d{2}-\d{2}$/.test(preDate) && preTime > 0) {
+        this.form.date = preDate;
+        this.form.time = preTime;
+      }
 
       this.authService.getProfile().subscribe({
         next: (profile) => {
@@ -435,9 +449,11 @@ export class SessionRequestPage implements OnInit {
       return;
     }
 
-    // Client should choose slot manually; no auto-selection.
-    this.form.date = '';
-    this.form.time = 0;
+    // Client should choose slot manually; keep preselected slot from profile if passed.
+    if (!this.form.date || !this.form.time) {
+      this.form.date = '';
+      this.form.time = 0;
+    }
   }
 
   private getDefaultDate(): string {

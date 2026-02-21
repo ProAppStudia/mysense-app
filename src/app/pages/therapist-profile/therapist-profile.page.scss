@@ -122,7 +122,8 @@ ion-content {
     
 button.sessionbutton {
     background: #ffffff;
-    width: 100%;
+    flex: 1 1 0;
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -136,7 +137,8 @@ button.sessionbutton {
 }
 button.sessionbutton.active {
     background: #7a5bda;
-    width: 100%;
+    flex: 1 1 0;
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -153,19 +155,37 @@ button.sessionbutton.active {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
     margin-bottom: 24px;
     margin-top: 24px;
 
+    .week-nav-arrows {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .week-title {
+      margin-left: auto;
+      text-align: right;
+    }
+
     button {
-      background: #ffffff;
-      border: none;
+      background: #fff;
+      border: 0;
       border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      font-size: 20px;
+      width: 42px;
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
       cursor: pointer;
-          color: #7a5bda;
-    border: 1px solid;
+    }
+
+    .week-btn-icon-next {
+      transform: rotate(180deg);
     }
   }
 
@@ -205,9 +225,14 @@ p.calendar-no {
       background: transparent;
       border: 0px solid #ddd;
       border-radius: 8px;
-      padding: 8px;
+      padding: 8px 2px;
       color: #795bda;
       cursor: pointer;
+
+      &.active {
+        background: #795bda;
+        color: #fff;
+      }
 
       &:disabled {
         background: #795bda1A; // 10% opacity
@@ -215,6 +240,31 @@ p.calendar-no {
         cursor: not-allowed;
       }
     }
+  }
+
+  .pair-online-request {
+    margin-top: 8px;
+    padding: 0;
+  }
+
+  .pair-online-request__text {
+    margin: 0 0 18px;
+    color: #2f264d;
+    font-size: 20px;
+    line-height: 1.15;
+    font-weight: 500;
+  }
+
+  .pair-online-request__btn {
+    border: 0;
+    border-radius: 999px;
+    background: #7a5bda;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 17px 24px;
+   
   }
 }
 
