@@ -36,9 +36,9 @@ ion-toolbar {
 }
 
 .person-row img {
-  width: 118px;
-  height: 118px;
-  border-radius: 8px;
+  width: 110px;
+  height: 110px;
+  border-radius: 4px;
   object-fit: cover;
   background: #cde1f7;
 }
@@ -75,7 +75,7 @@ ion-toolbar {
 
 .choice-btn {
   width: 100%;
-    border-radius: 8px;
+    border-radius: 6px;
     border: 1px solid #795bda;
     background: #fff;
     color: rgba(47, 38, 77, 1);
@@ -92,7 +92,7 @@ ion-toolbar {
 .timezone {
   margin: -4px 0 8px;
   color: #2f264d;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .datetime-box {
