@@ -91,6 +91,13 @@ export const routes: Routes = [
             (m) => m.SessionRequestPage
           ),
       },
+      {
+        path: 'request',
+        loadComponent: () =>
+          import('../pages/request/request.page').then(
+            (m) => m.RequestPage
+          ),
+      },
     ],
   },
   {

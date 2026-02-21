@@ -71,11 +71,11 @@
           <div class="pricing">
             <div *ngIf="doctor.priceIndividual" class="price-item">
               <p style="font-size: 14px; color: #9895a6; font-weight: 400;">Індивідуальна</p>
-              <p class="price-value" style="color: #2f264d; font-size: 20px; font-weight: 500;">{{ doctor.priceIndividual }} <span class="currency" style="font-size: 14px; color: #9895a6; font-weight: 400;">грн.</span></p>
+              <p class="price-value" style="color: #2f264d; font-size: 18px; font-weight: 600;">{{ doctor.priceIndividual }} <span class="currency" style="font-size: 14px; color: #9895a6; font-weight: 400;">грн.</span></p>
             </div>
             <div *ngIf="doctor.priceFamily" class="price-item">
               <p style="font-size: 14px; color: #9895a6; font-weight: 400;">Сімейна</p>
-              <p class="price-value" style="color: #2f264d; font-size: 20px; font-weight: 500;">{{ doctor.priceFamily }} <span class="currency" style="font-size: 14px; color: #9895a6; font-weight: 400;">грн.</span></p>
+              <p class="price-value" style="color: #2f264d; font-size: 18px; font-weight: 600;">{{ doctor.priceFamily }} <span class="currency" style="font-size: 14px; color: #9895a6; font-weight: 400;">грн.</span></p>
             </div>
           </div>
           <ion-button class="profile-button" (click)="goToProfile(doctor.id)">В профіль</ion-button>

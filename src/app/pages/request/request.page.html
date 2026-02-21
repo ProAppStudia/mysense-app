@@ -1,0 +1,122 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <button type="button" class="back-btn" (click)="goBack()">
+        <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="back-btn-icon">
+        Повернутися
+      </button>
+    </ion-buttons>
+    <ion-title></ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="session-request-page ion-padding">
+  <div class="request-layout" *ngIf="doctor() as doctor; else loadingOrError">
+    <section class="request-card">
+      <div class="person-row">
+        <img [src]="cardPhoto" alt="">
+        <div>
+          <p class="person-label">{{ doctor.city || '' }}</p>
+          <p class="person-name">{{ cardName }}</p>
+        </div>
+      </div>
+
+      <div class="summary">
+        <h3>Інформація про сесію</h3>
+        <div class="row">
+          <span>Дата</span>
+          <strong>{{ selectedDateTimeLabel }}</strong>
+        </div>
+        <div class="row">
+          <span>Формат</span>
+          <strong>{{ selectedFormatLabel }}</strong>
+        </div>
+        <div class="row">
+          <span>Тип терапії</span>
+          <strong>{{ selectedTypeLabel }}</strong>
+        </div>
+        <div class="row">
+          <span>Вартість</span>
+          <strong>{{ selectedPrice }} ₴</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="request-card pay-card">
+      <h2>Забронювати сесію</h2>
+
+      <ng-container *ngIf="isAuthenticated; else guestRegisterTpl">
+        <input
+          type="text"
+          placeholder="Промокод"
+          [(ngModel)]="form.promo_code"
+        >
+        <button type="button" class="submit-btn" [disabled]="loading()" (click)="pay()">
+          {{ loading() ? 'Зачекайте...' : 'Оплатити' }}
+        </button>
+      </ng-container>
+
+      <ng-template #guestRegisterTpl>
+        <div class="guest-register">
+          <p class="guest-register__info" *ngIf="guestStep === 'code' && guestInfo">{{ guestInfo }}</p>
+
+          <div class="guest-register__fields" *ngIf="guestStep === 'form'">
+            <input type="text" [(ngModel)]="guestForm.name" placeholder="Ваше ім'я">
+            <input type="text" [(ngModel)]="guestForm.surname" placeholder="Ваше прізвище">
+            <input type="email" [(ngModel)]="guestForm.email" placeholder="Ваш email">
+            <input type="tel" [(ngModel)]="guestForm.phone" placeholder="Телефон (+380...)">
+
+            <p class="guest-register__messenger-label">Оберіть, будь ласка, спосіб комунікації</p>
+            <div class="guest-register__messenger-row">
+              <button
+                type="button"
+                class="messenger-btn"
+                [class.active]="guestForm.messenger === 'telegram'"
+                (click)="guestForm.messenger = 'telegram'"
+              >
+                <img src="assets/icon/telegram.svg" alt="">
+                Telegram
+              </button>
+              <button
+                type="button"
+                class="messenger-btn"
+                [class.active]="guestForm.messenger === 'email'"
+                (click)="guestForm.messenger = 'email'"
+              >
+                <img src="assets/icon/email-contact.svg" alt="">
+                Ел.пошта
+              </button>
+            </div>
+
+            <input type="text" placeholder="Промокод" [(ngModel)]="form.promo_code">
+
+            <label class="guest-register__confirm">
+              <input type="checkbox" [(ngModel)]="guestForm.confirm">
+              <span class="guest-register__checkbox" [class.checked]="guestForm.confirm" aria-hidden="true"></span>
+              <span>Мені 18 і я погоджуюсь з <a href="#" (click)="$event.preventDefault()">правилами платформи My Sense</a></span>
+            </label>
+          </div>
+
+          <div class="guest-register__fields" *ngIf="guestStep === 'code'">
+            <input type="text" [(ngModel)]="guestForm.code" placeholder="Код підтвердження">
+          </div>
+        </div>
+
+        <button type="button" class="submit-btn" [disabled]="loading()" (click)="submitGuestRegister()">
+          {{ loading() ? 'Зачекайте...' : (guestStep === 'form' ? 'Оплатити' : 'Підтвердити та оплатити') }}
+        </button>
+      </ng-template>
+
+      <p class="error" *ngIf="error()">{{ error() }}</p>
+      <p class="error" *ngIf="guestError">{{ guestError }}</p>
+      <p class="success" *ngIf="success()">{{ success() }}</p>
+    </section>
+  </div>
+
+  <ng-template #loadingOrError>
+    <p class="error" *ngIf="error(); else loadingTpl">{{ error() }}</p>
+    <ng-template #loadingTpl>
+      <p>Завантаження...</p>
+    </ng-template>
+  </ng-template>
+</ion-content>

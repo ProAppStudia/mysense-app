@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="goBack()" fill="clear" class="custom-back-button">
-        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+        <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="custom-back-icon">
       </ion-button>
     </ion-buttons>
     <ion-title>{{ isDoctorCardView(doctor) ? doctor.fullName : 'Профіль' }}</ion-title>
@@ -138,36 +138,6 @@
       </div>
 </div>
       <div class="psychologist-card">
-      <div class="info-block education-block">
-        <h4 class="info-title">Освіта</h4>
-        <div class="list-container education-list" [class.expanded]="isEducationExpanded">
-          <div *ngFor="let uni of doctor.universities" class="education-item">
-            <p class="date">{{ uni.date }}</p>
-            <p class="name">{{ uni.name }}</p>
-            <p class="speciality">{{ uni.speciality }}</p>
-            <p class="checked">
-              <ion-icon src="assets/icon/verified.svg"></ion-icon>
-              {{ uni.checked }}
-            </p>
-          </div>
-        </div>
-        <button (click)="toggleEducation()" class="show-more-button" *ngIf="doctor.universities && doctor.universities.length > 2">
-          {{ isEducationExpanded ? 'Згорнути' : 'Показати більше' }}
-        </button>
-      </div>
-
-      <div class="diploma-gallery" *ngIf="doctor.doctorFiles && doctor.doctorFiles.length > 0">
-        <swiper-container slides-per-view="auto" space-between="10">
-          <swiper-slide *ngFor="let file of doctor.doctorFiles">
-            <a [href]="file.file" target="_blank">
-              <img [src]="file.thumb">
-            </a>
-          </swiper-slide>
-        </swiper-container>
-      </div>
-</div>
-    
-      <div class="psychologist-card">
       <div #bookingBlock class="booking-block" *ngIf="doctor.calendar">
         <h3>Забронювати сесію</h3>
         <p class="timezone-info">Бронювання проводиться за київським часом</p>
@@ -188,7 +158,7 @@
           </button>
         </div>
 
-        <ng-container *ngIf="!showPairOnlineRequestBlock; else pairOnlineRequestBlock">
+        <ng-container *ngIf="!showContactRequestBlock; else pairOnlineRequestBlock">
           <div class="week-navigator">
             <div class="week-nav-arrows">
               <button type="button" (click)="prevWeek()" [disabled]="!canGoPrevWeek()">
@@ -241,6 +211,35 @@
       </div>
       </div>
       <div class="psychologist-card">
+      <div class="info-block education-block">
+        <h4 class="info-title">Освіта</h4>
+        <div class="list-container education-list" [class.expanded]="isEducationExpanded">
+          <div *ngFor="let uni of doctor.universities" class="education-item">
+            <p class="date">{{ uni.date }}</p>
+            <p class="name">{{ uni.name }}</p>
+            <p class="speciality">{{ uni.speciality }}</p>
+            <p class="checked">
+              <ion-icon src="assets/icon/verified.svg"></ion-icon>
+              {{ uni.checked }}
+            </p>
+          </div>
+        </div>
+        <button (click)="toggleEducation()" class="show-more-button" *ngIf="doctor.universities && doctor.universities.length > 2">
+          {{ isEducationExpanded ? 'Згорнути' : 'Показати більше' }}
+        </button>
+      </div>
+
+      <div class="diploma-gallery" *ngIf="doctor.doctorFiles && doctor.doctorFiles.length > 0">
+        <swiper-container slides-per-view="auto" space-between="10">
+          <swiper-slide *ngFor="let file of doctor.doctorFiles">
+            <a [href]="file.file" target="_blank">
+              <img [src]="file.thumb">
+            </a>
+          </swiper-slide>
+        </swiper-container>
+      </div>
+</div>
+      <div class="psychologist-card">
       <div class="info-block reviews-block">
         <h4 class="info-title">Відгуки клієнтів</h4>
         <div *ngIf="doctor.reviews && doctor.reviews.length > 0; else noReviews">
@@ -276,11 +275,11 @@
 <ion-footer>
   <div class="footer-buttons">
     <ion-button class="book-button" (click)="openSessionRequest()">
-      <ion-icon slot="start" name="calendar-outline"></ion-icon>
+      <ion-icon slot="start" src="assets/icon/hand-waving 1.svg"></ion-icon>
       Забронювати зустріч
     </ion-button>
     <ion-button class="message-button" fill="outline" (click)="openChat('write')">
-      <ion-icon slot="start" name="chatbubble-ellipses-outline"></ion-icon>
+      <ion-icon slot="start" src="assets/icon/hand-waving2.svg"></ion-icon>
       Написати психологу
     </ion-button>
   </div>

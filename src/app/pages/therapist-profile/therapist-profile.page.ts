@@ -201,6 +201,7 @@ export class TherapistProfilePage implements OnInit {
     }
     this.selectedDayKey = dayKey;
     this.selectedTime = Number(slot.time);
+    this.openSessionRequest();
   }
 
   isSlotSelected(dayKey: string, slot: any): boolean {
@@ -209,6 +210,14 @@ export class TherapistProfilePage implements OnInit {
 
   get showPairOnlineRequestBlock(): boolean {
     return this.sessionType === 'online' && this.bookingFor === 'pair';
+  }
+
+  get showOfflineRequestBlock(): boolean {
+    return this.sessionType === 'offline';
+  }
+
+  get showContactRequestBlock(): boolean {
+    return this.showPairOnlineRequestBlock || this.showOfflineRequestBlock;
   }
 
   private resolveSlotDate(dayKey: string, slot: any): string {
@@ -303,7 +312,7 @@ export class TherapistProfilePage implements OnInit {
       queryParams['doctor_id'] = Number(this.doctor.id);
     }
 
-    this.router.navigate(['/tabs/session-request'], { queryParams });
+    this.router.navigate(['/tabs/request'], { queryParams });
   }
 
   private scrollToBookingBlock() {
@@ -315,4 +324,5 @@ export class TherapistProfilePage implements OnInit {
     const targetTop = Math.max((bookingEl.offsetTop || 0) - 16, 0);
     this.content?.scrollToPoint(0, targetTop, 450);
   }
+
 }
