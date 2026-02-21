@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } 
 import { IonContent, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel, IonHeader, IonToolbar, IonModal, IonInput, IonSpinner, IonText, IonButtons, IonCheckbox, RefresherCustomEvent } from '@ionic/angular/standalone';
 import { HttpClient } from '@angular/common/http';
 import { register } from 'swiper/element/bundle';
-import { AuthService } from '../services/auth.service'; // Import AuthService
+import { AuthService, MySessionItem } from '../services/auth.service'; // Import AuthService
 import { environment } from '../../environments/environment'; // Import environment for base URL
 import { Subscription, interval } from 'rxjs';
 import { addIcons } from 'ionicons';
@@ -25,11 +25,22 @@ interface Doctor {
 interface Session {
   id: number;
   type: 'Індивідуальна сесія' | 'Сімейна сесія' | 'Дитяча сесія' ;
-  status: string; // e.g., 'Waiting for call', 'Confirmed', 'Completed'
+  status: string;
   doctor_name: string;
   doctor_image: string;
-  time_range: string; // e.g., '4:00 PM-9:00 PM'
-  icon: string; // e.g., 'videocam-outline' or 'person-outline'
+  time_range: string;
+  icon: string;
+  order_id?: number;
+  meet_id?: number;
+  is_unpaid?: boolean;
+  payment_link?: string;
+  doctor_user_id?: number;
+}
+
+interface RecentPsychologist {
+  doctor_user_id: number;
+  fullname: string;
+  photo: string;
 }
 
 interface HomepageData {
@@ -90,6 +101,9 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   isLoggedIn = signal(false);
   isDoctor = signal(false);
   userSessions: Session[] = [];
+  reservePickerOpen = signal(false);
+  recentPsychologists: RecentPsychologist[] = [];
+  selectedReserveDoctorUserId: number | null = null;
 
   // Login Modal States
   loginOpen = signal(false);
@@ -127,7 +141,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       addIcons({calendarOutline,arrowForwardOutline,closeOutline,addCircleOutline,chatbubblesOutline,checkmarkCircleOutline,bookOutline});}
 
   ngOnInit() {
-    this.getHomepageData(); // Fetch homepage data first
+    this.getHomepageData();
     this.isLoggedIn.set(this.authService.isAuthenticated());
     if (this.isLoggedIn()) {
       this.loadUserRole();
@@ -154,33 +168,6 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       date: dateMatch ? dateMatch[0] : timeRange,
       time: timeMatch ? timeMatch[0] : ''
     };
-  }
-
-  checkLoginStatus() {
-    if (this.isLoggedIn() && this.homepageData && this.homepageData.doctors && this.homepageData.doctors.length >= 2) {
-      this.userSessions = [
-        {
-          id: 1,
-          type: 'Індивідуальна сесія', // Changed to match interface
-          status: 'Очікується', // Changed status to "Очікується"
-          doctor_name: `${this.homepageData.doctors[0].firstname} ${this.homepageData.doctors[0].lastname}`,
-          doctor_image: this.homepageData.doctors[0].img, // Use the image path directly from API
-          time_range: '20 вересня 2025 о 14:00', // Changed time to "20 вересня 2025 о 14:00"
-          icon: 'videocam-outline'
-        },
-        {
-          id: 2,
-          type: 'Сімейна сесія', // Changed to match interface
-          status: 'Очікується', // Changed status to "Очікується"
-          doctor_name: `${this.homepageData.doctors[1].firstname} ${this.homepageData.doctors[1].lastname}`,
-          doctor_image: this.homepageData.doctors[1].img, // Use the image path directly from API
-          time_range: '20 вересня 2025 о 14:00', // Changed time to "20 вересня 2025 о 14:00"
-          icon: 'videocam-outline'
-        }
-      ];
-      // In a real scenario, you would call getUserSessions() here
-      // this.getUserSessions();
-    }
   }
 
   toggleText(review: any) {
@@ -273,7 +260,9 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       }
       console.log('Homepage Data:', this.homepageData);
       console.log('Doctors Data:', this.homepageData?.doctors); // Add this line to inspect doctors data
-      this.checkLoginStatus(); // Call checkLoginStatus after homepageData is loaded
+      if (this.isLoggedIn()) {
+        this.loadHomeSessions();
+      }
     });
   }
 
@@ -303,29 +292,72 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     return parsedItems.length > 1 ? parsedItems : [];
   }
 
-  rescheduleSession(sessionId: number) {
-    console.log('Reschedule session:', sessionId);
-    // Add your reschedule logic here
+  rescheduleSession(session: Session) {
+    const sessionId = Number(session.meet_id || session.id || 0);
+    if (!sessionId) {
+      return;
+    }
+    const extras: NavigationExtras = {
+      queryParams: {
+        session_id: sessionId,
+        target_name: session.doctor_name,
+        target_photo: session.doctor_image,
+        session_type: session.type
+      }
+    };
+    void this.router.navigate(['/session-change'], extras);
   }
 
   cancelSession(sessionId: number) {
-    console.log('Cancel session:', sessionId);
-    // Add your cancel logic here
+    if (!sessionId) {
+      return;
+    }
+    const ok = window.confirm('Скасувати цю сесію?');
+    if (!ok) {
+      return;
+    }
+    this.authService.deleteSession(sessionId).subscribe({
+      next: (resp) => {
+        if (resp?.error) {
+          window.alert(resp.error);
+          return;
+        }
+        this.loadHomeSessions();
+      }
+    });
   }
 
-  paySession(sessionId: number) {
-    console.log('Pay for session:', sessionId);
-    // Add your payment logic here
+  paySession(session: Session) {
+    if (session.payment_link) {
+      window.open(session.payment_link, '_blank');
+      return;
+    }
+    this.authService.getMySessions().subscribe({
+      next: (resp) => {
+        const planned = Array.isArray(resp?.planned) ? resp.planned : [];
+        const matched = planned.find((item: any) => {
+          const orderIdMatch = session.order_id && Number(item?.order_id) === Number(session.order_id);
+          const meetIdMatch = session.meet_id && Number(item?.meet_id) === Number(session.meet_id);
+          return !!orderIdMatch || !!meetIdMatch;
+        });
+
+        const freshLink = String((matched as any)?.payment_link ?? (matched as any)?.checkout_url ?? '').trim();
+        if (freshLink) {
+          session.payment_link = freshLink;
+          window.open(freshLink, '_blank');
+          return;
+        }
+
+        window.alert('Посилання для оплати поки не доступне.');
+      },
+      error: () => {
+        window.alert('Не вдалося отримати посилання для оплати.');
+      }
+    });
   }
 
   viewAllSessions() {
-    const navigationExtras: NavigationExtras = {
-      state: {
-        sessions: this.userSessions,
-        doctors: this.homepageData?.doctors
-      }
-    };
-    this.router.navigate(['/sessions'], navigationExtras);
+    void this.router.navigate(['/sessions']);
   }
 
   // Login Modal Methods
@@ -538,10 +570,151 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         this.isDoctor.set(
           !!(profile?.is_doctor === true || profile?.is_doctor === 1 || profile?.is_doctor === '1')
         );
+        this.loadHomeSessions();
       },
       error: () => {
         this.isDoctor.set(false);
+        this.userSessions = [];
       }
     });
+  }
+
+  openBookSession() {
+    if (this.isDoctor()) {
+      void this.router.navigate(['/tabs/chat']);
+      return;
+    }
+
+    if (!this.recentPsychologists.length) {
+      void this.router.navigate(['/tabs/filter']);
+      return;
+    }
+
+    this.selectedReserveDoctorUserId = this.recentPsychologists[0]?.doctor_user_id ?? null;
+    this.reservePickerOpen.set(true);
+  }
+
+  closeReservePicker() {
+    this.reservePickerOpen.set(false);
+    this.selectedReserveDoctorUserId = null;
+  }
+
+  selectReserveDoctor(doctorUserId: number) {
+    this.selectedReserveDoctorUserId = doctorUserId;
+  }
+
+  continueReserveWithSelectedDoctor() {
+    if (!this.selectedReserveDoctorUserId) {
+      return;
+    }
+
+    const selected = this.recentPsychologists.find((item) => item.doctor_user_id === this.selectedReserveDoctorUserId);
+    if (!selected) {
+      return;
+    }
+
+    this.reservePickerOpen.set(false);
+    const extras: NavigationExtras = {
+      queryParams: {
+        to_user_id: selected.doctor_user_id,
+        doctor_user_id: selected.doctor_user_id,
+        target_name: selected.fullname,
+        target_photo: selected.photo
+      }
+    };
+    void this.router.navigate(['/tabs/session-request'], extras);
+  }
+
+  private loadHomeSessions() {
+    this.authService.getMySessions().subscribe({
+      next: (resp) => {
+        if (resp?.error) {
+          this.userSessions = [];
+          this.recentPsychologists = [];
+          return;
+        }
+
+        const planned = Array.isArray(resp?.planned) ? resp.planned : [];
+        const past = Array.isArray(resp?.past) ? resp.past : [];
+        const all = [...planned, ...past];
+
+        this.userSessions = all
+          .map((item, index) => this.mapApiSession(item, index))
+          .filter((item) => !!item.id)
+          .slice(0, this.isDoctor() ? 2 : all.length);
+
+        this.recentPsychologists = this.extractRecentPsychologists(all).slice(0, 3);
+      },
+      error: () => {
+        this.userSessions = [];
+        this.recentPsychologists = [];
+      }
+    });
+  }
+
+  private mapApiSession(item: MySessionItem & { status?: number | string; payment_link?: string }, index: number): Session {
+    const typeMap: Record<string, Session['type']> = {
+      'Індивідуальна': 'Індивідуальна сесія',
+      'Сімейна/Парна': 'Сімейна сесія',
+      'Дитяча': 'Дитяча сесія'
+    };
+    const sessionType = String(item.session_type ?? '');
+    const type = typeMap[sessionType] ?? 'Індивідуальна сесія';
+    const apiStatus = Number((item as any)?.status ?? 5);
+    const isUnpaid = apiStatus === 1;
+
+    return {
+      id: Number(item.meet_id || item.order_id || 0),
+      type,
+      status: isUnpaid ? 'Очікується' : 'Заброньована',
+      doctor_name: String(item.fullname || 'Психолог'),
+      doctor_image: this.normalizePhoto(item.photo),
+      time_range: `${item.session_date || ''} о ${this.extractStartTime(item.session_time_period)}`,
+      icon: 'videocam-outline',
+      order_id: item.order_id,
+      meet_id: item.meet_id,
+      is_unpaid: isUnpaid,
+      payment_link: String((item as any)?.payment_link ?? (item as any)?.checkout_url ?? '').trim(),
+      doctor_user_id: item.doctor_user_id
+    };
+  }
+
+  private normalizePhoto(photo?: string): string {
+    if (!photo) {
+      return 'assets/icon/favicon.png';
+    }
+    if (photo.startsWith('http://') || photo.startsWith('https://')) {
+      return photo;
+    }
+    if (photo.startsWith('/')) {
+      return `https://mysense.care${photo}`;
+    }
+    return `https://mysense.care/${photo.replace(/^\/+/, '')}`;
+  }
+
+  private extractStartTime(period?: string): string {
+    if (!period) {
+      return '';
+    }
+    return period.split('-')[0].trim();
+  }
+
+  private extractRecentPsychologists(items: Array<MySessionItem>): RecentPsychologist[] {
+    const unique = new Map<number, RecentPsychologist>();
+    for (const item of items) {
+      const doctorUserId = Number(item.doctor_user_id || 0);
+      if (!doctorUserId || unique.has(doctorUserId)) {
+        continue;
+      }
+      unique.set(doctorUserId, {
+        doctor_user_id: doctorUserId,
+        fullname: String(item.fullname || 'Психолог'),
+        photo: this.normalizePhoto(item.photo)
+      });
+      if (unique.size >= 3) {
+        break;
+      }
+    }
+    return Array.from(unique.values());
   }
 }

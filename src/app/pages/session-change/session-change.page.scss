@@ -1,0 +1,154 @@
+ion-toolbar {
+  --background: #f1edff;
+}
+
+.session-change-page {
+  --background: #f1edff;
+}
+
+.change-card {
+  background: #f6f5fa;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+h2 {
+  margin: 0 0 12px;
+  color: #2f2953;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  color: #6d56d4;
+  font-size: 20px;
+  padding: 0;
+}
+
+.person-row {
+  display: grid;
+  grid-template-columns: 86px 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.person-row img {
+  width: 86px;
+  height: 86px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #9bc0e5;
+}
+
+.person-label {
+  margin: 0;
+  color: #2f2953;
+  font-size: 16px;
+}
+
+.person-name {
+  margin: 4px 0 0;
+  color: #2f2953;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.block {
+  margin-top: 14px;
+}
+
+.title {
+  margin: 0;
+  color: #2f2953;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.timezone {
+  margin: 4px 0 8px;
+  color: #2f2953;
+  font-size: 14px;
+}
+
+.datetime-box {
+  background: #ecebf1;
+  border-radius: 12px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.datetime-box input,
+.datetime-box select {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 0 12px;
+  background: #fff;
+  color: #4d4d5a;
+  font-size: 15px;
+}
+
+.summary {
+  margin-top: 16px;
+}
+
+.summary h3 {
+  margin: 0 0 8px;
+  color: #2f2953;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd8ea;
+  color: #4b4760;
+  font-size: 16px;
+}
+
+.row strong {
+  color: #2f2953;
+  font-weight: 700;
+}
+
+.error {
+  margin: 14px 0 0;
+  color: #d73c58;
+  font-size: 15px;
+}
+
+.success {
+  margin: 14px 0 0;
+  color: #2b8f5a;
+  font-size: 15px;
+}
+
+.submit-btn {
+  margin-top: 16px;
+  width: 100%;
+  min-height: 56px;
+  border: 0;
+  border-radius: 12px;
+  background: #7a5bda;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+}

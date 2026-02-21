@@ -1,0 +1,276 @@
+ion-content.session-request-page {
+  --background: #f1edff;
+}
+
+ion-toolbar {
+  --background: #f1edff;
+}
+
+.back-btn {
+  border: 0;
+  background: transparent;
+  color: #795bda;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.request-card {
+  background: #f7f6fb;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.request-card h2 {
+  margin: 0 0 12px;
+  color: #2f264d;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.person-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.person-row img {
+  width: 118px;
+  height: 118px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #cde1f7;
+}
+
+.person-label {
+  margin: 0;
+  color: #2f264d;
+  font-size: 14px;
+}
+
+.person-name {
+  margin: 2px 0 0;
+  color: #2f264d;
+  font-size: 24px;
+  line-height: 1.1;
+  font-weight: 500;
+}
+
+.block {
+  margin-bottom: 14px;
+}
+
+.title {
+  margin: 0 0 8px;
+  color: #2f264d;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.buttons-row {
+  display: grid;
+  gap: 8px;
+}
+
+.choice-btn {
+  width: 100%;
+    border-radius: 8px;
+    border: 1px solid #795bda;
+    background: #fff;
+    color: rgba(47, 38, 77, 1);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 0;
+}
+
+.choice-btn.active {
+  background: #795bda;
+  color: #fff;
+}
+
+.timezone {
+  margin: -4px 0 8px;
+  color: #2f264d;
+  font-size: 14px;
+}
+
+.datetime-box {
+  background: #ecebef;
+  border-radius: 12px;
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.datetime-box input,
+.datetime-box select {
+  height: 52px;
+  border: 1px solid #dfdde4;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0 10px;
+  color: #50505a;
+  font-size: 17px;
+}
+
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.week-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid #795bda;
+  background: #fff;
+  color: #795bda;
+  font-size: 24px;
+}
+
+.week-btn:disabled {
+  border-color: #d6d3e1;
+  color: #c4c1cf;
+}
+
+.week-title {
+  color: #3a325c;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.calendar-grid {
+  display: grid;
+  gap: 10px;
+  align-items: start;
+}
+
+.calendar-column {
+  border-top: 1px solid #ddd7e9;
+  padding-top: 8px;
+}
+
+.calendar-day p {
+  margin: 0;
+  color: #8d88a2;
+}
+
+.calendar-day p:first-child {
+  font-size: 16px;
+  font-weight: 600;
+  color: #6e6980;
+}
+
+.calendar-day p:last-child {
+  font-size: 22px;
+  font-weight: 600;
+  color: #5e5873;
+}
+
+.slot-btn {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #795bda;
+  border-radius: 8px;
+  height: 42px;
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.slot-btn.unavailable {
+  background: #ece8f6;
+  color: transparent;
+}
+
+.slot-btn.available {
+  background: transparent;
+  color: #6f57d2;
+}
+
+.slot-btn.active {
+  background: #6f57d2;
+  color: #fff;
+}
+
+.selected-datetime {
+  height: 52px;
+  border: 1px solid #dfdde4;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0 10px;
+  color: #50505a;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+}
+
+ion-datetime-button::part(native) {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.summary {
+  margin-top: 16px;
+}
+
+.summary h3 {
+  margin: 0 0 12px;
+  color: #2f264d;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.summary .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #ddd7e9;
+}
+
+.summary .row span {
+  color: #4f4b61;
+  font-size: 20px;
+}
+
+.summary .row strong {
+  color: #2f264d;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.hint-error {
+  margin: 0;
+  color: #8d88a2;
+}
+
+.error {
+  margin: 12px 0 0;
+  color: #c73a52;
+}
+
+.success {
+  margin: 12px 0 0;
+  color: #2c8a57;
+}
+
+.submit-btn {
+  margin-top: 16px;
+  width: 100%;
+  height: 58px;
+  border: none;
+  border-radius: 10px;
+  background: #795bda;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.submit-btn:disabled {
+  opacity: 0.65;
+}

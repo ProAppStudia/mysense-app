@@ -12,6 +12,77 @@ export class ChatService {
 
   constructor(private http: HttpClient, private tokenStorage: TokenStorageService) { }
 
+  async createOrder(payload: {
+    hash: string;
+    type: number;
+    format: 'online' | 'offline';
+    date: string;
+    time: number;
+    messenger: 'email' | 'telegram';
+    promo_code?: string;
+    nickname?: string;
+    doctor_reserve?: boolean;
+    to_user_id?: number;
+  }): Promise<{ ok: boolean; action?: string; response?: any; error?: any }> {
+    const token = this.tokenStorage.getToken();
+    if (!token) {
+      return { ok: false, error: 'No token' };
+    }
+
+    const body = new URLSearchParams();
+    body.set('hash', payload.hash);
+    body.set('type', String(payload.type));
+    body.set('format', payload.format);
+    body.set('date', payload.date);
+    body.set('time', String(payload.time));
+    body.set('messenger', payload.messenger);
+    body.set('token', token);
+
+    if (payload.promo_code) {
+      body.set('promo_code', payload.promo_code);
+    }
+    if (payload.nickname) {
+      body.set('nickname', payload.nickname);
+    }
+    if (payload.doctor_reserve) {
+      body.set('doctor_reserve', '1');
+    }
+    if (payload.to_user_id) {
+      body.set('to_user_id', String(payload.to_user_id));
+    }
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    });
+
+    const action = 'set_new_order';
+    console.log('[ChatService][Reserve] createOrder request', { action, payload, hasToken: !!token });
+
+    try {
+      const rawResponse = await firstValueFrom(
+        this.http.post(`${this.apiUrl}?action=${action}&token=${token}`, body.toString(), {
+          headers,
+          responseType: 'text'
+        })
+      );
+
+      const response = this.parseBackendResponse(rawResponse);
+      console.log('[ChatService][Reserve] createOrder response', { payload, response });
+
+      const isSuccess =
+        response?.success === true ||
+        response?.success === 1 ||
+        response?.success === '1' ||
+        (!!response?.success && typeof response?.success === 'string') ||
+        !!response?.payment_link;
+
+      return isSuccess ? { ok: true, action, response } : { ok: false, action, response };
+    } catch (error) {
+      console.error('[ChatService][Reserve] createOrder error', { payload, error });
+      return { ok: false, action, error };
+    }
+  }
+
   getMyChats(): Observable<any> {
     const token = this.tokenStorage.getToken();
     return this.http.get(`${this.apiUrl}?action=get_my_chats&token=${token}`);

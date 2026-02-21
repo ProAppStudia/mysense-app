@@ -360,6 +360,48 @@ ion-content {
   mask: url("data:image/svg+xml,%3Csvg width='21' height='21' viewBox='0 0 21 21' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10.0303H19M19 10.0303L9.5 19.5303M19 10.0303L9.5 0.530273' stroke='black' stroke-width='1.5'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
+.reserve-picker-modal {
+  --background: #f5f2ff;
+}
+
+.reserve-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.reserve-picker-item {
+  width: 100%;
+  border: 2px solid #ddd6f8;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.reserve-picker-item.active {
+  border-color: #7a5bda;
+  background: #f2ecff;
+}
+
+.reserve-picker-item img {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #d8d8e8;
+}
+
+.reserve-picker-item span {
+  color: #2f264d;
+  font-size: 17px;
+  font-weight: 500;
+}
+
 .how-start__btn--prev::before {
   transform: rotate(180deg);
 }

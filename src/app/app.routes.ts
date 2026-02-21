@@ -14,6 +14,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/sessions/sessions.page').then( m => m.SessionsPage)
   },
   {
+    path: 'session-change',
+    loadComponent: () => import('./pages/session-change/session-change.page').then( m => m.SessionChangePage)
+  },
+  {
     path: 'faq',
     loadComponent: () => import('./pages/faq/faq.page').then( m => m.FaqPage)
   },

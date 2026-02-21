@@ -18,34 +18,38 @@
       </div>
 
       <div class="sessions-list">
-        <div class="session-card" *ngFor="let session of userSessions | slice:0:2; let i = index">
+        <div class="session-card" *ngFor="let session of userSessions | slice:0:2">
           <div class="session-info">
             <div class="session-date-time">
               <ion-icon name="calendar-outline"></ion-icon>
               <span>{{ formatSessionTime(session.time_range).date }} о {{ formatSessionTime(session.time_range).time }}</span>
             </div>
             <div class="doctor-info">
-              <img [src]="'https://mysense.care' + session.doctor_image" alt="{{ session.doctor_name }}">
+              <img [src]="session.doctor_image" alt="{{ session.doctor_name }}">
               <span>{{ session.doctor_name }}</span>
             </div>
           </div>
           <div class="session-actions">
-            <ion-button fill="clear" class="reschedule-button" (click)="rescheduleSession(session.id)">
+            <ion-button fill="clear" class="reschedule-button" (click)="rescheduleSession(session)">
               Перенести
               <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
             </ion-button>
-            <ion-button fill="clear" [class]="i === 0 ? 'pay-button' : 'cancel-button'" (click)="i === 0 ? paySession(session.id) : cancelSession(session.id)">
-              {{ i === 0 ? 'Оплатити' : 'Скасувати' }}
-              <ion-icon slot="end" [name]="i === 0 ? 'wallet-outline' : 'close-outline'"></ion-icon>
+            <ion-button
+              fill="clear"
+              [class]="session.is_unpaid ? 'pay-button' : 'cancel-button'"
+              (click)="session.is_unpaid ? paySession(session) : cancelSession(session.id)"
+            >
+              {{ session.is_unpaid ? 'Оплатити' : 'Скасувати' }}
+              <ion-icon slot="end" [name]="session.is_unpaid ? 'wallet-outline' : 'close-outline'"></ion-icon>
             </ion-button>
           </div>
         </div>
       </div>
-      <ion-button expand="block" class="book-session-button">
+      <ion-button expand="block" class="book-session-button" (click)="openBookSession()">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
         Забронювати сесію
       </ion-button>
-      <ion-button expand="block" class="chat-session-button" routerLink="/tabs/chat">
+      <ion-button *ngIf="!isDoctor()" expand="block" class="chat-session-button" routerLink="/tabs/chat">
         <ion-icon name="chatbubbles-outline" slot="start"></ion-icon>
         Написати в чат
       </ion-button>
@@ -430,6 +434,39 @@
             <span *ngIf="!loading()">{{ registerStep() === 'form' ? 'Зареєструватися' : 'Підтвердити код' }}</span>
           </ion-button>
         </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal [isOpen]="reservePickerOpen()" (willDismiss)="closeReservePicker()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Оберіть психолога</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeReservePicker()">
+              <ion-icon name="close-outline" class="close-icon"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding reserve-picker-modal">
+        <div class="reserve-picker-list">
+          <button
+            type="button"
+            class="reserve-picker-item"
+            *ngFor="let doctor of recentPsychologists"
+            [class.active]="selectedReserveDoctorUserId === doctor.doctor_user_id"
+            (click)="selectReserveDoctor(doctor.doctor_user_id)"
+          >
+            <img [src]="doctor.photo" alt="{{ doctor.fullname }}">
+            <span>{{ doctor.fullname }}</span>
+          </button>
+        </div>
+
+        <ion-button expand="block" class="select-psychologist-button" (click)="continueReserveWithSelectedDoctor()" [disabled]="!selectedReserveDoctorUserId">
+          Продовжити
+        </ion-button>
       </ion-content>
     </ng-template>
   </ion-modal>

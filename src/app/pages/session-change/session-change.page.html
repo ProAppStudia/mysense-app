@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <button type="button" class="back-btn" (click)="goBack()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+        Повернутися
+      </button>
+    </ion-buttons>
+    <ion-title></ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="session-change-page ion-padding">
+  <section class="change-card">
+    <h2>Перенести сесію</h2>
+
+    <div class="person-row">
+      <img [src]="targetPhoto || 'assets/icon/favicon.png'" alt="">
+      <div>
+        <p class="person-label">Клієнт:</p>
+        <p class="person-name">{{ targetName || 'Користувач' }}</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <p class="title">Виберіть дату та час сесії</p>
+      <p class="timezone">(за Києвом)</p>
+      <div class="datetime-box">
+        <input type="date" [(ngModel)]="form.date">
+        <select [(ngModel)]="form.time">
+          <option *ngFor="let hour of reserveTimeOptions" [value]="hour">{{ hour }}:00</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="summary" *ngIf="sessionType">
+      <h3>Інформація про сесію</h3>
+      <div class="row">
+        <span>Тип терапії</span>
+        <strong>{{ sessionType }}</strong>
+      </div>
+    </div>
+
+    <p class="error" *ngIf="error()">{{ error() }}</p>
+    <p class="success" *ngIf="success()">{{ success() }}</p>
+
+    <button
+      type="button"
+      class="submit-btn"
+      (click)="submit()"
+      [disabled]="loading() || !sessionId"
+    >
+      {{ loading() ? 'Збереження...' : 'Підтвердити' }}
+    </button>
+  </section>
+</ion-content>

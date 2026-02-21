@@ -5,6 +5,7 @@ import { IonContent, IonToolbar, IonButton, IonIcon, IonFooter, IonInput, IonIte
 import { ChatService } from '../services/chat.service';
 import { AuthService } from '../services/auth.service'; // Import AuthService
 import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { addOutline, attachOutline, createOutline, send, trashOutline } from 'ionicons/icons';
 
@@ -31,6 +32,7 @@ export class ChatPage implements OnInit {
   isLoggedIn: boolean = false; // Add property to track login status
   isDoctor = false;
   currentUserId: number | null = null;
+  currentDoctorHash = '';
   pendingHash: string | null = null;
   pendingType: '15min' | 'write' | null = null;
   pendingToUserId: number | null = null;
@@ -40,7 +42,8 @@ export class ChatPage implements OnInit {
   constructor(
     private chatService: ChatService,
     private authService: AuthService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) { // Inject AuthService
     addIcons({ send, addOutline, trashOutline, attachOutline, createOutline });
   }
@@ -61,11 +64,13 @@ export class ChatPage implements OnInit {
         next: (profile) => {
           this.isDoctor = !!(profile?.is_doctor === true || profile?.is_doctor === 1 || profile?.is_doctor === '1');
           this.currentUserId = Number(profile?.user_id) || null;
+          this.currentDoctorHash = String((profile as any)?.hash ?? '').trim();
           this.initChatAndLoad();
         },
         error: () => {
           this.isDoctor = false;
           this.currentUserId = null;
+          this.currentDoctorHash = '';
           this.initChatAndLoad();
         }
       });
@@ -159,6 +164,23 @@ export class ChatPage implements OnInit {
       this.pendingHash ? { hash: this.pendingHash, type: this.pendingType ?? undefined } : undefined
     ).subscribe({
       next: (data: any) => {
+        if (data && this.selectedChat) {
+          const resolvedHash = String(data.hash ?? data.doctor_hash ?? data.chat_hash ?? '').trim();
+          if (resolvedHash) {
+            this.selectedChat = { ...this.selectedChat, hash: resolvedHash };
+          }
+
+          const resolvedDoctorId = Number(data.doctor_id ?? data.id ?? 0);
+          if (resolvedDoctorId > 0) {
+            this.selectedChat = { ...this.selectedChat, doctor_id: resolvedDoctorId };
+          }
+
+          const resolvedDoctorUserId = Number(data.doctor_user_id ?? 0);
+          if (resolvedDoctorUserId > 0) {
+            this.selectedChat = { ...this.selectedChat, doctor_user_id: resolvedDoctorUserId };
+          }
+        }
+
         if (data && data.messages) {
           this.messages = data.messages;
         } else {
@@ -181,6 +203,46 @@ export class ChatPage implements OnInit {
     }
   }
 
+  openReservePage() {
+    if (!this.selectedChat) {
+      return;
+    }
+
+    const peerUserId = this.getSelectedUserId(this.selectedChat);
+    if (!peerUserId) {
+      return;
+    }
+
+    const doctorHash = String(
+      this.selectedChat?.hash ??
+      this.selectedChat?.doctor_hash ??
+      this.selectedChat?.chat_hash ??
+      (this.isDoctor ? this.currentDoctorHash : '') ??
+      this.pendingHash ??
+      ''
+    ).trim();
+
+    const queryParams: Record<string, string | number> = {
+      to_user_id: peerUserId,
+      target_name: String(this.selectedChat?.fullname ?? '').trim(),
+      target_photo: String(this.selectedChat?.photo ?? '').trim(),
+      doctor_user_id: this.isDoctor
+        ? Number(this.selectedChat?.doctor_user_id ?? this.currentUserId ?? 0)
+        : Number(this.selectedChat?.doctor_user_id ?? peerUserId)
+    };
+
+    const doctorId = Number(this.selectedChat?.doctor_id ?? 0);
+    if (doctorId > 0) {
+      queryParams['doctor_id'] = doctorId;
+    }
+
+    if (doctorHash) {
+      queryParams['hash'] = doctorHash;
+    }
+
+    void this.router.navigate(['/tabs/session-request'], { queryParams });
+  }
+
   async sendMessage() {
     const text = this.newMessage.trim();
     if (!text || !this.selectedChat || this.isSending) {
@@ -191,8 +253,6 @@ export class ChatPage implements OnInit {
     if (!toUserId) {
       return;
     }
-
-    this.isSending = true;
 
     // Optimistic message for instant UI feedback.
     const optimisticMessage = {

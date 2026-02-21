@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonIcon, IonButton, IonSegment, IonSegmentButton, IonLabel } from '@ionic/angular/standalone';
 import { AuthService, MySessionItem } from '../../services/auth.service';
+import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { timeOutline, videocamOutline, calendarOutline, arrowForwardOutline, closeOutline, walletOutline } from 'ionicons/icons';
 
@@ -16,6 +17,8 @@ interface Session {
   icon: string;
   order_id?: number;
   meet_id?: number;
+  is_unpaid?: boolean;
+  payment_link?: string;
 }
 
 @Component({
@@ -36,7 +39,7 @@ export class SessionsPage implements OnInit {
   actionLoading = false;
   emptyText = 'Порожньо';
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private router: Router) {
     addIcons({calendarOutline,arrowForwardOutline,timeOutline,videocamOutline,closeOutline,walletOutline});
   }
 
@@ -48,6 +51,14 @@ export class SessionsPage implements OnInit {
     this.loading = true;
     this.authService.getMySessions().subscribe({
       next: (resp) => {
+        if (resp?.error) {
+          this.loading = false;
+          this.sessions = [];
+          this.filteredSessions = [];
+          this.emptyText = resp.error;
+          return;
+        }
+
         const planned = Array.isArray(resp?.planned) ? resp.planned : [];
         const past = Array.isArray(resp?.past) ? resp.past : [];
         this.emptyText = resp?.empty_text || 'Порожньо';
@@ -63,6 +74,7 @@ export class SessionsPage implements OnInit {
         this.loading = false;
         this.sessions = [];
         this.filteredSessions = [];
+        this.emptyText = 'Не вдалося завантажити сесії';
       }
     });
   }
@@ -84,7 +96,11 @@ export class SessionsPage implements OnInit {
   }
 
   private mapApiSession(item: MySessionItem, segment: 'planned' | 'past'): Session {
-    const status = segment === 'planned' ? 'Заброньована' : 'Пройдена';
+    const apiStatus = Number((item as any)?.status ?? 5);
+    const isUnpaid = segment === 'planned' && apiStatus === 1;
+    const status = segment === 'planned'
+      ? (isUnpaid ? 'Очікується' : 'Заброньована')
+      : 'Пройдена';
 
     return {
       id: item.meet_id || item.order_id || 0,
@@ -95,7 +111,9 @@ export class SessionsPage implements OnInit {
       time_range: `${item.session_date || ''} о ${this.extractStartTime(item.session_time_period)}`,
       icon: 'videocam-outline',
       order_id: item.order_id,
-      meet_id: item.meet_id
+      meet_id: item.meet_id,
+      is_unpaid: isUnpaid,
+      payment_link: String((item as any)?.payment_link ?? (item as any)?.checkout_url ?? '').trim()
     };
   }
 
@@ -133,80 +151,19 @@ export class SessionsPage implements OnInit {
     };
   }
 
-  rescheduleSession(sessionId: number) {
+  rescheduleSession(session: Session) {
+    const sessionId = Number(session.meet_id || session.id || 0);
     if (!sessionId) {
       window.alert('Не вдалося визначити сесію для перенесення.');
       return;
     }
 
-    const date = window.prompt('Вкажіть нову дату (YYYY-MM-DD):');
-    if (!date) {
-      return;
-    }
-
-    const timeRaw = window.prompt('Вкажіть новий час (0-23):');
-    if (!timeRaw) {
-      return;
-    }
-
-    const time = Number(timeRaw);
-    if (!Number.isInteger(time) || time < 0 || time > 23) {
-      window.alert('Некоректний час. Вкажіть число від 0 до 23.');
-      return;
-    }
-
-    this.actionLoading = true;
-    this.authService.changeSession({
-      session_id: sessionId,
-      date,
-      time
-    }).subscribe({
-      next: (resp) => {
-        // Doctor flow: backend can return confirmation payload first.
-        if (resp?.confirm && resp?.show_modal) {
-          const ok = window.confirm(
-            `Підтвердити перенос сесії на ${resp.date || date} ${resp.time || `${time}:00`} для клієнта ${resp.client_name || ''}?`
-          );
-
-          if (!ok) {
-            this.actionLoading = false;
-            return;
-          }
-
-          this.authService.changeSession({
-            session_id: sessionId,
-            date,
-            time,
-            confirm_change: 1
-          }).subscribe({
-            next: (confirmResp) => {
-              this.actionLoading = false;
-              if (confirmResp?.error) {
-                window.alert(confirmResp.error);
-                return;
-              }
-              window.alert(confirmResp?.success || 'Сесію перенесено');
-              this.loadSessions();
-            },
-            error: () => {
-              this.actionLoading = false;
-              window.alert('Не вдалося перенести сесію');
-            }
-          });
-          return;
-        }
-
-        this.actionLoading = false;
-        if (resp?.error) {
-          window.alert(resp.error);
-          return;
-        }
-        window.alert(resp?.success || 'Сесію перенесено');
-        this.loadSessions();
-      },
-      error: () => {
-        this.actionLoading = false;
-        window.alert('Не вдалося перенести сесію');
+    void this.router.navigate(['/session-change'], {
+      queryParams: {
+        session_id: sessionId,
+        target_name: session.doctor_name,
+        target_photo: session.doctor_image,
+        session_type: session.type
       }
     });
   }
@@ -242,7 +199,32 @@ export class SessionsPage implements OnInit {
     });
   }
 
-  paySession(sessionId: number) {
-    window.alert('Оплата сесії буде доступна після підключення endpoint для payment_link.');
+  paySession(session: Session) {
+    if (session.payment_link) {
+      window.open(session.payment_link, '_blank');
+      return;
+    }
+    this.authService.getMySessions().subscribe({
+      next: (resp) => {
+        const planned = Array.isArray(resp?.planned) ? resp.planned : [];
+        const matched = planned.find((item: any) => {
+          const orderIdMatch = session.order_id && Number(item?.order_id) === Number(session.order_id);
+          const meetIdMatch = session.meet_id && Number(item?.meet_id) === Number(session.meet_id);
+          return !!orderIdMatch || !!meetIdMatch;
+        });
+
+        const freshLink = String((matched as any)?.payment_link ?? (matched as any)?.checkout_url ?? '').trim();
+        if (freshLink) {
+          session.payment_link = freshLink;
+          window.open(freshLink, '_blank');
+          return;
+        }
+
+        window.alert('Посилання на оплату не отримано. Зверніться в підтримку.');
+      },
+      error: () => {
+        window.alert('Не вдалося отримати посилання для оплати.');
+      }
+    });
   }
 }

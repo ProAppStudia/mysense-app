@@ -97,6 +97,9 @@ export interface MySessionItem {
   session_date?: string;
   session_type?: string;
   session_time_period?: string;
+  status?: number | string;
+  payment_link?: string;
+  who?: number | string;
   client_user_id?: number;
   doctor_id?: number;
   doctor_user_id?: number;
@@ -326,7 +329,25 @@ export class AuthService {
   }
 
   getMySessions(): Observable<MySessionsResponse> {
-    return this.http.get<MySessionsResponse>(this.MY_SESSIONS_URL);
+    const token = this.tokenStorage.getToken();
+    const params = new HttpParams().set('token', String(token ?? ''));
+    return this.http.get(this.MY_SESSIONS_URL, { params, responseType: 'text' }).pipe(
+      map((responseText) => {
+        try {
+          return JSON.parse(responseText) as MySessionsResponse;
+        } catch {
+          return {
+            error: String(responseText || 'Некоректна відповідь сервера')
+          } as MySessionsResponse;
+        }
+      }),
+      catchError((error) => {
+        const backendText = String(error?.error ?? '').trim();
+        return of({
+          error: backendText || 'Не вдалося завантажити сесії'
+        } as MySessionsResponse);
+      })
+    );
   }
 
   changeSession(payload: {
@@ -335,10 +356,12 @@ export class AuthService {
     time: number; // 24h integer
     confirm_change?: 1;
   }): Observable<ChangeSessionResponse> {
+    const token = this.tokenStorage.getToken();
     let body = new HttpParams()
       .set('session_id', String(payload.session_id))
       .set('date', payload.date)
-      .set('time', String(payload.time));
+      .set('time', String(payload.time))
+      .set('token', String(token ?? ''));
 
     if (payload.confirm_change) {
       body = body.set('confirm_change', '1');
@@ -348,15 +371,44 @@ export class AuthService {
       'Content-Type': 'application/x-www-form-urlencoded'
     });
 
-    return this.http.post<ChangeSessionResponse>(this.CHANGE_SESSION_URL, body.toString(), { headers });
+    const url = `${this.CHANGE_SESSION_URL}&token=${encodeURIComponent(String(token ?? ''))}`;
+    return this.http.post(url, body.toString(), { headers, responseType: 'text' }).pipe(
+      map((responseText) => {
+        try {
+          return JSON.parse(responseText) as ChangeSessionResponse;
+        } catch {
+          return { error: String(responseText || 'Не вдалося перенести сесію.') } as ChangeSessionResponse;
+        }
+      }),
+      catchError((error) => {
+        const backendText = String(error?.error ?? '').trim();
+        return of({ error: backendText || 'Не вдалося перенести сесію.' } as ChangeSessionResponse);
+      })
+    );
   }
 
   deleteSession(sessionId: number): Observable<DeleteSessionResponse> {
-    const body = new HttpParams().set('session_id', String(sessionId));
+    const token = this.tokenStorage.getToken();
+    const body = new HttpParams()
+      .set('session_id', String(sessionId))
+      .set('token', String(token ?? ''));
     const headers = new HttpHeaders({
       'Content-Type': 'application/x-www-form-urlencoded'
     });
 
-    return this.http.post<DeleteSessionResponse>(this.DELETE_SESSION_URL, body.toString(), { headers });
+    const url = `${this.DELETE_SESSION_URL}&token=${encodeURIComponent(String(token ?? ''))}`;
+    return this.http.post(url, body.toString(), { headers, responseType: 'text' }).pipe(
+      map((responseText) => {
+        try {
+          return JSON.parse(responseText) as DeleteSessionResponse;
+        } catch {
+          return { error: String(responseText || 'Не вдалося скасувати сесію.') } as DeleteSessionResponse;
+        }
+      }),
+      catchError((error) => {
+        const backendText = String(error?.error ?? '').trim();
+        return of({ error: backendText || 'Не вдалося скасувати сесію.' } as DeleteSessionResponse);
+      })
+    );
   }
 }

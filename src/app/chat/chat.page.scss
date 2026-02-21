@@ -68,6 +68,201 @@ ion-content {
 button.btn-reserve {
     color: rgba(255, 92, 141, 1) !important;
 }
+
+.reserve-panel {
+  background: #f3f2f7;
+  margin: 0 10px;
+  padding: 14px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-bottom: 1px solid rgba(227, 225, 229, 1);
+}
+
+.reserve-title {
+  margin: 0 0 10px;
+  color: #2f264d;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.reserve-person {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.reserve-avatar {
+  width: 84px;
+  height: 84px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #d8ecff;
+}
+
+.reserve-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reserve-person-label {
+  margin: 0;
+  color: #4a4560;
+  font-size: 18px;
+}
+
+.reserve-person-name {
+  margin: 4px 0 0;
+  color: #2f264d;
+  font-size: 22px;
+  line-height: 1.08;
+  font-weight: 500;
+}
+
+.reserve-toggle-group {
+  margin-bottom: 12px;
+}
+
+.reserve-block-title {
+  margin: 0 0 8px;
+  color: #2f264d;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.reserve-toggle-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.reserve-toggle-btn {
+  flex: 1;
+  min-width: 140px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid #7a5bda;
+  background: #fff;
+  color: #7a5bda;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.reserve-toggle-btn.active {
+  background: #795bda;
+  color: #fff;
+}
+
+.reserve-empty-note {
+  margin: 0;
+  color: #8f8aa3;
+  font-size: 13px;
+}
+
+.reserve-datetime-title {
+  margin-top: 8px;
+}
+
+.reserve-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.reserve-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reserve-field span {
+  font-size: 12px;
+  color: #6f6f78;
+}
+
+.reserve-field select,
+.reserve-field input {
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid #ddd7f4;
+  padding: 0 10px;
+  background: #f7f4ff;
+  color: #2f264d;
+}
+
+.reserve-summary {
+  margin-top: 12px;
+  border-top: 1px solid #ddd7f4;
+  padding-top: 10px;
+}
+
+.reserve-summary h4 {
+  margin: 0 0 10px;
+  color: #2f264d;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.reserve-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid #ebe8f4;
+}
+
+.reserve-summary-row span {
+  color: #4f4b61;
+  font-size: 17px;
+}
+
+.reserve-summary-row strong {
+  color: #2f264d;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.reserve-summary-row:last-child {
+  border-bottom: 0;
+}
+
+.reserve-info {
+  margin: 10px 0 0;
+  color: #6f6f78;
+  font-size: 12px;
+}
+
+.reserve-error {
+  margin: 8px 0 0;
+  color: #c73a52;
+  font-size: 12px;
+}
+
+.reserve-success {
+  margin: 8px 0 0;
+  color: #2c8a57;
+  font-size: 12px;
+}
+
+.reserve-actions {
+  margin-top: 12px;
+}
+
+.reserve-submit {
+  width: 100%;
+  height: 42px;
+  border-radius: 8px;
+  border: none;
+  background: #795bda;
+  color: #fff;
+  font-weight: 600;
+}
+
+.reserve-submit:disabled {
+  opacity: 0.65;
+}
 .message-list {
   padding: 15px 30px;
     display: flex

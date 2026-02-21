@@ -184,6 +184,54 @@ export class DoctorService {
     );
   }
 
+  getDoctorProfileByHash(hash: string): Observable<DoctorCardView | { error: string }> {
+    const params = new HttpParams().set('action', 'get_doctor_profile').set('hash', hash);
+
+    return this.http.get(this.apiUrl, { params, responseType: 'text' }).pipe(
+      map(response => {
+        try {
+          const data = JSON.parse(response);
+          if (data.error) {
+            return { error: data.error };
+          }
+          return this.transformToDoctorCardView(data);
+        } catch (e) {
+          if (response.includes('error')) {
+            return { error: 'An error occurred while fetching the doctor profile by hash.' };
+          }
+          return { error: 'Invalid response format.' };
+        }
+      }),
+      catchError(() => {
+        return of({ error: 'Failed to fetch doctor profile by hash.' });
+      })
+    );
+  }
+
+  getDoctorProfileByUserId(userId: number | string): Observable<DoctorCardView | { error: string }> {
+    const params = new HttpParams().set('action', 'get_doctor_profile').set('user_id', userId.toString());
+
+    return this.http.get(this.apiUrl, { params, responseType: 'text' }).pipe(
+      map(response => {
+        try {
+          const data = JSON.parse(response);
+          if (data.error) {
+            return { error: data.error };
+          }
+          return this.transformToDoctorCardView(data);
+        } catch {
+          if (response.includes('error')) {
+            return { error: 'An error occurred while fetching the doctor profile by user_id.' };
+          }
+          return { error: 'Invalid response format.' };
+        }
+      }),
+      catchError(() => {
+        return of({ error: 'Failed to fetch doctor profile by user_id.' });
+      })
+    );
+  }
+
   transformToDoctorCardView(data: any): DoctorCardView {
     let worksWith = [];
     if (Array.isArray(data.work_with)) {
@@ -192,6 +240,9 @@ export class DoctorService {
       worksWith = data.work_with.split(',').map((s: string) => s.trim());
     }
 
+    const therapyTypeIds = this.extractTherapyTypeIds(data);
+    const workType = this.extractWorkTypeFlags(data?.work_type);
+
     return {
       id: data.doctor_id,
       userId: data.user_id,
@@ -199,9 +250,10 @@ export class DoctorService {
       fullName: data.fullname,
       city: data.city_name,
       avatarUrl: data.img,
-      online: data.work_type.includes('Онлайн'),
-      inPerson: data.work_type.includes('Очно'),
+      online: workType.online,
+      inPerson: workType.inPerson,
       rawWorkType: data.work_type, // Populate rawWorkType
+      therapyTypeIds,
       specialization: data.specialisation,
       experienceYears: data.practice_years,
       sessionsCount: data.practice_time_hours,
@@ -224,5 +276,99 @@ export class DoctorService {
       calendar: data.calendar,
       reviews: data.reviews || [],
     };
+  }
+
+  private extractWorkTypeFlags(workTypeRaw: any): { online: boolean; inPerson: boolean } {
+    const raw = String(workTypeRaw ?? '').trim().toLowerCase();
+    if (!raw) {
+      return { online: false, inPerson: false };
+    }
+
+    const normalized = raw.replace(/\s|_/g, '').replace('-', '');
+    const hasBoth = ['both', 'усі', 'обидва', 'онлайночно'].some((v) => normalized.includes(v));
+    const online = hasBoth || ['онлайн', 'online', 'online', 'online'].some((v) => normalized.includes(v.replace('-', '')));
+    const inPerson = hasBoth || ['очно', 'офлайн', 'offline', 'offline'].some((v) => normalized.includes(v.replace('-', '')));
+
+    return { online, inPerson };
+  }
+
+  private extractTherapyTypeIds(data: any): number[] {
+    const candidates = [
+      data?.therapy_type,
+      data?.therapy_types,
+      data?.therapy_type_ids,
+      data?.types,
+      data?.type_ids
+    ];
+
+    const ids = new Set<number>();
+    for (const candidate of candidates) {
+      this.normalizeTherapyTypeSource(candidate).forEach((id) => ids.add(id));
+    }
+
+    return Array.from(ids).sort((a, b) => a - b);
+  }
+
+  private normalizeTherapyTypeSource(source: any): number[] {
+    if (!source) {
+      return [];
+    }
+
+    if (Array.isArray(source)) {
+      const out: number[] = [];
+      for (const item of source) {
+        out.push(...this.mapTherapyToken(item));
+      }
+      return out;
+    }
+
+    if (typeof source === 'object') {
+      const out: number[] = [];
+      const values = Object.values(source);
+      for (const item of values) {
+        out.push(...this.mapTherapyToken(item));
+      }
+      return out;
+    }
+
+    if (typeof source === 'string') {
+      const raw = source.trim();
+      try {
+        const parsed = JSON.parse(raw);
+        return this.normalizeTherapyTypeSource(parsed);
+      } catch {
+        const out: number[] = [];
+        for (const item of raw.split(',')) {
+          out.push(...this.mapTherapyToken(item));
+        }
+        return out;
+      }
+    }
+
+    return this.mapTherapyToken(source);
+  }
+
+  private mapTherapyToken(token: any): number[] {
+    const asNumber = Number(token);
+    if (Number.isFinite(asNumber) && [1, 2, 3].includes(asNumber)) {
+      return [asNumber];
+    }
+
+    const text = String(token ?? '').trim().toLowerCase();
+    if (!text) {
+      return [];
+    }
+
+    if (text.includes('індив') || text.includes('индив') || text.includes('individual')) {
+      return [1];
+    }
+    if (text.includes('сім') || text.includes('сем') || text.includes('пар') || text.includes('family')) {
+      return [2];
+    }
+    if (text.includes('дит') || text.includes('child')) {
+      return [3];
+    }
+
+    return [];
   }
 }

@@ -31,11 +31,11 @@
           </div>
         </div>
         <div class="session-actions" *ngIf="selectedSegment === 'planned'">
-          <ion-button fill="clear" class="reschedule-button" (click)="rescheduleSession(session.id)" [disabled]="actionLoading">
+          <ion-button fill="clear" class="reschedule-button" (click)="rescheduleSession(session)" [disabled]="actionLoading">
             Перенести
             <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
           </ion-button>
-          <ion-button fill="clear" [class]="session.status === 'Очікується' ? 'pay-button' : 'cancel-button'" (click)="session.status === 'Очікується' ? paySession(session.id) : cancelSession(session.id)" [disabled]="actionLoading">
+          <ion-button fill="clear" [class]="session.is_unpaid ? 'pay-button' : 'cancel-button'" (click)="session.is_unpaid ? paySession(session) : cancelSession(session.id)" [disabled]="actionLoading">
             {{ session.status === 'Очікується' ? 'Оплатити' : 'Скасувати' }}
             <ion-icon slot="end" [name]="session.status === 'Очікується' ? 'wallet-outline' : 'close-outline'"></ion-icon>
           </ion-button>
@@ -46,8 +46,7 @@
 
   <ng-template #noSessions>
     <div class="no-sessions">
-      <p *ngIf="selectedSegment === 'planned'">У вас ще немає запланованих сесій.</p>
-      <p *ngIf="selectedSegment === 'past'">У вас ще немає минулих сесій.</p>
+      <p>{{ emptyText || (selectedSegment === 'planned' ? 'У вас ще немає запланованих сесій.' : 'У вас ще немає минулих сесій.') }}</p>
     </div>
   </ng-template>
 </ion-content>

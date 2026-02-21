@@ -84,6 +84,13 @@ export const routes: Routes = [
             (m) => m.TherapistProfilePage
           ),
       },
+      {
+        path: 'session-request',
+        loadComponent: () =>
+          import('../pages/session-request/session-request.page').then(
+            (m) => m.SessionRequestPage
+          ),
+      },
     ],
   },
   {

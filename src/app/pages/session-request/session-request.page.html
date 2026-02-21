@@ -1,0 +1,150 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <button type="button" class="back-btn" (click)="goBack()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+        Повернутися
+      </button>
+    </ion-buttons>
+    <ion-title></ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="session-request-page ion-padding">
+  <section class="request-card">
+    <h2>Бронювання сесії</h2>
+
+    <div class="person-row">
+      <img [src]="targetPhoto || 'assets/icon/favicon.png'" alt="">
+      <div>
+        <p class="person-label">{{ targetLabel }}:</p>
+        <p class="person-name">{{ targetName || 'Користувач' }}</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <p class="title">Оберіть тип сесії</p>
+      <div
+        class="buttons-row"
+        *ngIf="availableSessionTypes.length; else noTypes"
+        [style.grid-template-columns]="'repeat(' + availableSessionTypes.length + ', minmax(0, 1fr))'"
+      >
+        <button
+          type="button"
+          class="choice-btn"
+          *ngFor="let typeOpt of availableSessionTypes"
+          [class.active]="form.type === typeOpt.value"
+          (click)="form.type = typeOpt.value"
+        >
+          {{ typeOpt.label }}
+        </button>
+      </div>
+      <ng-template #noTypes>
+        <p class="hint-error">Немає доступних типів сесій</p>
+      </ng-template>
+    </div>
+
+    <div class="block">
+      <p class="title">Оберіть формат сесії</p>
+      <div
+        class="buttons-row"
+        *ngIf="availableFormats.length; else noFormats"
+        [style.grid-template-columns]="'repeat(' + availableFormats.length + ', minmax(0, 1fr))'"
+      >
+        <button
+          type="button"
+          class="choice-btn"
+          *ngFor="let formatOpt of availableFormats"
+          [class.active]="form.format === formatOpt.value"
+          (click)="form.format = formatOpt.value"
+        >
+          {{ formatOpt.label }}
+        </button>
+      </div>
+      <ng-template #noFormats>
+        <p class="hint-error">Немає доступних форматів сесій</p>
+      </ng-template>
+    </div>
+
+    <div class="block">
+      <p class="title">Виберіть дату та час сесії</p>
+      <p class="timezone">(за Києвом)</p>
+      <ng-container *ngIf="!isDoctor; else doctorPicker">
+        <div class="week-nav" *ngIf="currentWeek">
+          <button type="button" class="week-btn" (click)="prevWeek()" [disabled]="currentWeekIndex === 0">←</button>
+          <button type="button" class="week-btn" (click)="nextWeek()" [disabled]="currentWeekIndex >= weeks.length - 1">→</button>
+          <span class="week-title">{{ currentWeek.week }}</span>
+        </div>
+
+        <div
+          class="calendar-grid"
+          *ngIf="currentWeekDayKeys.length; else noSlots"
+          [style.grid-template-columns]="'repeat(' + currentWeekDayKeys.length + ', minmax(0, 1fr))'"
+        >
+          <div class="calendar-column" *ngFor="let dayKey of currentWeekDayKeys">
+            <div class="calendar-day">
+              <p>{{ getDayLabel(dayKey) }}</p>
+              <p>{{ getDayNumber(dayKey) }}</p>
+            </div>
+            <button
+              *ngFor="let hour of weekHourOptions"
+              type="button"
+              class="slot-btn"
+              [class.available]="isHourAvailable(dayKey, hour)"
+              [class.unavailable]="!isHourAvailable(dayKey, hour)"
+              [class.active]="isSelectedClientSlot(dayKey, hour)"
+              (click)="onClientSlotSelect(dayKey, hour)"
+            >
+              {{ isHourAvailable(dayKey, hour) ? (hour + ':00') : '' }}
+            </button>
+          </div>
+        </div>
+
+        <ng-template #noSlots>
+          <p class="hint-error">Немає доступних годин для бронювання</p>
+        </ng-template>
+      </ng-container>
+
+      <ng-template #doctorPicker>
+        <div class="datetime-box">
+          <ion-datetime-button datetime="doctor-session-datetime"></ion-datetime-button>
+          <div class="selected-datetime">{{ selectedDateTimeLabel }}</div>
+        </div>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime
+              id="doctor-session-datetime"
+              presentation="date-time"
+              [value]="selectedDateTimeIso"
+              (ionChange)="onDoctorDateTimeChange($event.detail.value)"
+            ></ion-datetime>
+          </ng-template>
+        </ion-modal>
+      </ng-template>
+    </div>
+
+    <div class="summary">
+      <h3>Інформація про сесію</h3>
+      <div class="row">
+        <span>Тип терапії</span>
+        <strong>{{ selectedTypeLabel }}</strong>
+      </div>
+      <div class="row">
+        <span>Вартість</span>
+        <strong>{{ selectedPrice }} ₴</strong>
+      </div>
+    </div>
+
+    <p class="error" *ngIf="error()">{{ error() }}</p>
+    <p class="success" *ngIf="success()">{{ success() }}</p>
+
+    <button
+      type="button"
+      class="submit-btn"
+      (click)="submit()"
+      [disabled]="loading() || !availableSessionTypes.length || !availableFormats.length"
+    >
+      {{ loading() ? 'Створення...' : 'Підтвердити' }}
+    </button>
+  </section>
+</ion-content>
