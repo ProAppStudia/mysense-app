@@ -70,6 +70,7 @@ export class SessionRequestPage implements OnInit {
   readonly weekHourOptions = Array.from({ length: 13 }, (_, i) => i + 9); // 9:00 - 21:00
   weeks: Week[] = [];
   currentWeekIndex = 0;
+  initialWeekIndex = 0;
   selectedDateTimeIso = '';
 
   constructor(
@@ -447,20 +448,31 @@ export class SessionRequestPage implements OnInit {
     this.weeks = rawWeeks;
     const activeIndex = this.weeks.findIndex((week) => !!week.active);
     this.currentWeekIndex = activeIndex >= 0 ? activeIndex : 0;
+    this.initialWeekIndex = this.currentWeekIndex;
   }
 
   prevWeek() {
-    if (this.currentWeekIndex > 0) {
+    if (this.canGoPrevWeek()) {
       this.currentWeekIndex--;
       this.selectFirstAvailableSlot();
     }
   }
 
   nextWeek() {
-    if (this.currentWeekIndex < this.weeks.length - 1) {
+    if (this.canGoNextWeek()) {
       this.currentWeekIndex++;
       this.selectFirstAvailableSlot();
     }
+  }
+
+  canGoPrevWeek(): boolean {
+    // Don't allow going to weeks before the initial (current) week.
+    return this.currentWeekIndex > this.initialWeekIndex;
+  }
+
+  canGoNextWeek(): boolean {
+    const maxForwardIndex = Math.min(this.weeks.length - 1, this.initialWeekIndex + 4);
+    return this.currentWeekIndex < maxForwardIndex;
   }
 
   onDoctorDateTimeChange(value: string | string[] | null | undefined) {
@@ -565,6 +577,30 @@ export class SessionRequestPage implements OnInit {
 
   get selectedDateTimeLabel(): string {
     return `${this.form.date} ${String(this.form.time).padStart(2, '0')}:00`;
+  }
+
+  get currentWeekLabel(): string {
+    const week = this.currentWeek as any;
+    if (!week) {
+      return '';
+    }
+
+    const fromRaw = String(week['date-form'] ?? '').trim();
+    const toRaw = String(week['date-to'] ?? '').trim();
+    const from = fromRaw ? new Date(fromRaw) : null;
+    const to = toRaw ? new Date(toRaw) : null;
+
+    if (!from || !to || Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) {
+      return String(week.week ?? '');
+    }
+
+    const fromDay = String(from.getDate()).padStart(2, '0');
+    const toDay = String(to.getDate()).padStart(2, '0');
+    let month = to.toLocaleDateString('uk-UA', { month: 'long' });
+    month = month.charAt(0).toUpperCase() + month.slice(1);
+    const year = to.getFullYear();
+
+    return `${fromDay} - ${toDay} ${month}, ${year}`;
   }
 
   private buildDoctorFromProfile(profile: any): DoctorCardView | undefined {

@@ -71,9 +71,20 @@
       <p class="timezone">(за Києвом)</p>
       <ng-container *ngIf="!isDoctor; else doctorPicker">
         <div class="week-nav" *ngIf="currentWeek">
-          <button type="button" class="week-btn" (click)="prevWeek()" [disabled]="currentWeekIndex === 0">←</button>
-          <button type="button" class="week-btn" (click)="nextWeek()" [disabled]="currentWeekIndex >= weeks.length - 1">→</button>
-          <span class="week-title">{{ currentWeek.week }}</span>
+          <button type="button" class="week-btn" (click)="prevWeek()" [disabled]="!canGoPrevWeek()">
+            <img
+              [src]="canGoPrevWeek() ? 'assets/icon/arrow-left-color.svg' : 'assets/icon/arrow-left-grey.svg'"
+              alt="Попередній тиждень"
+            >
+          </button>
+          <button type="button" class="week-btn" (click)="nextWeek()" [disabled]="!canGoNextWeek()">
+            <img
+              [src]="canGoNextWeek() ? 'assets/icon/arrow-left-color.svg' : 'assets/icon/arrow-left-grey.svg'"
+              alt="Наступний тиждень"
+              class="week-btn-icon-next"
+            >
+          </button>
+          <span class="week-title">{{ currentWeekLabel }}</span>
         </div>
 
         <div
