@@ -750,6 +750,13 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private refreshDiaryState() {
+    if (!this.authService.isAuthenticated()) {
+      this.todayDiaryEntry.set(null);
+      this.todayDiaryExists.set(false);
+      this.weekMoodDots.set([]);
+      return;
+    }
+
     const now = new Date();
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     this.diaryService.getDiaryByDate(today).subscribe((entry) => {
@@ -757,6 +764,14 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       this.todayDiaryExists.set(!!entry);
     });
     this.loadWeekMoodDots(now);
+  }
+
+  openDiaryFromHome(): void {
+    if (!this.authService.isAuthenticated()) {
+      window.alert('Щоб вести щоденник, потрібно авторизуватись.');
+      return;
+    }
+    void this.router.navigate(['/tabs/diary']);
   }
 
   todayDiaryMoodLabel(): string {

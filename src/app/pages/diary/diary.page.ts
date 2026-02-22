@@ -6,7 +6,7 @@ import { DiaryService, DiaryEntryNormalized } from '../../services/diary.service
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { arrowBack, arrowForward } from 'ionicons/icons';
-import { TokenStorageService } from '../../services/token-storage.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-diary',
@@ -32,19 +32,23 @@ export class DiaryPage implements OnInit {
 
   constructor(
     private diaryService: DiaryService,
-    private tokenStorage: TokenStorageService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router,
     private location: Location
   ) {
     addIcons({ arrowBack, arrowForward });
-    this.tokenStorage.ensureDiaryToken();
     const today = new Date();
     this.selectedDate = this.toLocalDateString(today);
     this.generateCalendar(today.getFullYear(), today.getMonth());
   }
 
   ngOnInit() {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/tabs/home']);
+      return;
+    }
+
     this.diaryService.getDiaryQuestions().subscribe((response) => {
       this.moodById = {};
       this.moodIconById = {};

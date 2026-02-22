@@ -178,16 +178,16 @@
         </div>
       <ion-button expand="block" class="free-psychologists-button" routerLink="/tabs/filter">В каталог</ion-button>
     </div>
-<div class="diary-block">
+<div *ngIf="!isDoctor()" class="diary-block">
       
       <div class="diary-card">
         <ion-icon name="book-outline"></ion-icon>
         <ng-container *ngIf="todayDiaryExists(); else diaryEmptyState">
           <div class="diary-ready-head">
             <h3>Записи в щоденнику</h3>
-            <a routerLink="/tabs/diary">Всі записи</a>
+            <a (click)="openDiaryFromHome()">Всі записи</a>
           </div>
-          <a class="diary-ready-preview" routerLink="/tabs/diary">
+          <a class="diary-ready-preview" (click)="openDiaryFromHome()">
             <div class="diary-ready-preview__chips">
               <span class="diary-ready-preview__chip">
                 <img *ngIf="todayDiaryMoodIcon(); else moodEmojiTpl" [src]="todayDiaryMoodIcon()" alt="">
@@ -239,7 +239,7 @@
         <ng-template #diaryEmptyState>
           <h3>Заповніть свій щоденник</h3>
           <p>Не забувайте вести свій особистий щоденник, відстежувати настрій та записувати свої думки.</p>
-          <ion-button expand="block" class="add-diary-button" routerLink="/tabs/diary">
+          <ion-button expand="block" class="add-diary-button" (click)="openDiaryFromHome()">
             Додати запис
           </ion-button>
         </ng-template>

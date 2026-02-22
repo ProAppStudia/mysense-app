@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonTextarea, IonInput, IonButtons, IonLabel } from '@ionic/angular/standalone';
 import { DiaryService, DiaryQuestion } from '../../services/diary.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-diary-entry',
@@ -29,12 +30,18 @@ export class DiaryEntryPage implements OnInit {
 
   constructor(
     private diaryService: DiaryService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router,
     private location: Location
   ) {}
 
   ngOnInit() {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/tabs/home']);
+      return;
+    }
+
     const incomingDate = this.route.snapshot.queryParamMap.get('date');
     this.date = incomingDate && /^\d{4}-\d{2}-\d{2}$/.test(incomingDate)
       ? incomingDate
