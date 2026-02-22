@@ -49,34 +49,19 @@ export class DiaryPage implements OnInit {
       return;
     }
 
-    this.diaryService.getDiaryQuestions().subscribe((response) => {
-      this.moodById = {};
-      this.moodIconById = {};
-      this.bodyById = {};
-      this.bodyIconById = {};
-      this.questionById = {};
-
-      (response.mood?.items ?? []).forEach((item) => {
-        this.moodById[item.id] = item.name;
-        this.moodIconById[item.id] = item.icon;
-      });
-      (response.body?.items ?? []).forEach((item) => {
-        this.bodyById[item.id] = item.name;
-        this.bodyIconById[item.id] = item.icon;
-      });
-      (response.questions ?? []).forEach((item) => {
-        this.questionById[item.id] = item.title;
-      });
-    });
-
-    this.route.queryParams.subscribe(params => {
-      if (params['refresh']) {
-        this.loadDiaryEntry();
-        this.loadMonthEntries();
+    this.authService.getProfile().subscribe({
+      next: (profile) => {
+        const isDoctor = profile?.is_doctor === true || profile?.is_doctor === 1 || profile?.is_doctor === '1';
+        if (isDoctor) {
+          this.router.navigate(['/tabs/home']);
+          return;
+        }
+        this.initDiaryView();
+      },
+      error: () => {
+        this.router.navigate(['/tabs/home']);
       }
     });
-    this.loadDiaryEntry();
-    this.loadMonthEntries();
   }
 
   ngAfterViewInit() {
@@ -164,6 +149,37 @@ export class DiaryPage implements OnInit {
   getDayName(date: Date): string {
     const weekdays = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
     return weekdays[date.getDay()];
+  }
+
+  private initDiaryView(): void {
+    this.diaryService.getDiaryQuestions().subscribe((response) => {
+      this.moodById = {};
+      this.moodIconById = {};
+      this.bodyById = {};
+      this.bodyIconById = {};
+      this.questionById = {};
+
+      (response.mood?.items ?? []).forEach((item) => {
+        this.moodById[item.id] = item.name;
+        this.moodIconById[item.id] = item.icon;
+      });
+      (response.body?.items ?? []).forEach((item) => {
+        this.bodyById[item.id] = item.name;
+        this.bodyIconById[item.id] = item.icon;
+      });
+      (response.questions ?? []).forEach((item) => {
+        this.questionById[item.id] = item.title;
+      });
+    });
+
+    this.route.queryParams.subscribe(params => {
+      if (params['refresh']) {
+        this.loadDiaryEntry();
+        this.loadMonthEntries();
+      }
+    });
+    this.loadDiaryEntry();
+    this.loadMonthEntries();
   }
 
   private scrollToSelectedDate() {

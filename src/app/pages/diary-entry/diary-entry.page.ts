@@ -44,22 +44,18 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.diaryService.getDiaryQuestions().subscribe(response => {
-      this.diaryData = response;
-      this.questions = response.questions ?? [];
-      this.positiveMoods = this.diaryData.mood.items.filter((m: any) => m.type === 'positive');
-      this.negativeMoods = this.diaryData.mood.items.filter((m: any) => m.type === 'negative');
-
-      this.routeSub?.unsubscribe();
-      this.routeSub = this.route.queryParamMap.subscribe((params) => {
-        const incomingDate = params.get('date');
-        this.date = incomingDate && /^\d{4}-\d{2}-\d{2}$/.test(incomingDate)
-          ? incomingDate
-          : this.todayLocalDate();
-
-        this.resetEntryState();
-        this.loadExistingEntry();
-      });
+    this.authService.getProfile().subscribe({
+      next: (profile) => {
+        const isDoctor = profile?.is_doctor === true || profile?.is_doctor === 1 || profile?.is_doctor === '1';
+        if (isDoctor) {
+          this.router.navigate(['/tabs/home']);
+          return;
+        }
+        this.initDiaryEntryView();
+      },
+      error: () => {
+        this.router.navigate(['/tabs/home']);
+      }
     });
   }
 
@@ -180,5 +176,25 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
     const m = String(now.getMonth() + 1).padStart(2, '0');
     const d = String(now.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
+  }
+
+  private initDiaryEntryView(): void {
+    this.diaryService.getDiaryQuestions().subscribe(response => {
+      this.diaryData = response;
+      this.questions = response.questions ?? [];
+      this.positiveMoods = this.diaryData.mood.items.filter((m: any) => m.type === 'positive');
+      this.negativeMoods = this.diaryData.mood.items.filter((m: any) => m.type === 'negative');
+
+      this.routeSub?.unsubscribe();
+      this.routeSub = this.route.queryParamMap.subscribe((params) => {
+        const incomingDate = params.get('date');
+        this.date = incomingDate && /^\d{4}-\d{2}-\d{2}$/.test(incomingDate)
+          ? incomingDate
+          : this.todayLocalDate();
+
+        this.resetEntryState();
+        this.loadExistingEntry();
+      });
+    });
   }
 }

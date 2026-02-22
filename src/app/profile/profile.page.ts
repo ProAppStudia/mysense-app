@@ -211,6 +211,10 @@ export class ProfilePage implements OnInit {
   }
 
   goToMyDiary() {
+    if (this.isDoctor()) {
+      this.router.navigate(['/tabs/home']);
+      return;
+    }
     this.router.navigate(['/tabs/diary']);
   }
 

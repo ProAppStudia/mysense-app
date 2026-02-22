@@ -114,7 +114,7 @@
       </ion-list>
     </div>
 
-    <ion-list class="profile-menu-group">
+    <ion-list *ngIf="!isDoctor()" class="profile-menu-group">
       <ion-item detail (click)="goToMyDiary()">
         <ion-icon slot="start" name="book-outline"></ion-icon>
         <ion-label>Мій щоденник</ion-label>
