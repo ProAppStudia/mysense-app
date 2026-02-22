@@ -20,6 +20,9 @@
       <div class="sessions-list">
         <div class="session-card" *ngFor="let session of userSessions | slice:0:2">
           <div class="session-info">
+            <div class="session-status-chip" [ngClass]="statusColorClass(session)">
+              {{ session.status }}
+            </div>
             <div class="session-date-time">
               <ion-icon name="calendar-outline"></ion-icon>
               <span>{{ formatSessionTime(session.time_range).date }} о {{ formatSessionTime(session.time_range).time }}</span>

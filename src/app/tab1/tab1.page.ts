@@ -27,6 +27,8 @@ interface Session {
   id: number;
   type: 'Індивідуальна сесія' | 'Сімейна сесія' | 'Дитяча сесія' ;
   status: string;
+  status_id?: number;
+  status_color?: string;
   doctor_name: string;
   doctor_image: string;
   time_range: string;
@@ -659,19 +661,15 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   private loadHomeSessions() {
     this.authService.getMySessions().subscribe({
       next: (resp) => {
-        if (resp?.error) {
+        const { all } = this.extractSessionsFromResponse(resp);
+        if (resp?.error && all.length === 0) {
           this.userSessions = [];
           this.recentPsychologists = [];
           return;
         }
 
-        const planned = Array.isArray(resp?.planned) ? resp.planned : [];
-        const past = Array.isArray(resp?.past) ? resp.past : [];
-        const all = [...planned, ...past];
-
         this.userSessions = all
           .map((item, index) => this.mapApiSession(item, index))
-          .filter((item) => !!item.id)
           .slice(0, this.isDoctor() ? 2 : all.length);
 
         this.recentPsychologists = this.extractRecentPsychologists(all).slice(0, 3);
@@ -683,6 +681,30 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  private extractSessionsFromResponse(resp: any): { all: MySessionItem[] } {
+    const planned = Array.isArray(resp?.planned) ? resp.planned : [];
+    const past = Array.isArray(resp?.past) ? resp.past : [];
+    const combined = [...planned, ...past];
+    if (combined.length) {
+      return { all: combined };
+    }
+
+    const fallback = [resp?.sessions, resp?.results, resp?.items, resp?.list, resp?.data]
+      .find((value) => Array.isArray(value));
+    return { all: Array.isArray(fallback) ? fallback as MySessionItem[] : [] };
+  }
+
+  private resolveSessionId(item: any, index: number): number {
+    const candidates = [item?.meet_id, item?.order_id, item?.id, item?.session_id, item?.orderId, item?.meetId];
+    for (const candidate of candidates) {
+      const parsed = Number(candidate ?? 0);
+      if (Number.isFinite(parsed) && parsed > 0) {
+        return parsed;
+      }
+    }
+    return index + 1;
+  }
+
   private mapApiSession(item: MySessionItem & { status?: number | string; payment_link?: string }, index: number): Session {
     const typeMap: Record<string, Session['type']> = {
       'Індивідуальна': 'Індивідуальна сесія',
@@ -691,13 +713,18 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     };
     const sessionType = String(item.session_type ?? '');
     const type = typeMap[sessionType] ?? 'Індивідуальна сесія';
-    const apiStatus = Number((item as any)?.status ?? 5);
+    const apiStatus = Number((item as any)?.status_id ?? (item as any)?.status ?? 5);
     const isUnpaid = apiStatus === 1;
+    const fallbackStatus = isUnpaid ? 'Очікується' : 'Заброньована';
+    const statusText = String((item as any)?.status_text ?? '').trim() || fallbackStatus;
+    const statusColor = String((item as any)?.status_color ?? '').trim().toLowerCase();
 
     return {
-      id: Number(item.meet_id || item.order_id || 0),
+      id: this.resolveSessionId(item as any, index),
       type,
-      status: isUnpaid ? 'Очікується' : 'Заброньована',
+      status: statusText,
+      status_id: Number.isFinite(apiStatus) ? apiStatus : undefined,
+      status_color: statusColor,
       doctor_name: String(item.fullname || 'Психолог'),
       doctor_image: this.normalizePhoto(item.photo),
       time_range: `${item.session_date || ''} о ${this.extractStartTime(item.session_time_period)}`,
@@ -708,6 +735,14 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       payment_link: String((item as any)?.payment_link ?? (item as any)?.checkout_url ?? '').trim(),
       doctor_user_id: item.doctor_user_id
     };
+  }
+
+  statusColorClass(session: Session): string {
+    const color = String(session.status_color || '').toLowerCase();
+    if (color === 'success' || color === 'danger' || color === 'primary') {
+      return `status-${color}`;
+    }
+    return 'status-neutral';
   }
 
   private normalizePhoto(photo?: string): string {

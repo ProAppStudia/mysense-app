@@ -21,6 +21,9 @@
     <div *ngIf="filteredSessions.length > 0; else noSessions" class="sessions-list">
       <div *ngFor="let session of filteredSessions; let i = index" class="session-card">
         <div class="session-info">
+          <div class="session-status-chip" [ngClass]="statusColorClass(session)">
+            {{ session.status }}
+          </div>
           <div class="session-date-time">
             <ion-icon name="calendar-outline"></ion-icon>
             <span>{{ formatSessionTime(session.time_range).date }} о {{ formatSessionTime(session.time_range).time }}</span>
@@ -36,8 +39,8 @@
             <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
           </ion-button>
           <ion-button fill="clear" [class]="session.is_unpaid ? 'pay-button' : 'cancel-button'" (click)="session.is_unpaid ? paySession(session) : cancelSession(session.id)" [disabled]="actionLoading">
-            {{ session.status === 'Очікується' ? 'Оплатити' : 'Скасувати' }}
-            <ion-icon slot="end" [name]="session.status === 'Очікується' ? 'wallet-outline' : 'close-outline'"></ion-icon>
+            {{ session.is_unpaid ? 'Оплатити' : 'Скасувати' }}
+            <ion-icon slot="end" [name]="session.is_unpaid ? 'wallet-outline' : 'close-outline'"></ion-icon>
           </ion-button>
         </div>
       </div>

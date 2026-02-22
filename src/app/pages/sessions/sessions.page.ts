@@ -10,7 +10,10 @@ import { timeOutline, videocamOutline, calendarOutline, arrowForwardOutline, clo
 interface Session {
   id: number;
   type: string;
-  status: 'Заброньована' | 'Оплачена' | 'Скасована' | 'Пройдена' | 'Очікується';
+  status: string;
+  status_id?: number;
+  status_color?: string;
+  segment: 'planned' | 'past';
   doctor_name: string;
   doctor_image: string;
   time_range: string;
@@ -51,7 +54,15 @@ export class SessionsPage implements OnInit {
     this.loading = true;
     this.authService.getMySessions().subscribe({
       next: (resp) => {
-        if (resp?.error) {
+        const raw = resp as any;
+        const planned = Array.isArray(resp?.planned) ? resp.planned : [];
+        const past = Array.isArray(resp?.past) ? resp.past : [];
+        const fallback = [raw?.sessions, raw?.results, raw?.items, raw?.list, raw?.data]
+          .find((value) => Array.isArray(value));
+        const fallbackAll = Array.isArray(fallback) ? (fallback as MySessionItem[]) : [];
+        const hasAny = planned.length > 0 || past.length > 0 || fallbackAll.length > 0;
+
+        if (resp?.error && !hasAny) {
           this.loading = false;
           this.sessions = [];
           this.filteredSessions = [];
@@ -59,13 +70,13 @@ export class SessionsPage implements OnInit {
           return;
         }
 
-        const planned = Array.isArray(resp?.planned) ? resp.planned : [];
-        const past = Array.isArray(resp?.past) ? resp.past : [];
+        const allPlanned = planned.length || past.length ? planned : fallbackAll;
+        const allPast = planned.length || past.length ? past : [];
         this.emptyText = resp?.empty_text || 'Порожньо';
 
         this.sessions = [
-          ...planned.map((item) => this.mapApiSession(item, 'planned')),
-          ...past.map((item) => this.mapApiSession(item, 'past'))
+          ...allPlanned.map((item) => this.mapApiSession(item, 'planned')),
+          ...allPast.map((item) => this.mapApiSession(item, 'past'))
         ];
         this.loading = false;
         this.filterSessions();
@@ -84,28 +95,33 @@ export class SessionsPage implements OnInit {
   }
 
   filterSessions() {
-    if (this.selectedSegment === 'planned') {
-      this.filteredSessions = this.sessions.filter(session =>
-        session.status === 'Заброньована' || session.status === 'Оплачена' || session.status === 'Очікується'
-      );
-    } else { // 'past'
-      this.filteredSessions = this.sessions.filter(session =>
-        session.status === 'Скасована' || session.status === 'Пройдена'
-      );
+    this.filteredSessions = this.sessions;
+  }
+
+  statusColorClass(session: Session): string {
+    const color = String(session.status_color || '').toLowerCase();
+    if (color === 'success' || color === 'danger' || color === 'primary') {
+      return `status-${color}`;
     }
+    return 'status-neutral';
   }
 
   private mapApiSession(item: MySessionItem, segment: 'planned' | 'past'): Session {
-    const apiStatus = Number((item as any)?.status ?? 5);
+    const apiStatus = Number((item as any)?.status_id ?? (item as any)?.status ?? 5);
     const isUnpaid = segment === 'planned' && apiStatus === 1;
-    const status = segment === 'planned'
+    const fallbackStatus = segment === 'planned'
       ? (isUnpaid ? 'Очікується' : 'Заброньована')
       : 'Пройдена';
+    const statusText = String((item as any)?.status_text ?? '').trim() || fallbackStatus;
+    const statusColor = String((item as any)?.status_color ?? '').trim().toLowerCase();
 
     return {
       id: item.meet_id || item.order_id || 0,
       type: item.session_type || 'Сесія',
-      status,
+      status: statusText,
+      status_id: Number.isFinite(apiStatus) ? apiStatus : undefined,
+      status_color: statusColor,
+      segment,
       doctor_name: item.fullname || 'Психолог',
       doctor_image: this.normalizePhoto(item.photo),
       time_range: `${item.session_date || ''} о ${this.extractStartTime(item.session_time_period)}`,

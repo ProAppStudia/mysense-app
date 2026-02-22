@@ -98,6 +98,9 @@ export interface MySessionItem {
   session_type?: string;
   session_time_period?: string;
   status?: number | string;
+  status_id?: number | string;
+  status_text?: string;
+  status_color?: 'success' | 'danger' | 'primary' | string;
   payment_link?: string;
   who?: number | string;
   client_user_id?: number;

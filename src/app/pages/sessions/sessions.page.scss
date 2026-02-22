@@ -27,6 +27,34 @@
   align-items: flex-start; /* Align items to the start */
 }
 
+.session-status-chip {
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.status-success {
+  background: rgba(36, 181, 89, 0.18);
+  color: #1f8a47;
+}
+
+.status-danger {
+  background: rgba(227, 70, 70, 0.18);
+  color: #b02929;
+}
+
+.status-primary {
+  background: rgba(122, 91, 218, 0.2);
+  color: #5b3ec0;
+}
+
+.status-neutral {
+  background: rgba(34, 43, 64, 0.14);
+  color: #222b40;
+}
+
 .session-date-time {
   display: flex;
   align-items: center;
