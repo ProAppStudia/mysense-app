@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonTextarea, IonInput, IonButtons, IonLabel } from '@ionic/angular/standalone';
 import { DiaryService, DiaryQuestion } from '../../services/diary.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-diary-entry',
@@ -13,7 +14,7 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButton, IonTextarea, IonInput, IonButtons, IonLabel]
 })
-export class DiaryEntryPage implements OnInit {
+export class DiaryEntryPage implements OnInit, OnDestroy {
   step = 1;
   date = '';
   diaryData: any;
@@ -27,6 +28,7 @@ export class DiaryEntryPage implements OnInit {
   errorMessage = '';
   positiveMoods: any[] = [];
   negativeMoods: any[] = [];
+  private routeSub?: Subscription;
 
   constructor(
     private diaryService: DiaryService,
@@ -42,21 +44,27 @@ export class DiaryEntryPage implements OnInit {
       return;
     }
 
-    const incomingDate = this.route.snapshot.queryParamMap.get('date');
-    this.date = incomingDate && /^\d{4}-\d{2}-\d{2}$/.test(incomingDate)
-      ? incomingDate
-      : this.todayLocalDate();
-
     this.diaryService.getDiaryQuestions().subscribe(response => {
       this.diaryData = response;
       this.questions = response.questions ?? [];
-      this.questions.forEach((q) => {
-        this.answersMap[q.id] = '';
-      });
       this.positiveMoods = this.diaryData.mood.items.filter((m: any) => m.type === 'positive');
       this.negativeMoods = this.diaryData.mood.items.filter((m: any) => m.type === 'negative');
-      this.loadExistingEntry();
+
+      this.routeSub?.unsubscribe();
+      this.routeSub = this.route.queryParamMap.subscribe((params) => {
+        const incomingDate = params.get('date');
+        this.date = incomingDate && /^\d{4}-\d{2}-\d{2}$/.test(incomingDate)
+          ? incomingDate
+          : this.todayLocalDate();
+
+        this.resetEntryState();
+        this.loadExistingEntry();
+      });
     });
+  }
+
+  ngOnDestroy(): void {
+    this.routeSub?.unsubscribe();
   }
 
   nextStep() {
@@ -117,12 +125,15 @@ export class DiaryEntryPage implements OnInit {
       answers: this.answersMap
     };
 
-    this.diaryService.saveDiaryEntry(entryToSave).subscribe(() => {
-      this.loading = false;
-      this.step = 5;
-    }, () => {
-      this.loading = false;
-      this.errorMessage = 'Не вдалося зберегти запис. Спробуйте ще раз.';
+    this.diaryService.saveDiaryEntry(entryToSave).subscribe({
+      next: () => {
+        this.loading = false;
+        this.step = 5;
+      },
+      error: (err: Error) => {
+        this.loading = false;
+        this.errorMessage = err?.message || 'Не вдалося зберегти запис. Спробуйте ще раз.';
+      }
     });
   }
 
@@ -146,6 +157,20 @@ export class DiaryEntryPage implements OnInit {
           this.answersMap[item.id] = item.answer ?? '';
         }
       });
+    });
+  }
+
+  private resetEntryState(): void {
+    this.step = 1;
+    this.loading = false;
+    this.errorMessage = '';
+    this.editingId = undefined;
+    this.selectedMood = '';
+    this.selectedBody = '';
+    this.thoughts = '';
+    this.answersMap = {};
+    this.questions.forEach((q) => {
+      this.answersMap[q.id] = '';
     });
   }
 

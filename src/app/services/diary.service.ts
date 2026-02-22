@@ -109,32 +109,54 @@ export class DiaryService {
       return throwError(() => new Error('Потрібна авторизація'));
     }
     const appId = this.tokenStorage.ensureDiaryToken();
-    const form = new FormData();
-    form.append('app_id', appId);
-    form.append('token', authToken);
-    form.append('date', entry.date);
-    form.append('text', entry.text ?? '');
+    let body = new HttpParams()
+      .set('app_id', appId)
+      .set('token', authToken)
+      .set('date', entry.date)
+      .set('text', entry.text ?? '');
 
     if (entry.id) {
-      form.append('id', String(entry.id));
+      body = body.set('id', String(entry.id));
     }
 
-    (entry.mood ?? []).forEach((moodId) => form.append('mood[]', moodId));
-    (entry.body ?? []).forEach((bodyId) => form.append('body[]', bodyId));
+    (entry.mood ?? []).forEach((moodId) => {
+      body = body.append('mood[]', moodId);
+    });
+    (entry.body ?? []).forEach((bodyId) => {
+      body = body.append('body[]', bodyId);
+    });
     Object.entries(entry.answers ?? {}).forEach(([questionId, answer]) => {
-      form.append(`answer[${questionId}]`, answer ?? '');
+      body = body.append(`answer[${questionId}]`, answer ?? '');
     });
 
-    const url = `${this.apiUrl}?action=set_diary`;
-    return this.http.post(url, form).pipe(
-      map((response: any) => {
+    const url = `${this.apiUrl}?action=set_diary&app_id=${encodeURIComponent(appId)}&token=${encodeURIComponent(authToken)}&date=${encodeURIComponent(entry.date)}`;
+    return this.http.post(url, body.toString(), { headers: this.formHeaders, responseType: 'text' }).pipe(
+      map((responseText: string) => {
+        let response: any = null;
+        try {
+          response = JSON.parse(responseText);
+        } catch {
+          const raw = String(responseText ?? '').trim();
+          if (raw) {
+            throw new Error(`Сервер повернув не JSON: ${raw.slice(0, 220)}`);
+          }
+          throw new Error('Порожня відповідь сервера при збереженні щоденника.');
+        }
+
         if (response?.error) {
           throw new Error(String(response.error));
         }
-        return response;
+
+        if (response?.success) {
+          return response;
+        }
+
+        throw new Error('Не вдалося зберегти запис.');
       }),
-      catchError(() => {
-        return throwError(() => new Error('Не вдалося зберегти запис.'));
+      catchError((error: any) => {
+        const backendText = String(error?.error ?? '').trim();
+        const message = backendText || error?.message || 'Не вдалося зберегти запис.';
+        return throwError(() => new Error(message));
       })
     );
   }
