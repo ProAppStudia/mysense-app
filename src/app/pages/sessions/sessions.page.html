@@ -8,21 +8,36 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-segment [(ngModel)]="selectedSegment" (ionChange)="segmentChanged()" value="planned" class="session-segments">
-    <ion-segment-button value="planned">
-      <ion-label>Заплановані</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="past">
-      <ion-label>Минулі</ion-label>
-    </ion-segment-button>
-  </ion-segment>
+  <div class="session-tabs">
+    <button type="button" class="session-tab" [class.active]="selectedSegment === 'planned'" (click)="setSegment('planned')">
+      Заплановані
+    </button>
+    <button type="button" class="session-tab" [class.active]="selectedSegment === 'past'" (click)="setSegment('past')">
+      Минулі
+    </button>
+    <button type="button" class="session-tab" [class.active]="selectedSegment === 'archive'" (click)="setSegment('archive')">
+      Архів
+    </button>
+  </div>
 
   
     <div *ngIf="filteredSessions.length > 0; else noSessions" class="sessions-list">
       <div *ngFor="let session of filteredSessions; let i = index" class="session-card">
         <div class="session-info">
-          <div class="session-status-chip" [ngClass]="statusColorClass(session)">
-            {{ session.status }}
+          <div class="session-status-row">
+            <div class="session-status-chip" [ngClass]="statusColorClass(session)">
+              {{ session.status }}
+            </div>
+            <ion-button
+              *ngIf="showActions(session) && !isPaidSession(session)"
+              fill="clear"
+              class="session-pay-inline"
+              (click)="isDoctor ? copyPaymentLink(session) : paySession(session)"
+              [disabled]="actionLoading"
+            >
+              {{ isDoctor ? 'Посилання на оплату' : 'Оплатити' }}
+              <ion-icon slot="end" [name]="isDoctor ? 'copy-outline' : 'wallet-outline'"></ion-icon>
+            </ion-button>
           </div>
           <div class="session-date-time">
             <ion-icon name="calendar-outline"></ion-icon>
@@ -33,14 +48,14 @@
             <span>{{ session.doctor_name }}</span>
           </div>
         </div>
-        <div class="session-actions" *ngIf="selectedSegment === 'planned'">
+        <div class="session-actions" *ngIf="showActions(session)">
           <ion-button fill="clear" class="reschedule-button" (click)="rescheduleSession(session)" [disabled]="actionLoading">
             Перенести
             <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
           </ion-button>
-          <ion-button fill="clear" [class]="session.is_unpaid ? 'pay-button' : 'cancel-button'" (click)="session.is_unpaid ? paySession(session) : cancelSession(session.id)" [disabled]="actionLoading">
-            {{ session.is_unpaid ? 'Оплатити' : 'Скасувати' }}
-            <ion-icon slot="end" [name]="session.is_unpaid ? 'wallet-outline' : 'close-outline'"></ion-icon>
+          <ion-button fill="clear" class="cancel-button" (click)="cancelSession(session.id)" [disabled]="actionLoading">
+            Відмінити
+            <ion-icon slot="end" name="close-outline"></ion-icon>
           </ion-button>
         </div>
       </div>
@@ -49,7 +64,7 @@
 
   <ng-template #noSessions>
     <div class="no-sessions">
-      <p>{{ emptyText || (selectedSegment === 'planned' ? 'У вас ще немає запланованих сесій.' : 'У вас ще немає минулих сесій.') }}</p>
+      <p>{{ emptyStateText() }}</p>
     </div>
   </ng-template>
 </ion-content>

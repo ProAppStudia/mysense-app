@@ -9,11 +9,11 @@ import { DiaryEntryNormalized, DiaryService } from '../services/diary.service';
 import { environment } from '../../environments/environment'; // Import environment for base URL
 import { forkJoin, Subscription, interval } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, checkmarkDoneOutline, heart, checkmarkCircleOutline, walletOutline } from 'ionicons/icons';
+import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, checkmarkDoneOutline, heart, checkmarkCircleOutline, walletOutline, copyOutline } from 'ionicons/icons';
 import { Router, RouterLink, NavigationExtras } from '@angular/router';
 import { TestsBlockComponent } from '../components/tests-block/tests-block.component';
 
-addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, walletOutline });
+addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, walletOutline, copyOutline });
 register();
 
 interface Doctor {
@@ -389,6 +389,72 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  copyPaymentLink(session: Session) {
+    const copy = (value: string) => {
+      if (!navigator.clipboard?.writeText) {
+        window.alert('Не вдалося скопіювати посилання.');
+        return;
+      }
+      navigator.clipboard.writeText(value).then(() => {
+        window.alert('Посилання на оплату скопійовано');
+      }).catch(() => {
+        window.alert('Не вдалося скопіювати посилання.');
+      });
+    };
+
+    if (session.payment_link) {
+      copy(session.payment_link);
+      return;
+    }
+
+    this.authService.getMySessions().subscribe({
+      next: (resp) => {
+        const planned = Array.isArray(resp?.planned) ? resp.planned : [];
+        const matched = planned.find((item: any) => {
+          const orderIdMatch = session.order_id && Number(item?.order_id) === Number(session.order_id);
+          const meetIdMatch = session.meet_id && Number(item?.meet_id) === Number(session.meet_id);
+          return !!orderIdMatch || !!meetIdMatch;
+        });
+
+        const freshLink = String((matched as any)?.payment_link ?? (matched as any)?.checkout_url ?? '').trim();
+        if (!freshLink) {
+          window.alert('Посилання на оплату не отримано.');
+          return;
+        }
+        session.payment_link = freshLink;
+        copy(freshLink);
+      },
+      error: () => {
+        window.alert('Не вдалося отримати посилання для копіювання.');
+      }
+    });
+  }
+
+  isPaidSession(session: Session): boolean {
+    const text = String(session.status || '').toLowerCase();
+    if (text.includes('оплач')) {
+      return true;
+    }
+    return String(session.status_color || '').toLowerCase() === 'success';
+  }
+
+  private isCancelledSession(session: Session): boolean {
+    const statusId = Number(session.status_id ?? 0);
+    if (statusId === 9) {
+      return true;
+    }
+    const text = String(session.status || '').toLowerCase();
+    return text.includes('скасов') || text.includes('відмін');
+  }
+
+  showHomePaymentAction(session: Session): boolean {
+    return !this.isPaidSession(session) && !this.isCancelledSession(session);
+  }
+
+  showHomeSessionActions(session: Session): boolean {
+    return !this.isCancelledSession(session);
+  }
+
   viewAllSessions() {
     void this.router.navigate(['/sessions']);
   }
@@ -738,11 +804,30 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   }
 
   statusColorClass(session: Session): string {
-    const color = String(session.status_color || '').toLowerCase();
-    if (color === 'success' || color === 'danger' || color === 'primary') {
-      return `status-${color}`;
+    const text = String(session.status || '').toLowerCase();
+    if (text.includes('створ')) {
+      return 'status-created';
     }
-    return 'status-neutral';
+    if (text.includes('неусп') || text.includes('failed')) {
+      return 'status-failed';
+    }
+    if (text.includes('оплач')) {
+      return 'status-paid';
+    }
+    if (text.includes('пройд') || text.includes('минул') || text.includes('past')) {
+      return 'status-past';
+    }
+    const color = String(session.status_color || '').toLowerCase();
+    if (color === 'danger') {
+      return 'status-failed';
+    }
+    if (color === 'success') {
+      return 'status-paid';
+    }
+    if (color === 'primary') {
+      return 'status-past';
+    }
+    return 'status-past';
   }
 
   private normalizePhoto(photo?: string): string {

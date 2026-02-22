@@ -20,8 +20,19 @@
       <div class="sessions-list">
         <div class="session-card" *ngFor="let session of userSessions | slice:0:2">
           <div class="session-info">
-            <div class="session-status-chip" [ngClass]="statusColorClass(session)">
-              {{ session.status }}
+            <div class="session-status-row">
+              <div class="session-status-chip" [ngClass]="statusColorClass(session)">
+                {{ session.status }}
+              </div>
+              <ion-button
+                *ngIf="showHomePaymentAction(session)"
+                fill="clear"
+                class="session-pay-inline"
+                (click)="isDoctor() ? copyPaymentLink(session) : paySession(session)"
+              >
+                {{ isDoctor() ? 'Посилання на оплату' : 'Оплатити' }}
+                <ion-icon slot="end" [name]="isDoctor() ? 'copy-outline' : 'wallet-outline'"></ion-icon>
+              </ion-button>
             </div>
             <div class="session-date-time">
               <ion-icon name="calendar-outline"></ion-icon>
@@ -32,18 +43,14 @@
               <span>{{ session.doctor_name }}</span>
             </div>
           </div>
-          <div class="session-actions">
+          <div class="session-actions" *ngIf="showHomeSessionActions(session)">
             <ion-button fill="clear" class="reschedule-button" (click)="rescheduleSession(session)">
               Перенести
               <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
             </ion-button>
-            <ion-button
-              fill="clear"
-              [class]="session.is_unpaid ? 'pay-button' : 'cancel-button'"
-              (click)="session.is_unpaid ? paySession(session) : cancelSession(session.id)"
-            >
-              {{ session.is_unpaid ? 'Оплатити' : 'Скасувати' }}
-              <ion-icon slot="end" [name]="session.is_unpaid ? 'wallet-outline' : 'close-outline'"></ion-icon>
+            <ion-button fill="clear" class="cancel-button" (click)="cancelSession(session.id)">
+              Відмінити
+              <ion-icon slot="end" name="close-outline"></ion-icon>
             </ion-button>
           </div>
         </div>

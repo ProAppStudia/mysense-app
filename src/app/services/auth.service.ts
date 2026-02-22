@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { tap, catchError, map } from 'rxjs/operators';
+import { tap, catchError, map, switchMap } from 'rxjs/operators';
 import { TokenStorageService } from './token-storage.service';
 import { environment } from '../../environments/environment';
 
@@ -162,6 +162,7 @@ export class AuthService {
   private readonly DOCTOR_STATS_URL = `${environment.baseUrl}/connector.php?action=get_my_doctor_stats`;
   private readonly DOCTOR_WORK_SCHEDULE_URL = `${environment.baseUrl}/connector.php?action=get_my_work_schedule`;
   private readonly MY_SESSIONS_URL = `${environment.baseUrl}/connector.php?action=get_my_sessions`;
+  private readonly MY_SESSIONS_LEGACY_URL = `${environment.baseUrl}/connector.php?action=get_user_sessions`;
   private readonly CHANGE_SESSION_URL = `${environment.baseUrl}/connector.php?action=change_session`;
   private readonly DELETE_SESSION_URL = `${environment.baseUrl}/connector.php?action=delete_session`;
 
@@ -343,6 +344,35 @@ export class AuthService {
             error: String(responseText || 'Некоректна відповідь сервера')
           } as MySessionsResponse;
         }
+      }),
+      switchMap((resp) => {
+        const planned = Array.isArray(resp?.planned) ? resp.planned : [];
+        const past = Array.isArray(resp?.past) ? resp.past : [];
+        if (planned.length > 0 || past.length > 0) {
+          return of(resp);
+        }
+
+        return this.http.get(this.MY_SESSIONS_LEGACY_URL, { params, responseType: 'text' }).pipe(
+          map((legacyText) => {
+            try {
+              const parsed = JSON.parse(legacyText);
+              if (Array.isArray(parsed)) {
+                return { success: true, planned: parsed, past: [] } as MySessionsResponse;
+              }
+              if (Array.isArray(parsed?.results)) {
+                return { success: true, planned: parsed.results, past: [] } as MySessionsResponse;
+              }
+              if (Array.isArray(parsed?.items)) {
+                return { success: true, planned: parsed.items, past: [] } as MySessionsResponse;
+              }
+              if (Array.isArray(parsed?.planned) || Array.isArray(parsed?.past)) {
+                return parsed as MySessionsResponse;
+              }
+            } catch {}
+            return resp;
+          }),
+          catchError(() => of(resp))
+        );
       }),
       catchError((error) => {
         const backendText = String(error?.error ?? '').trim();

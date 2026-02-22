@@ -1180,22 +1180,29 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
 }
 
 .session-card {
-  background-color: #a498d9; /* Purple background from the image */
-  color: #fff;
-  border-radius: 16px;
-      padding: 20px 20px 5px;
-  display: flex;
-  flex-direction: column;
-
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: left;
+  background-color: #a498d9;
+    color: #fff;
+    border-radius: 16px;
+    padding: 10px 15px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
 }
 
 .session-info {
   display: flex;
   flex-direction: column;
   gap: 10px;
-      align-items: center;
+     
+}
+
+.session-status-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .session-status-chip {
@@ -1208,24 +1215,33 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
   color: #ffffff;
 }
 
-.status-success {
+.session-pay-inline {
+  --background: transparent;
+  --color: #f1edff;
+  --box-shadow: none;
+  font-size: 14px;
+  text-transform: none;
+  margin: 0;
+}
+
+.status-created {
+  background: #FFC107;
+    color: #5b5b5b;
+}
+
+.status-failed {
+      background: rgb(223 104 104);
+    color: #ffffff;
+}
+
+.status-paid {
   background: rgba(36, 181, 89, 0.2);
   color: #1f8a47;
 }
 
-.status-danger {
-  background: rgba(227, 70, 70, 0.2);
-  color: #b02929;
-}
-
-.status-primary {
+.status-past {
   background: rgba(122, 91, 218, 0.2);
   color: #5b3ec0;
-}
-
-.status-neutral {
-  background: rgba(255, 255, 255, 0.24);
-  color: #ffffff;
 }
 
 .session-date-time {
@@ -1319,7 +1335,6 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
   white-space: nowrap; /* Prevent text from wrapping */
 }
 
-.session-actions .pay-button,
 .session-actions .cancel-button,
 .session-actions .reschedule-button {
   min-width: 100px; /* Ensure a minimum width for buttons */
