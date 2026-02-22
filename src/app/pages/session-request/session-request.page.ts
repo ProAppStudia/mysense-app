@@ -68,7 +68,6 @@ export class SessionRequestPage implements OnInit {
   readonly weekHourOptions = Array.from({ length: 13 }, (_, i) => i + 9); // 9:00 - 21:00
   weeks: Week[] = [];
   currentWeekIndex = 0;
-  initialWeekIndex = 0;
   selectedDateTimeIso = '';
   doctorDatePickerOpen = false;
   doctorDateMinIso = '';
@@ -467,10 +466,15 @@ export class SessionRequestPage implements OnInit {
 
   private setupCalendarFromDoctor(doctor: DoctorCardView) {
     const rawWeeks = doctor?.calendar?.weeks ? Object.values(doctor.calendar.weeks) : [];
-    this.weeks = rawWeeks;
+    this.weeks = rawWeeks.sort((a, b) => {
+      const aTime = new Date(String((a as any)?.['date-form'] ?? '')).getTime();
+      const bTime = new Date(String((b as any)?.['date-form'] ?? '')).getTime();
+      const safeA = Number.isNaN(aTime) ? Number.MAX_SAFE_INTEGER : aTime;
+      const safeB = Number.isNaN(bTime) ? Number.MAX_SAFE_INTEGER : bTime;
+      return safeA - safeB;
+    });
     const activeIndex = this.weeks.findIndex((week) => !!week.active);
     this.currentWeekIndex = activeIndex >= 0 ? activeIndex : 0;
-    this.initialWeekIndex = this.currentWeekIndex;
   }
 
   prevWeek() {
@@ -486,13 +490,11 @@ export class SessionRequestPage implements OnInit {
   }
 
   canGoPrevWeek(): boolean {
-    // Don't allow going to weeks before the initial (current) week.
-    return this.currentWeekIndex > this.initialWeekIndex;
+    return this.currentWeekIndex > 0;
   }
 
   canGoNextWeek(): boolean {
-    const maxForwardIndex = Math.min(this.weeks.length - 1, this.initialWeekIndex + 4);
-    return this.currentWeekIndex < maxForwardIndex;
+    return this.currentWeekIndex < this.weeks.length - 1;
   }
 
   onDoctorDateTimeChange(value: string | string[] | null | undefined) {
