@@ -1,8 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  IonBackButton,
   IonButtons,
   IonContent,
   IonHeader,
@@ -10,6 +9,7 @@ import {
   IonTitle,
   IonToolbar
 } from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
 import { AuthService, DoctorWorkScheduleResponse, WorkScheduleDay } from '../../services/auth.service';
 
 @Component({
@@ -23,7 +23,6 @@ import { AuthService, DoctorWorkScheduleResponse, WorkScheduleDay } from '../../
     IonToolbar,
     IonTitle,
     IonButtons,
-    IonBackButton,
     IonSpinner,
     CommonModule,
     FormsModule
@@ -44,7 +43,7 @@ export class DoctorWorkSchedulePage implements OnInit {
 
   readonly hours = Array.from({ length: 17 }, (_, i) => i + 7); // 7..23
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private location: Location, private router: Router) {}
 
   ngOnInit() {
     this.load();
@@ -135,5 +134,13 @@ export class DoctorWorkSchedulePage implements OnInit {
     } else {
       this.weekIndex = 0;
     }
+  }
+
+  goBack() {
+    if (window.history.length > 1) {
+      this.location.back();
+      return;
+    }
+    void this.router.navigate(['/tabs/profile']);
   }
 }

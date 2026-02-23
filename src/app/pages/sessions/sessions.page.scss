@@ -1,3 +1,32 @@
+ion-toolbar {
+  --background: #fff;
+  --min-height: 44px;
+  padding: 0 8px;
+}
+
+ion-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.back-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.back-btn-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
 .sessions-list {
   display: flex;
   flex-direction: column;
@@ -152,18 +181,41 @@
 
 .session-tab {
   border: 2px solid #7a5bda;
-    background: #fff;
-    color: #4c4a59;
-    border-radius: 12px;
-    padding: 8px 10px;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.2;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  background: #fff;
+  color: #4c4a59;
+  border-radius: 12px;
+  padding: 9px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .session-tab.active {
   background: #7a5bda;
   color: #fff;
+}
+
+@media (max-width: 430px) {
+  ion-toolbar {
+    --min-height: 44px;
+    padding: 0 4px;
+  }
+
+  ion-title {
+    font-size: 20px;
+  }
+
+  .session-tabs {
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .session-tab {
+    font-size: 12px;
+    padding: 8px 6px;
+    border-radius: 10px;
+  }
 }

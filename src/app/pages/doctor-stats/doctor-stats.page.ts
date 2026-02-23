@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
@@ -7,11 +7,11 @@ import {
   IonToolbar,
   IonTitle,
   IonButtons,
-  IonBackButton,
   IonSelect,
   IonSelectOption,
   IonSpinner
 } from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
 import { AuthService, DoctorStatsResponse } from '../../services/auth.service';
 
 type StatsPeriod = 'day' | 'week' | 'month' | 'half_year';
@@ -27,7 +27,6 @@ type StatsPeriod = 'day' | 'week' | 'month' | 'half_year';
     IonToolbar,
     IonTitle,
     IonButtons,
-    IonBackButton,
     IonSelect,
     IonSelectOption,
     IonSpinner,
@@ -41,7 +40,7 @@ export class DoctorStatsPage implements OnInit {
   stats = signal<DoctorStatsResponse | null>(null);
   error = signal<string | null>(null);
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private location: Location, private router: Router) {}
 
   ngOnInit() {
     this.loadStats();
@@ -71,5 +70,13 @@ export class DoctorStatsPage implements OnInit {
 
   onPeriodChange() {
     this.loadStats();
+  }
+
+  goBack() {
+    if (window.history.length > 1) {
+      this.location.back();
+      return;
+    }
+    void this.router.navigate(['/tabs/profile']);
   }
 }

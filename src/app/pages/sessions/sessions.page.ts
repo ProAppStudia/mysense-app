@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonIcon, IonButton } from '@ionic/angular/standalone';
+import { Location } from '@angular/common';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonIcon, IonButton } from '@ionic/angular/standalone';
 import { AuthService, MySessionItem } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
@@ -30,7 +31,7 @@ interface Session {
   styleUrls: ['./sessions.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, IonButtons, IonBackButton, IonIcon, IonButton
+    IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, IonButtons, IonIcon, IonButton
   ]
 })
 export class SessionsPage implements OnInit {
@@ -42,9 +43,10 @@ export class SessionsPage implements OnInit {
   actionLoading = false;
   emptyText = 'Порожньо';
 
-  constructor(private authService: AuthService, private router: Router) {
+  constructor(private authService: AuthService, private router: Router, private location: Location) {
     addIcons({ calendarOutline, arrowForwardOutline, timeOutline, videocamOutline, closeOutline, walletOutline, copyOutline });
   }
+
 
   ngOnInit() {
     this.loadRole();
@@ -438,5 +440,13 @@ export class SessionsPage implements OnInit {
         window.alert('Не вдалося отримати посилання для копіювання.');
       }
     });
+  }
+
+  goBack() {
+    if (window.history.length > 1) {
+      this.location.back();
+      return;
+    }
+    void this.router.navigate(['/tabs/home']);
   }
 }

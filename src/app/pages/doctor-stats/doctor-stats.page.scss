@@ -1,3 +1,31 @@
+ion-toolbar {
+  --background: #fff;
+  --min-height: 44px;
+  padding: 0 8px;
+}
+
+ion-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.back-btn {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.back-btn-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
 ion-content.doctor-stats-page {
   --background: #f1edff;
   --padding-start: 16px;
@@ -87,6 +115,14 @@ ion-content.doctor-stats-page {
 }
 
 @media (max-width: 480px) {
+  ion-toolbar {
+    padding: 0 4px;
+  }
+
+  ion-title {
+    font-size: 19px;
+  }
+
   .card-value {
     font-size: 46px;
   }

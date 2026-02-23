@@ -1,7 +1,9 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/profile" icon="assets/icon/arrow-left-color.svg" text=""></ion-back-button>
+      <button type="button" class="back-btn" (click)="goBack()" aria-label="Назад">
+        <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="back-btn-icon">
+      </button>
     </ion-buttons>
     <ion-title>Мій графік</ion-title>
   </ion-toolbar>

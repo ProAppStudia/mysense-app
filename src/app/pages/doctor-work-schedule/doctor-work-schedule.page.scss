@@ -1,3 +1,32 @@
+ion-toolbar {
+  --background: #fff;
+  --min-height: 44px;
+  padding: 0 8px;
+}
+
+ion-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.back-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.back-btn-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
 ion-content.schedule-page {
   --background: #f1edff;
   --padding-start: 8px;
@@ -94,7 +123,7 @@ ion-content.schedule-page {
 }
 
 .controls-card label {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
   color: #26304a;
 }
@@ -110,7 +139,7 @@ ion-content.schedule-page {
 
 .hint {
   color: #9ca1ac;
-  font-size: 16px;
+  font-size: 12px;
   margin: 0 0 14px;
 }
 
@@ -123,8 +152,8 @@ ion-content.schedule-page {
 .btn {
   border: 0;
   border-radius: 14px;
-  padding: 14px 18px;
-  font-size: 20px;
+  padding: 12px 16px;
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -146,19 +175,19 @@ ion-content.schedule-page {
 }
 
 .checkbox-row span {
-  font-size: 24px;
+  font-size: 14px;
   line-height: 1.2;
 }
 
 .checkbox-row input {
-  width: 28px;
-  height: 28px;
+  width: 18px;
+  height: 18px;
 }
 
 .description {
   margin: 0 0 10px;
   color: #818181;
-  font-size: 24px;
+  font-size: 12px;
   line-height: 1.25;
 }
 
@@ -171,7 +200,7 @@ ion-content.schedule-page {
   border-radius: 14px;
   padding: 14px;
   color: #818181;
-  font-size: 20px;
+  font-size: 12px;
   line-height: 1.2;
   margin-bottom: 14px;
 }
@@ -186,18 +215,29 @@ ion-content.schedule-page {
 
 @media (max-width: 768px) {
   .controls-card label {
-    font-size: 18px;
+    font-size: 14px;
   }
 
   .checkbox-row span {
-    font-size: 17px;
+    font-size: 14px;
   }
 
   .description {
-    font-size: 17px;
+    font-size: 12px;
   }
 
   .instruction {
-    font-size: 16px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 430px) {
+  ion-toolbar {
+    --min-height: 44px;
+    padding: 0 4px;
+  }
+
+  ion-title {
+    font-size: 19px;
   }
 }
