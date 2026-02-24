@@ -107,6 +107,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   reservePickerOpen = signal(false);
   recentPsychologists: RecentPsychologist[] = [];
   selectedReserveDoctorUserId: number | null = null;
+  private pendingReserveNavigationExtras: NavigationExtras | null = null;
   todayDiaryExists = signal(false);
   todayDiaryEntry = signal<DiaryEntryNormalized | null>(null);
   moodNameById: Record<string, string> = {};
@@ -695,7 +696,6 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
 
   closeReservePicker() {
     this.reservePickerOpen.set(false);
-    this.selectedReserveDoctorUserId = null;
   }
 
   selectReserveDoctor(doctorUserId: number) {
@@ -712,8 +712,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.reservePickerOpen.set(false);
-    const extras: NavigationExtras = {
+    this.pendingReserveNavigationExtras = {
       queryParams: {
         to_user_id: selected.doctor_user_id,
         doctor_user_id: selected.doctor_user_id,
@@ -721,7 +720,16 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         target_photo: selected.photo
       }
     };
-    void this.router.navigate(['/tabs/session-request'], extras);
+    this.closeReservePicker();
+  }
+
+  onReservePickerDidDismiss() {
+    const extras = this.pendingReserveNavigationExtras;
+    this.pendingReserveNavigationExtras = null;
+    this.selectedReserveDoctorUserId = null;
+    if (extras) {
+      void this.router.navigate(['/tabs/session-request'], extras);
+    }
   }
 
   private loadHomeSessions() {

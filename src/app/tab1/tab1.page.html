@@ -101,6 +101,40 @@
         </div>
       </div>
     </div>
+
+    <section *ngIf="!isDoctor()" class="banner-features">
+      <div class="banner-features__inner">
+        <div class="banner-feature">
+          <img src="assets/icon/prei1.svg" alt="">
+          <p>Безкоштовне 15 хвилинне знайомство</p>
+        </div>
+
+        <div class="banner-feature">
+          <img src="assets/icon/prei2.svg" alt="">
+          <p>Зручний запис без попередньої реєстрації</p>
+        </div>
+
+        <div class="banner-feature">
+          <img src="assets/icon/prei3.svg" alt="">
+          <p>Безпечна оплата з можливістю повернути кошти</p>
+        </div>
+
+        <div class="banner-feature">
+          <img src="assets/icon/prei4.svg" alt="">
+          <p>Вартість консультацій від 1000 грн</p>
+        </div>
+
+        <div class="banner-feature">
+          <img src="assets/icon/prei5.svg" alt="">
+          <p>Відміна / перенос сесій в особистому кабінеті</p>
+        </div>
+
+        <div class="banner-feature">
+          <img src="assets/icon/prei6.svg" alt="">
+          <p>Нагадування про сесії</p>
+        </div>
+      </div>
+    </section>
  <!-- Diary Block -->
     
 
@@ -506,7 +540,7 @@
     </ng-template>
   </ion-modal>
 
-  <ion-modal [isOpen]="reservePickerOpen()" (willDismiss)="closeReservePicker()">
+  <ion-modal #reservePickerModal [isOpen]="reservePickerOpen()" (didDismiss)="onReservePickerDidDismiss()">
     <ng-template>
       <ion-header>
         <ion-toolbar>
