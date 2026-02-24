@@ -2,13 +2,14 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline } from 'ionicons/icons';
 import { ChatService } from '../../services/chat.service';
 import { DoctorService } from '../../services/doctor.service';
 import { DoctorCardView } from '../../models/doctor-card-view.model';
 import { AuthService } from '../../services/auth.service';
+import { PaymentFlowService } from '../../services/payment-flow.service';
 
 @Component({
   selector: 'app-request',
@@ -55,7 +56,9 @@ export class RequestPage implements OnInit {
     private location: Location,
     private doctorService: DoctorService,
     private chatService: ChatService,
-    private authService: AuthService
+    private authService: AuthService,
+    private paymentFlowService: PaymentFlowService,
+    private router: Router
   ) {
     addIcons({ arrowBackOutline });
   }
@@ -182,8 +185,10 @@ export class RequestPage implements OnInit {
 
     const paymentLink = String(result?.response?.payment_link ?? '').trim();
     if (paymentLink) {
+      const orderId = this.resolveOrderId(result?.response);
       this.clearPendingOrder();
-      window.open(paymentLink, '_blank');
+      const paymentState = await this.paymentFlowService.openPaymentAndCheck(orderId, paymentLink);
+      this.navigateToPaymentResult(paymentState, orderId);
       return;
     }
 
@@ -276,6 +281,58 @@ export class RequestPage implements OnInit {
 
   private clearPendingOrder() {
     sessionStorage.removeItem(this.pendingOrderKey);
+  }
+
+  private navigateToPaymentResult(status: 'paid' | 'pending' | 'failed' | 'cancelled' | 'unknown', orderId: number): void {
+    const date = this.formatDateForResult(this.form.date);
+    const time = this.form.time ? `${String(this.form.time).padStart(2, '0')}:00` : '';
+
+    this.router.navigate(['/tabs/payment-result'], {
+      queryParams: {
+        status,
+        order_id: orderId > 0 ? String(orderId) : '',
+        doctor_fullname: this.cardName,
+        date,
+        time,
+        payment_date: this.formatDateTimeForResult(new Date()),
+        amount: this.selectedPrice > 0 ? String(this.selectedPrice) : ''
+      }
+    });
+  }
+
+  private formatDateForResult(value: string): string {
+    const trimmed = String(value || '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+      return '';
+    }
+    const [y, m, d] = trimmed.split('-');
+    return `${d}.${m}.${y}`;
+  }
+
+  private formatDateTimeForResult(date: Date): string {
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    const hh = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    const ss = String(date.getSeconds()).padStart(2, '0');
+    return `${dd}.${mm}.${yyyy} ${hh}:${min}:${ss}`;
+  }
+
+  private resolveOrderId(response: any): number {
+    const candidates = [
+      response?.order_id,
+      response?.id,
+      response?.order?.id,
+      response?.result?.order_id
+    ];
+    for (const candidate of candidates) {
+      const n = Number(candidate ?? 0);
+      if (Number.isFinite(n) && n > 0) {
+        return n;
+      }
+    }
+    return 0;
   }
 
   private tryAutoPayAfterAuth() {

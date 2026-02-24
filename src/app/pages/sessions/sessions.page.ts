@@ -6,6 +6,7 @@ import { AuthService, MySessionItem } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { timeOutline, videocamOutline, calendarOutline, arrowForwardOutline, closeOutline, walletOutline, copyOutline } from 'ionicons/icons';
+import { PaymentFlowService, PaymentState } from '../../services/payment-flow.service';
 
 interface Session {
   id: number;
@@ -43,7 +44,12 @@ export class SessionsPage implements OnInit {
   actionLoading = false;
   emptyText = 'Порожньо';
 
-  constructor(private authService: AuthService, private router: Router, private location: Location) {
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private location: Location,
+    private paymentFlowService: PaymentFlowService
+  ) {
     addIcons({ calendarOutline, arrowForwardOutline, timeOutline, videocamOutline, closeOutline, walletOutline, copyOutline });
   }
 
@@ -371,33 +377,17 @@ export class SessionsPage implements OnInit {
     });
   }
 
-  paySession(session: Session) {
-    if (session.payment_link) {
-      window.open(session.payment_link, '_blank');
+  async paySession(session: Session) {
+    const paymentLink = session.payment_link || await this.resolvePaymentLink(session);
+    if (!paymentLink) {
+      window.alert('Посилання на оплату не отримано. Зверніться в підтримку.');
       return;
     }
-    this.authService.getMySessions().subscribe({
-      next: (resp) => {
-        const planned = Array.isArray(resp?.planned) ? resp.planned : [];
-        const matched = planned.find((item: any) => {
-          const orderIdMatch = session.order_id && Number(item?.order_id) === Number(session.order_id);
-          const meetIdMatch = session.meet_id && Number(item?.meet_id) === Number(session.meet_id);
-          return !!orderIdMatch || !!meetIdMatch;
-        });
 
-        const freshLink = String((matched as any)?.payment_link ?? (matched as any)?.checkout_url ?? '').trim();
-        if (freshLink) {
-          session.payment_link = freshLink;
-          window.open(freshLink, '_blank');
-          return;
-        }
-
-        window.alert('Посилання на оплату не отримано. Зверніться в підтримку.');
-      },
-      error: () => {
-        window.alert('Не вдалося отримати посилання для оплати.');
-      }
-    });
+    session.payment_link = paymentLink;
+    const orderId = Number(session.order_id ?? 0);
+    const paymentState = await this.paymentFlowService.openPaymentAndCheck(orderId, paymentLink);
+    this.navigateToPaymentResult(session, paymentState);
   }
 
   copyPaymentLink(session: Session) {
@@ -448,5 +438,49 @@ export class SessionsPage implements OnInit {
       return;
     }
     void this.router.navigate(['/tabs/home']);
+  }
+
+  private async resolvePaymentLink(session: Session): Promise<string> {
+    return new Promise((resolve) => {
+      this.authService.getMySessions().subscribe({
+        next: (resp) => {
+          const planned = Array.isArray(resp?.planned) ? resp.planned : [];
+          const matched = planned.find((item: any) => {
+            const orderIdMatch = session.order_id && Number(item?.order_id) === Number(session.order_id);
+            const meetIdMatch = session.meet_id && Number(item?.meet_id) === Number(session.meet_id);
+            return !!orderIdMatch || !!meetIdMatch;
+          });
+
+          const freshLink = String((matched as any)?.payment_link ?? (matched as any)?.checkout_url ?? '').trim();
+          resolve(freshLink);
+        },
+        error: () => resolve('')
+      });
+    });
+  }
+
+  private navigateToPaymentResult(session: Session, status: PaymentState): void {
+    const parsed = this.formatSessionTime(session.time_range || '');
+    void this.router.navigate(['/tabs/payment-result'], {
+      queryParams: {
+        status,
+        order_id: Number(session.order_id ?? 0) > 0 ? String(session.order_id) : '',
+        doctor_fullname: session.doctor_name || '',
+        date: parsed.date || session.session_date || '',
+        time: parsed.time || '',
+        payment_date: this.formatDateTimeForResult(new Date()),
+        amount: ''
+      }
+    });
+  }
+
+  private formatDateTimeForResult(date: Date): string {
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    const hh = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    const ss = String(date.getSeconds()).padStart(2, '0');
+    return `${dd}.${mm}.${yyyy} ${hh}:${min}:${ss}`;
   }
 }

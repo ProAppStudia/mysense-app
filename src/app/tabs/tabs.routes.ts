@@ -98,6 +98,13 @@ export const routes: Routes = [
             (m) => m.RequestPage
           ),
       },
+      {
+        path: 'payment-result',
+        loadComponent: () =>
+          import('../pages/payment-result/payment-result.page').then(
+            (m) => m.PaymentResultPage
+          ),
+      },
     ],
   },
   {

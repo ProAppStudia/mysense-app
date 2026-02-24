@@ -13,6 +13,7 @@ import { addIcons } from 'ionicons';
 import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, checkmarkDoneOutline, heart, checkmarkCircleOutline, walletOutline, copyOutline } from 'ionicons/icons';
 import { Router, RouterLink, NavigationExtras } from '@angular/router';
 import { TestsBlockComponent } from '../components/tests-block/tests-block.component';
+import { PaymentFlowService, PaymentState } from '../services/payment-flow.service';
 
 addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, walletOutline, copyOutline });
 register();
@@ -153,7 +154,13 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     code: new FormControl('', []) // Code field initially not required
   });
 
-  constructor(private http: HttpClient, private authService: AuthService, private diaryService: DiaryService, private router: Router) {
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private diaryService: DiaryService,
+    private router: Router,
+    private paymentFlowService: PaymentFlowService
+  ) {
       addIcons({calendarOutline,arrowForwardOutline,closeOutline,addCircleOutline,chatbubblesOutline,checkmarkCircleOutline,bookOutline});}
 
   ngOnInit() {
@@ -366,33 +373,17 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  paySession(session: Session) {
-    if (session.payment_link) {
-      window.open(session.payment_link, '_blank');
+  async paySession(session: Session) {
+    const paymentLink = session.payment_link || await this.resolvePaymentLink(session);
+    if (!paymentLink) {
+      window.alert('Посилання для оплати поки не доступне.');
       return;
     }
-    this.authService.getMySessions().subscribe({
-      next: (resp) => {
-        const planned = Array.isArray(resp?.planned) ? resp.planned : [];
-        const matched = planned.find((item: any) => {
-          const orderIdMatch = session.order_id && Number(item?.order_id) === Number(session.order_id);
-          const meetIdMatch = session.meet_id && Number(item?.meet_id) === Number(session.meet_id);
-          return !!orderIdMatch || !!meetIdMatch;
-        });
 
-        const freshLink = String((matched as any)?.payment_link ?? (matched as any)?.checkout_url ?? '').trim();
-        if (freshLink) {
-          session.payment_link = freshLink;
-          window.open(freshLink, '_blank');
-          return;
-        }
-
-        window.alert('Посилання для оплати поки не доступне.');
-      },
-      error: () => {
-        window.alert('Не вдалося отримати посилання для оплати.');
-      }
-    });
+    session.payment_link = paymentLink;
+    const orderId = Number(session.order_id ?? 0);
+    const paymentState = await this.paymentFlowService.openPaymentAndCheck(orderId, paymentLink);
+    this.navigateToPaymentResult(session, paymentState);
   }
 
   copyPaymentLink(session: Session) {
@@ -861,6 +852,50 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       return '';
     }
     return period.split('-')[0].trim();
+  }
+
+  private async resolvePaymentLink(session: Session): Promise<string> {
+    return new Promise((resolve) => {
+      this.authService.getMySessions().subscribe({
+        next: (resp) => {
+          const planned = Array.isArray(resp?.planned) ? resp.planned : [];
+          const matched = planned.find((item: any) => {
+            const orderIdMatch = session.order_id && Number(item?.order_id) === Number(session.order_id);
+            const meetIdMatch = session.meet_id && Number(item?.meet_id) === Number(session.meet_id);
+            return !!orderIdMatch || !!meetIdMatch;
+          });
+
+          const freshLink = String((matched as any)?.payment_link ?? (matched as any)?.checkout_url ?? '').trim();
+          resolve(freshLink);
+        },
+        error: () => resolve('')
+      });
+    });
+  }
+
+  private navigateToPaymentResult(session: Session, status: PaymentState): void {
+    const parsed = this.formatSessionTime(session.time_range || '');
+    void this.router.navigate(['/tabs/payment-result'], {
+      queryParams: {
+        status,
+        order_id: Number(session.order_id ?? 0) > 0 ? String(session.order_id) : '',
+        doctor_fullname: session.doctor_name || '',
+        date: parsed.date || '',
+        time: parsed.time || '',
+        payment_date: this.formatDateTimeForResult(new Date()),
+        amount: ''
+      }
+    });
+  }
+
+  private formatDateTimeForResult(date: Date): string {
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    const hh = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    const ss = String(date.getSeconds()).padStart(2, '0');
+    return `${dd}.${mm}.${yyyy} ${hh}:${min}:${ss}`;
   }
 
   private extractRecentPsychologists(items: Array<MySessionItem>): RecentPsychologist[] {

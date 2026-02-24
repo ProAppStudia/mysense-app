@@ -1,0 +1,117 @@
+ion-content.payment-page {
+  --background: #f3f0fb;
+}
+
+.payment-result {
+  min-height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.small-content,
+.order-details {
+  background: #fff;
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid #ebe7f5;
+  width: min(100%, 460px);
+}
+
+.small-content {
+  text-align: center;
+}
+
+.status-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  margin: 0 auto 14px;
+  display: grid;
+  place-items: center;
+  font-size: 34px;
+  font-weight: 700;
+  background: #ece7fb;
+  color: #6f57d2;
+}
+
+.status-icon.error {
+  background: #fde8ee;
+  color: #c84a66;
+}
+
+.small-content h3 {
+  margin: 0;
+  color: #2f264d;
+  font-size: 20px;
+}
+
+.small-content small {
+  margin-top: 8px;
+  display: block;
+  color: #6a6678;
+  line-height: 1.45;
+  font-size: 14px;
+}
+
+.order-details {
+  display: grid;
+  gap: 10px;
+}
+
+.order-d-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid #efebf7;
+  padding-bottom: 10px;
+}
+
+.order-d-line:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.order-d-line .text {
+  color: #615b73;
+  font-size: 14px;
+}
+
+.order-d-line .val {
+  color: #2f264d;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.actions {
+  width: min(100%, 460px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.btn {
+  border: 0;
+  border-radius: 12px;
+  min-height: 48px;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px;
+}
+
+.btn.primary {
+  background: #795bda;
+  color: #fff;
+}
+
+.btn.secondary {
+  background: #fff;
+  color: #795bda;
+  border: 1px solid #d7d0ec;
+}

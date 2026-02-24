@@ -1,0 +1,43 @@
+<ion-content class="payment-page">
+  <div class="payment-result">
+    <div class="small-content">
+      <div class="status-icon" [class.error]="isError">
+        {{ isError ? '✕' : '✓' }}
+      </div>
+      <h3>{{ statusTitle }}</h3>
+      <small *ngIf="statusText">{{ statusText }}</small>
+    </div>
+
+    <div class="order-details">
+      <div class="order-d-line" *ngIf="orderId">
+        <div class="text">Номер замовлення</div>
+        <div class="val">{{ orderId }}</div>
+      </div>
+      <div class="order-d-line" *ngIf="doctorFullname">
+        <div class="text">Психолог</div>
+        <div class="val">{{ doctorFullname }}</div>
+      </div>
+      <div class="order-d-line" *ngIf="sessionDate">
+        <div class="text">Дата сесії</div>
+        <div class="val">{{ sessionDate }}</div>
+      </div>
+      <div class="order-d-line" *ngIf="sessionTime">
+        <div class="text">Час</div>
+        <div class="val">{{ sessionTime }} за Києвом</div>
+      </div>
+      <div class="order-d-line" *ngIf="paymentDate">
+        <div class="text">Час оплати</div>
+        <div class="val">{{ paymentDate }}</div>
+      </div>
+      <div class="order-d-line" *ngIf="amount">
+        <div class="text">Сума</div>
+        <div class="val">{{ amount }} грн.</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn primary" (click)="goSessions()">Мої сесії</button>
+      <button type="button" class="btn secondary" (click)="goHome()">На головну</button>
+    </div>
+  </div>
+</ion-content>
