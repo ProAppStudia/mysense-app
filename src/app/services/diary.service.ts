@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { TokenStorageService } from './token-storage.service';
+import { environment } from 'src/environments/environment';
 
 export interface DiaryQuestion {
   id: number;
@@ -40,7 +41,7 @@ export interface SaveDiaryEntryPayload {
   providedIn: 'root'
 })
 export class DiaryService {
-  private apiUrl = 'https://mysense.care/app/connector.php';
+  private apiUrl = `${environment.baseUrl}/connector.php`;
   private readonly formHeaders = new HttpHeaders({
     'Content-Type': 'application/x-www-form-urlencoded'
   });
@@ -71,12 +72,9 @@ export class DiaryService {
       return of(null);
     }
     const appId = this.tokenStorage.ensureDiaryToken();
-    const body = new HttpParams()
-      .set('date', date)
-      .set('app_id', appId)
-      .set('token', authToken);
+    const url = `${this.apiUrl}?action=get_diary_by_date&date=${encodeURIComponent(date)}&app_id=${encodeURIComponent(appId)}&token=${encodeURIComponent(authToken)}`;
 
-    return this.http.post(`${this.apiUrl}?action=get_diary_by_date`, body.toString(), { headers: this.formHeaders }).pipe(
+    return this.http.get(url).pipe(
       map((response: any) => {
         const rows = Array.isArray(response?.results) ? response.results : [];
         if (!rows.length) {

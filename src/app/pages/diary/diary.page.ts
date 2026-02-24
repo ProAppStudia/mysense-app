@@ -125,13 +125,25 @@ export class DiaryPage implements OnInit {
       this.diaryEntry = response;
       if (response) {
         this.entries[this.selectedDate] = true;
+        this.storeKnownDiaryDate(this.selectedDate);
       }
     });
   }
 
   loadMonthEntries() {
-    this.diaryService.getDiaryEntriesForMonth(this.currentYear, this.getMonthNumber(this.currentMonth)).subscribe(response => {
-      this.entries = response;
+    this.diaryService.getDiaryEntriesForMonth(this.currentYear, this.getMonthNumber(this.currentMonth)).subscribe((response) => {
+      this.entries = { ...this.entries, ...response };
+      Object.keys(response).forEach((date) => {
+        if (response[date]) {
+          this.storeKnownDiaryDate(date);
+        }
+      });
+
+      const monthKey = this.getMonthKey(this.currentYear, this.getMonthNumber(this.currentMonth));
+      const hasMonthEntriesFromApi = Object.keys(response).some((date) => date.startsWith(monthKey));
+      if (!hasMonthEntriesFromApi) {
+        this.applyKnownDatesForCurrentMonth();
+      }
     });
   }
 
@@ -180,6 +192,58 @@ export class DiaryPage implements OnInit {
     });
     this.loadDiaryEntry();
     this.loadMonthEntries();
+  }
+
+  private applyKnownDatesForCurrentMonth(): void {
+    const monthKey = this.getMonthKey(this.currentYear, this.getMonthNumber(this.currentMonth));
+    const knownDates = this.getKnownDiaryDates();
+    if (!knownDates.length) {
+      return;
+    }
+    const nextEntries = { ...this.entries };
+    knownDates.forEach((date) => {
+      if (date.startsWith(monthKey)) {
+        nextEntries[date] = true;
+      }
+    });
+    this.entries = nextEntries;
+  }
+
+  private getKnownDiaryDatesStorageKey(): string {
+    const token = String(this.authService.getToken() ?? '').trim();
+    if (!token) {
+      return 'known_diary_dates_v1_guest';
+    }
+    return `known_diary_dates_v1_${token.slice(0, 20)}`;
+  }
+
+  private getKnownDiaryDates(): string[] {
+    try {
+      const raw = localStorage.getItem(this.getKnownDiaryDatesStorageKey());
+      if (!raw) {
+        return [];
+      }
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+      return parsed.filter((date) => typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date));
+    } catch {
+      return [];
+    }
+  }
+
+  private storeKnownDiaryDate(date: string): void {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return;
+    }
+    const known = new Set(this.getKnownDiaryDates());
+    known.add(date);
+    localStorage.setItem(this.getKnownDiaryDatesStorageKey(), JSON.stringify(Array.from(known)));
+  }
+
+  private getMonthKey(year: number, monthIndex: number): string {
+    return `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
   }
 
   private scrollToSelectedDate() {

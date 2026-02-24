@@ -226,13 +226,13 @@
       
       <div class="diary-card">
         <ion-icon name="book-outline"></ion-icon>
-        <ng-container *ngIf="todayDiaryExists(); else diaryEmptyState">
+        <ng-container *ngIf="hasAnyDiaryEntry(); else diaryEmptyState">
           <div class="diary-ready-head">
             <h3>Записи в щоденнику</h3>
             <a (click)="openDiaryFromHome()">Всі записи</a>
           </div>
           <a class="diary-ready-preview" (click)="openDiaryFromHome()">
-            <div class="diary-ready-preview__chips">
+            <div class="diary-ready-preview__chips" *ngIf="todayDiaryExists()">
               <span class="diary-ready-preview__chip">
                 <img *ngIf="todayDiaryMoodIcon(); else moodEmojiTpl" [src]="todayDiaryMoodIcon()" alt="">
                 <ng-template #moodEmojiTpl>🙂</ng-template>
@@ -279,6 +279,14 @@
               </div>
             </div>
           </a>
+          <ion-button
+            *ngIf="!todayDiaryExists()"
+            expand="block"
+            class="add-diary-button"
+            (click)="openTodayDiaryFromHome()"
+          >
+            Заповнити сьогодні
+          </ion-button>
         </ng-container>
         <ng-template #diaryEmptyState>
           <h3>Заповніть свій щоденник</h3>

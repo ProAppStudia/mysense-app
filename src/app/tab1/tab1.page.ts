@@ -7,7 +7,8 @@ import { register } from 'swiper/element/bundle';
 import { AuthService, MySessionItem } from '../services/auth.service'; // Import AuthService
 import { DiaryEntryNormalized, DiaryService } from '../services/diary.service';
 import { environment } from '../../environments/environment'; // Import environment for base URL
-import { forkJoin, Subscription, interval } from 'rxjs';
+import { from, of, Subscription, interval } from 'rxjs';
+import { catchError, map, mergeMap, toArray } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
 import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, checkmarkDoneOutline, heart, checkmarkCircleOutline, walletOutline, copyOutline } from 'ionicons/icons';
 import { Router, RouterLink, NavigationExtras } from '@angular/router';
@@ -110,12 +111,15 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   private pendingReserveNavigationExtras: NavigationExtras | null = null;
   todayDiaryExists = signal(false);
   todayDiaryEntry = signal<DiaryEntryNormalized | null>(null);
+  hasAnyDiaryEntry = signal(false);
   moodNameById: Record<string, string> = {};
   moodTypeById: Record<string, string> = {};
   moodIconById: Record<string, string> = {};
   bodyNameById: Record<string, string> = {};
   bodyIconById: Record<string, string> = {};
   weekMoodDots = signal<Array<{ col: number; row: number }>>([]);
+  private lastWeekDotsKey = '';
+  private lastWeekDotsAt = 0;
 
   // Login Modal States
   loginOpen = signal(false);
@@ -171,8 +175,9 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         this.bodyIconById[item.id] = item.icon;
       });
       this.refreshDiaryState();
+    }, () => {
+      this.refreshDiaryState();
     });
-    this.refreshDiaryState();
     if (this.isLoggedIn()) {
       this.loadUserRole();
     }
@@ -881,15 +886,23 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     if (!this.authService.isAuthenticated()) {
       this.todayDiaryEntry.set(null);
       this.todayDiaryExists.set(false);
+      this.hasAnyDiaryEntry.set(false);
       this.weekMoodDots.set([]);
       return;
     }
+
+    const knownDates = this.getKnownDiaryDates();
+    this.hasAnyDiaryEntry.set(knownDates.length > 0);
 
     const now = new Date();
     const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     this.diaryService.getDiaryByDate(today).subscribe((entry) => {
       this.todayDiaryEntry.set(entry);
       this.todayDiaryExists.set(!!entry);
+      if (entry) {
+        this.storeKnownDiaryDate(today);
+        this.hasAnyDiaryEntry.set(true);
+      }
     });
     this.loadWeekMoodDots(now);
   }
@@ -900,6 +913,17 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     void this.router.navigate(['/tabs/diary']);
+  }
+
+  openTodayDiaryFromHome(): void {
+    if (!this.authService.isAuthenticated()) {
+      window.alert('Щоб вести щоденник, потрібно авторизуватись.');
+      return;
+    }
+    const now = new Date();
+    void this.router.navigate(['/tabs/diary-entry'], {
+      queryParams: { date: this.toLocalDateString(now) }
+    });
   }
 
   todayDiaryMoodLabel(): string {
@@ -956,23 +980,81 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
 
   private loadWeekMoodDots(baseDate: Date): void {
     const monday = this.startOfWeekMonday(baseDate);
-    const dayRequests = Array.from({ length: 7 }, (_, index) => {
+    const weekKey = this.toLocalDateString(monday);
+    const nowTs = Date.now();
+    if (this.lastWeekDotsKey === weekKey && nowTs - this.lastWeekDotsAt < 120000) {
+      return;
+    }
+    this.lastWeekDotsKey = weekKey;
+    this.lastWeekDotsAt = nowTs;
+
+    const weekDates = Array.from({ length: 7 }, (_, index) => {
       const date = new Date(monday);
       date.setDate(monday.getDate() + index);
-      return this.diaryService.getDiaryByDate(this.toLocalDateString(date));
+      return this.toLocalDateString(date);
     });
-
-    forkJoin(dayRequests).subscribe((entries) => {
+    from(weekDates.map((date, index) => ({ date, index }))).pipe(
+      mergeMap((item) => this.diaryService.getDiaryByDate(item.date).pipe(
+        map((entry) => ({ index: item.index, date: item.date, entry })),
+        catchError(() => of({ index: item.index, date: item.date, entry: null }))
+      ), 2),
+      toArray()
+    ).subscribe((rows) => {
+      const orderedRows = rows
+        .map((row: any) => ({
+          index: Number(row?.index ?? 0),
+          date: String(row?.date ?? ''),
+          entry: row?.entry ?? null
+        }))
+        .sort((a, b) => a.index - b.index);
       const dots: Array<{ col: number; row: number }> = [];
-      entries.forEach((entry, col) => {
+      orderedRows.forEach((row, col) => {
+        const entry = row.entry;
         const moodId = entry?.mood?.[0] ?? '';
         if (!moodId) {
           return;
         }
+        this.storeKnownDiaryDate(row.date);
         dots.push({ col, row: this.resolveMoodRow(moodId) });
       });
       this.weekMoodDots.set(dots);
+      if (dots.length > 0) {
+        this.hasAnyDiaryEntry.set(true);
+      }
     });
+  }
+
+  private getKnownDiaryDates(): string[] {
+    try {
+      const raw = localStorage.getItem(this.getKnownDiaryDatesStorageKey());
+      if (!raw) {
+        return [];
+      }
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+      return parsed.filter((date) => typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date));
+    } catch {
+      return [];
+    }
+  }
+
+  private storeKnownDiaryDate(date: string): void {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return;
+    }
+    const known = new Set(this.getKnownDiaryDates());
+    known.add(date);
+    localStorage.setItem(this.getKnownDiaryDatesStorageKey(), JSON.stringify(Array.from(known)));
+  }
+
+  private getKnownDiaryDatesStorageKey(): string {
+    const token = String(this.authService.getToken() ?? '').trim();
+    if (!token) {
+      return 'known_diary_dates_v1_guest';
+    }
+    return `known_diary_dates_v1_${token.slice(0, 20)}`;
   }
 
   private startOfWeekMonday(date: Date): Date {
