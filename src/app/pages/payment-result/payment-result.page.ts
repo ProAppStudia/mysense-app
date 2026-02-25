@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
+import { Browser } from '@capacitor/browser';
+import { PaymentFlowService } from '../../services/payment-flow.service';
 
 type PaymentResultStatus = 'paid' | 'pending' | 'failed' | 'cancelled' | 'unknown';
 
@@ -12,7 +14,7 @@ type PaymentResultStatus = 'paid' | 'pending' | 'failed' | 'cancelled' | 'unknow
   standalone: true,
   imports: [IonContent, CommonModule]
 })
-export class PaymentResultPage {
+export class PaymentResultPage implements OnInit {
   status: PaymentResultStatus = 'unknown';
   orderId = '';
   doctorFullname = '';
@@ -23,7 +25,8 @@ export class PaymentResultPage {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private paymentFlowService: PaymentFlowService
   ) {
     this.route.queryParamMap.subscribe((params) => {
       const rawStatus = String(params.get('status') || '').trim().toLowerCase();
@@ -35,6 +38,12 @@ export class PaymentResultPage {
       this.paymentDate = String(params.get('payment_date') || '').trim();
       this.amount = String(params.get('amount') || '').trim();
     });
+  }
+
+  ngOnInit(): void {
+    // Safety net: ensure the in-app browser is closed after returning to app.
+    void Browser.close().catch(() => undefined);
+    void this.upgradePendingState();
   }
 
   get isError(): boolean {
@@ -86,5 +95,21 @@ export class PaymentResultPage {
       return value;
     }
     return 'unknown';
+  }
+
+  private async upgradePendingState(): Promise<void> {
+    if (this.status !== 'pending') {
+      return;
+    }
+
+    const orderId = Number(this.orderId ?? 0);
+    if (!Number.isFinite(orderId) || orderId <= 0) {
+      return;
+    }
+
+    const finalState = await this.paymentFlowService.waitForFinalState(orderId, '', 10, 3000);
+    if (finalState === 'paid' || finalState === 'failed' || finalState === 'cancelled') {
+      this.status = finalState;
+    }
   }
 }

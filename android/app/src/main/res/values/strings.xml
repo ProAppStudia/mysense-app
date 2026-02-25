@@ -3,5 +3,5 @@
     <string name="app_name">mysense-app</string>
     <string name="title_activity_main">mysense-app</string>
     <string name="package_name">mysense.app</string>
-    <string name="custom_url_scheme">mysense.app</string>
+    <string name="custom_url_scheme">mysense</string>
 </resources>

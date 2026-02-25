@@ -191,7 +191,9 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ionViewWillEnter() {
+    this.syncHomeAuthState();
     this.refreshDiaryState();
+    this.loadHomeSessionsIfLoggedIn();
   }
 
   ngOnDestroy() {
@@ -656,8 +658,15 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleRefresh(event: RefresherCustomEvent) {
-    window.location.reload(); // Perform a full page reload
-    event.detail.complete(); // Complete the refresher animation
+    this.syncHomeAuthState();
+    this.getHomepageData();
+    this.refreshDiaryState();
+    this.loadHomeSessionsIfLoggedIn();
+
+    // Keep refresher UX smooth while async sources refresh in background.
+    setTimeout(() => {
+      event.detail.complete();
+    }, 700);
   }
 
   private loadUserRole() {
@@ -673,6 +682,22 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         this.userSessions = [];
       }
     });
+  }
+
+  private syncHomeAuthState() {
+    this.isLoggedIn.set(this.authService.isAuthenticated());
+    if (!this.isLoggedIn()) {
+      this.isDoctor.set(false);
+      this.userSessions = [];
+      this.recentPsychologists = [];
+    }
+  }
+
+  private loadHomeSessionsIfLoggedIn() {
+    if (!this.isLoggedIn()) {
+      return;
+    }
+    this.loadUserRole();
   }
 
   openBookSession() {

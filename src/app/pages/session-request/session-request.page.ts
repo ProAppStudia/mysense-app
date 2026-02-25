@@ -292,7 +292,7 @@ export class SessionRequestPage implements OnInit {
     if (!this.isDoctor) {
       const paymentLink = String(result?.response?.payment_link ?? '').trim();
       if (paymentLink) {
-        const orderId = this.resolveOrderId(result?.response);
+        const orderId = this.resolveOrderId(result?.response, paymentLink);
         const paymentState = await this.paymentFlowService.openPaymentAndCheck(orderId, paymentLink);
         this.navigateToPaymentResult(paymentState, orderId);
         return;
@@ -336,7 +336,7 @@ export class SessionRequestPage implements OnInit {
     return `${dd}.${mm}.${yyyy} ${hh}:${min}:${ss}`;
   }
 
-  private resolveOrderId(response: any): number {
+  private resolveOrderId(response: any, paymentLink?: string): number {
     const candidates = [
       response?.order_id,
       response?.id,
@@ -349,6 +349,23 @@ export class SessionRequestPage implements OnInit {
         return n;
       }
     }
+
+    const link = String(paymentLink ?? response?.payment_link ?? '').trim();
+    if (link) {
+      try {
+        const parsed = new URL(link);
+        const keys = ['order_id', 'orderId', 'invoice_id', 'invoiceId', 'payment_id', 'paymentId'];
+        for (const key of keys) {
+          const value = Number(parsed.searchParams.get(key) ?? 0);
+          if (Number.isFinite(value) && value > 0) {
+            return value;
+          }
+        }
+      } catch {
+        return 0;
+      }
+    }
+
     return 0;
   }
 

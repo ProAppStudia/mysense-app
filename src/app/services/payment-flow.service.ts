@@ -17,11 +17,28 @@ export class PaymentFlowService {
       return 'unknown';
     }
 
-    if (!orderId) {
-      return 'pending';
+    const resolvedOrderId = orderId > 0 ? orderId : this.extractOrderIdFromPaymentUrl(paymentUrl);
+    return this.waitForFinalState(resolvedOrderId, paymentUrl, 20, 3000);
+  }
+
+  async waitForFinalState(
+    orderId: number,
+    paymentUrl: string,
+    maxAttempts: number,
+    intervalMs: number
+  ): Promise<PaymentState> {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const state = await this.getOrderState(orderId, paymentUrl);
+      if (state === 'paid' || state === 'failed' || state === 'cancelled') {
+        return state;
+      }
+
+      if (attempt < maxAttempts - 1) {
+        await this.sleep(intervalMs);
+      }
     }
 
-    return this.pollOrderState(orderId, 10, 3000);
+    return 'pending';
   }
 
   private async openPaymentBrowser(url: string): Promise<boolean> {
@@ -67,25 +84,10 @@ export class PaymentFlowService {
     return true;
   }
 
-  private async pollOrderState(orderId: number, maxAttempts: number, intervalMs: number): Promise<PaymentState> {
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      const state = await this.getOrderState(orderId);
-      if (state === 'paid' || state === 'failed' || state === 'cancelled') {
-        return state;
-      }
-
-      if (attempt < maxAttempts - 1) {
-        await this.sleep(intervalMs);
-      }
-    }
-
-    return 'pending';
-  }
-
-  private async getOrderState(orderId: number): Promise<PaymentState> {
+  private async getOrderState(orderId: number, paymentUrl?: string): Promise<PaymentState> {
     try {
       const response = await firstValueFrom(this.authService.getMySessions());
-      const item = this.findOrderById(response, orderId);
+      const item = this.findOrder(response, orderId, paymentUrl);
       if (!item) {
         return 'unknown';
       }
@@ -95,14 +97,32 @@ export class PaymentFlowService {
     }
   }
 
-  private findOrderById(response: any, orderId: number): MySessionItem | null {
+  private findOrder(response: any, orderId: number, paymentUrl?: string): MySessionItem | null {
     const planned = Array.isArray(response?.planned) ? response.planned : [];
     const past = Array.isArray(response?.past) ? response.past : [];
     const fallback = [response?.sessions, response?.results, response?.items, response?.list, response?.data]
       .find((value) => Array.isArray(value));
     const combined = [...planned, ...past, ...(Array.isArray(fallback) ? fallback : [])] as MySessionItem[];
 
-    return combined.find((item: any) => Number(item?.order_id ?? 0) === orderId) ?? null;
+    if (orderId > 0) {
+      const byOrderId = combined.find((item: any) => Number(item?.order_id ?? 0) === orderId);
+      if (byOrderId) {
+        return byOrderId;
+      }
+    }
+
+    const normalizedPaymentUrl = String(paymentUrl || '').trim();
+    if (normalizedPaymentUrl) {
+      const byPaymentUrl = combined.find((item: any) => {
+        const link = String(item?.payment_link ?? (item as any)?.checkout_url ?? '').trim();
+        return !!link && link === normalizedPaymentUrl;
+      });
+      if (byPaymentUrl) {
+        return byPaymentUrl;
+      }
+    }
+
+    return null;
   }
 
   private detectState(item: MySessionItem): PaymentState {
@@ -110,7 +130,7 @@ export class PaymentFlowService {
     const statusText = String((item as any)?.status_text ?? (item as any)?.status ?? '').toLowerCase();
     const color = String((item as any)?.status_color ?? '').toLowerCase();
 
-    if (statusId === 5 || color === 'success' || statusText.includes('оплач')) {
+    if (statusId === 5 || color === 'success' || statusText.includes('оплач') || statusText.includes('успіш')) {
       return 'paid';
     }
     if (statusId === 4 || statusText.includes('failed') || statusText.includes('помил')) {
@@ -128,5 +148,28 @@ export class PaymentFlowService {
 
   private sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  private extractOrderIdFromPaymentUrl(url: string): number {
+    const raw = String(url || '').trim();
+    if (!raw) {
+      return 0;
+    }
+
+    try {
+      const parsed = new URL(raw);
+      const directCandidates = ['order_id', 'orderId', 'invoice_id', 'invoiceId', 'payment_id', 'paymentId'];
+      for (const key of directCandidates) {
+        const value = parsed.searchParams.get(key);
+        const parsedValue = Number(value ?? 0);
+        if (Number.isFinite(parsedValue) && parsedValue > 0) {
+          return parsedValue;
+        }
+      }
+    } catch {
+      return 0;
+    }
+
+    return 0;
   }
 }
