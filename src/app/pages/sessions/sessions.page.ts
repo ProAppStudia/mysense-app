@@ -24,6 +24,9 @@ interface Session {
   meet_id?: number;
   is_unpaid?: boolean;
   payment_link?: string;
+  doctor_id?: number;
+  doctor_user_id?: number;
+  doctor_hash?: string;
 }
 
 @Component({
@@ -259,7 +262,10 @@ export class SessionsPage implements OnInit {
       order_id: item.order_id,
       meet_id: item.meet_id,
       is_unpaid: apiStatus === 1,
-      payment_link: String((item as any)?.payment_link ?? (item as any)?.checkout_url ?? '').trim()
+      payment_link: String((item as any)?.payment_link ?? (item as any)?.checkout_url ?? '').trim(),
+      doctor_id: Number((item as any)?.doctor_id ?? 0) || undefined,
+      doctor_user_id: Number((item as any)?.doctor_user_id ?? 0) || undefined,
+      doctor_hash: String((item as any)?.doctor_hash ?? (item as any)?.hash ?? '').trim() || undefined
     };
   }
 
@@ -341,7 +347,10 @@ export class SessionsPage implements OnInit {
         session_id: sessionId,
         target_name: session.doctor_name,
         target_photo: session.doctor_image,
-        session_type: session.type
+        session_type: session.type,
+        doctor_id: session.doctor_id,
+        doctor_user_id: session.doctor_user_id,
+        doctor_hash: session.doctor_hash
       }
     });
   }

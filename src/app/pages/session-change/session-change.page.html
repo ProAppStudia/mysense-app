@@ -1,7 +1,7 @@
-<ion-header>
+<ion-header class="app-back-toolbar">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <button type="button" class="back-btn" (click)="goBack()">
+      <button type="button" class="back-btn app-back-btn" (click)="goBack()">
         <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="back-btn-icon">
         Повернутися
       </button>
@@ -26,9 +26,11 @@
       <p class="title">Виберіть дату та час сесії</p>
       <p class="timezone">(за Києвом)</p>
       <div class="datetime-box">
-        <input type="date" [(ngModel)]="form.date">
+        <input type="date" [(ngModel)]="form.date" (ngModelChange)="onDateChange()">
         <select [(ngModel)]="form.time">
-          <option *ngFor="let hour of reserveTimeOptions" [value]="hour">{{ hour }}:00</option>
+          <option [ngValue]="0" disabled *ngIf="loadingSlots()">Завантаження...</option>
+          <option [ngValue]="0" disabled *ngIf="!loadingSlots() && !reserveTimeOptions.length">Немає доступних годин</option>
+          <option *ngFor="let hour of reserveTimeOptions" [ngValue]="hour">{{ hour }}:00</option>
         </select>
       </div>
     </div>
@@ -48,7 +50,7 @@
       type="button"
       class="submit-btn"
       (click)="submit()"
-      [disabled]="loading() || !sessionId"
+      [disabled]="loading() || loadingSlots() || !sessionId || !form.time"
     >
       {{ loading() ? 'Збереження...' : 'Підтвердити' }}
     </button>

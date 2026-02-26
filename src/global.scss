@@ -77,3 +77,48 @@ ion-accordion .ion-accordion-toggle-icon {
 ion-accordion[expanded] .ion-accordion-toggle-icon {
   color: #22c55e;
 }
+
+ion-header.app-back-toolbar ion-toolbar {
+  --background: #fff;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --min-height: 54px;
+}
+
+ion-header.app-back-toolbar ion-buttons[slot='start'] {
+  margin-inline-start: 0;
+}
+
+ion-header.app-back-toolbar .app-back-btn,
+ion-header.app-back-toolbar .back-btn {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #4c4a6f;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.2;
+  text-transform: none;
+}
+
+ion-header.app-back-toolbar .app-back-btn-icon,
+ion-header.app-back-toolbar .back-btn-icon,
+ion-header.app-back-toolbar .custom-back-icon,
+ion-header.app-back-toolbar .header-back-icon {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  display: block;
+  object-fit: contain;
+}
+
+ion-header.app-back-toolbar ion-back-button.app-back-icon-btn {
+  --color: #4c4a6f;
+  --icon-font-size: 30px;
+  --padding-start: 0;
+  --padding-end: 0;
+}

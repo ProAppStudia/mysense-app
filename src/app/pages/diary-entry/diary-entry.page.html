@@ -1,10 +1,10 @@
-<ion-header>
+<ion-header class="app-back-toolbar">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="previousStep()" *ngIf="step > 1 && step < 5">
+      <ion-button (click)="previousStep()" *ngIf="step > 1 && step < 5" class="app-back-btn">
         <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="header-back-icon">
       </ion-button>
-      <ion-button (click)="goBack()" *ngIf="step === 1">
+      <ion-button (click)="goBack()" *ngIf="step === 1" class="app-back-btn">
         <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="header-back-icon">
       </ion-button>
     </ion-buttons>
