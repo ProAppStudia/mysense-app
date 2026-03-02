@@ -1,0 +1,242 @@
+.news-article-page {
+  --background: #f1edff;
+}
+
+.news-article-loading {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+.news-article-error {
+  margin: 12px 0 0;
+  color: #c73a52;
+}
+
+.news-article-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.news-author-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.news-author-row img {
+  width: 68px;
+  height: 68px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.news-author-label {
+  margin: 0;
+  color: #8a8899;
+  font-size: 16px;
+}
+
+.news-author-name {
+  margin: 2px 0 0;
+  color: #2f264d;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 400;
+}
+
+.news-article-card h1 {
+  margin: 22px 0 0;
+  color: #2f264d;
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 400;
+}
+
+.news-meta-row {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.news-meta-btn {
+  border: 0;
+  background: transparent;
+  color: #7a5bda;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.news-meta-btn ion-icon,
+.news-meta-item ion-icon {
+  font-size: 22px;
+  color: #7a5bda;
+}
+
+.news-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.news-meta-item strong {
+  font-size: 16px;
+  color: #1f1b2f;
+  font-weight: 400;
+}
+
+.news-article-date {
+  margin-left: auto;
+  color: #8d88a2;
+  font-size: 14px;
+}
+
+.news-article-card img {
+  margin-top: 0;
+  max-width: 100%;
+  border-radius: 0;
+  object-fit: cover;
+  display: block;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.news-article-description {
+  margin: 14px 0 0;
+  color: #4a4756;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.news-article-body {
+  margin-top: 12px;
+  color: #2f264d;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.article-author-card {
+  margin-top: 18px;
+  padding: 15px;
+  border-radius: 16px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.article-author-card .card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.article-author-card .psychologist-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.article-author-card .header-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.article-author-card .online-offline-status {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.article-author-card .status-item {
+  font-size: 15px;
+  font-weight: 400;
+  color: #423f4d;
+  padding: 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.article-author-card .psychologist-name {
+  margin: 5px 0 0;
+  color: #423f4d;
+  font-size: 24px;
+  line-height: 1.15;
+  font-weight: 400;
+}
+
+.article-author-card .verified-specialist {
+  margin: 5px 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #9895a6;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 0;
+}
+
+.article-author-card .specialization {
+  font-size: 15px;
+  line-height: 1.25;
+  color: #423f4d;
+  text-align: left;
+  margin: 0;
+}
+
+.article-author-card .stats {
+  display: flex;
+  gap: 20px;
+  font-size: 15px;
+  color: #423f4d;
+}
+
+.article-author-card .stat-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.article-author-card .pricing-and-profile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.article-author-card .availability {
+  font-size: 14px;
+  line-height: 1.2;
+  color: #9895a6;
+  font-weight: 400;
+}
+
+.article-author-card .profile-button {
+  --background: #795bda;
+  --background-activated: #795bda;
+  --background-focused: #795bda;
+  --background-hover: #795bda;
+  --color: #fff;
+  --box-shadow: none;
+  border-radius: 8px;
+  min-height: 40px;
+  height: 40px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

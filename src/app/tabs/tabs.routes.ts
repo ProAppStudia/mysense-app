@@ -105,6 +105,20 @@ export const routes: Routes = [
             (m) => m.PaymentResultPage
           ),
       },
+      {
+        path: 'news',
+        loadComponent: () =>
+          import('../pages/news/news.page').then(
+            (m) => m.NewsPage
+          ),
+      },
+      {
+        path: 'news/:id',
+        loadComponent: () =>
+          import('../pages/news-article/news-article.page').then(
+            (m) => m.NewsArticlePage
+          ),
+      },
     ],
   },
   {

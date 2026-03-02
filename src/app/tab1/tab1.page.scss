@@ -547,12 +547,15 @@ ion-content {
 }
 .article-card h3 {
     font-size: 18px;
+    color: #2f264d;
+    line-height: 1.25;
     text-align: left;
     margin-top: 5px;
     margin-bottom: 0;
 }
 .article-card p {
    text-align: left;
+    color: #4a4756;
     margin-top: 10px;
     margin-bottom: 0;
 }
@@ -758,7 +761,7 @@ button.rewiew-more {
 .articles-swiper {
   width: 100%;
   height: auto; /* Adjust height based on content */
-  padding: 20px 0 40px 0; /* Increased bottom padding to make space for pagination */
+  padding: 20px 0 8px;
   display: block;
   --swiper-pagination-color: var(--ion-color-primary); /* Color of active pagination dot */
   --swiper-pagination-bullet-inactive-color: #999; /* Color of inactive pagination dots */
@@ -777,7 +780,7 @@ button.rewiew-more {
   width: 100%;
   /* Removed max-width: 500px; */
   /* Removed overflow: hidden; to ensure navigation arrows are visible */
-  margin-top: 20px;
+  margin-top: 0;
 }
 
 .articles-swiper swiper-slide {
@@ -802,6 +805,63 @@ button.rewiew-more {
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* Distribute content vertically */
+}
+
+.article-card-btn {
+  border: 0;
+  width: 100%;
+  text-align: left;
+  color: #2f264d;
+}
+
+.section-11__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.section-11__all {
+  border: 0;
+  background: transparent;
+  color: #7a5bda;
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 0;
+}
+
+.articles-empty {
+  margin: 0;
+  color: #8d88a2;
+  text-align: left;
+}
+
+.section-11__footer {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.section-11__pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-11__dot {
+  width: 10px;
+  height: 10px;
+  border: 0;
+  border-radius: 50%;
+  background: #a4a4ab;
+  padding: 0;
+}
+
+.section-11__dot.active {
+  background: #7a5bda;
 }
 
 .doctor-card img {
@@ -909,11 +969,6 @@ button.rewiew-more {
     margin-top: 5px;
     text-align: left;
 }
-.articles-swiper .swiper-pagination {
-  bottom: 10px; 
-}
-
-
 .section-10 ion-accordion-group {
   margin-top: 20px;
   width: 100%;

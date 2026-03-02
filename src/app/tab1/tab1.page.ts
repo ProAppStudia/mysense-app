@@ -13,6 +13,7 @@ import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendar
 import { Router, RouterLink, NavigationExtras } from '@angular/router';
 import { TestsBlockComponent } from '../components/tests-block/tests-block.component';
 import { PaymentFlowService, PaymentState } from '../services/payment-flow.service';
+import { NewsListItem, NewsService } from '../services/news.service';
 
 addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, walletOutline, copyOutline });
 register();
@@ -118,6 +119,9 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   todayDiaryExists = signal(false);
   todayDiaryEntry = signal<DiaryEntryNormalized | null>(null);
   hasAnyDiaryEntry = signal(false);
+  homeNews: NewsListItem[] = [];
+  homeNewsLoading = false;
+  activeArticleSlide = 0;
 
   // Login Modal States
   loginOpen = signal(false);
@@ -156,12 +160,14 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     private authService: AuthService,
     private diaryService: DiaryService,
     private router: Router,
-    private paymentFlowService: PaymentFlowService
+    private paymentFlowService: PaymentFlowService,
+    private newsService: NewsService
   ) {
       addIcons({calendarOutline,arrowForwardOutline,closeOutline,addCircleOutline,chatbubblesOutline,checkmarkCircleOutline,bookOutline});}
 
   ngOnInit() {
     this.getHomepageData();
+    this.loadHomeNews();
     this.isLoggedIn.set(this.authService.isAuthenticated());
     this.refreshDiaryState();
     if (this.isLoggedIn()) {
@@ -202,14 +208,6 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (this.articlesSwiper) {
-      this.articlesSwiper.nativeElement.addEventListener('swiperinit', () => {
-        if (this.articlesSwiper && this.articlesSwiper.nativeElement.swiper) {
-          this.articlesSwiper.nativeElement.swiper.update();
-        }
-      });
-    }
-
     // No need to configure navigation params here, as we'll use direct methods
     if (this.reviewsSwiper) {
       this.reviewsSwiper.nativeElement.addEventListener('swiperinit', () => {
@@ -712,6 +710,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   handleRefresh(event: RefresherCustomEvent) {
     this.syncHomeAuthState();
     this.getHomepageData();
+    this.loadHomeNews();
     this.refreshDiaryState();
     this.loadHomeSessionsIfLoggedIn();
 
@@ -1167,5 +1166,72 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     const m = String(date.getMonth() + 1).padStart(2, '0');
     const d = String(date.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
+  }
+
+  openNewsList(): void {
+    void this.router.navigate(['/tabs/news']);
+  }
+
+  openNewsArticle(articleId: number): void {
+    if (!articleId) {
+      return;
+    }
+    void this.router.navigate(['/tabs/news', articleId]);
+  }
+
+  loadHomeNews(): void {
+    this.homeNewsLoading = true;
+    this.activeArticleSlide = 0;
+    this.newsService.getNewsList(1).subscribe({
+      next: (resp) => {
+        const results = Array.isArray(resp?.results) ? resp.results : [];
+        this.homeNews = results.slice(0, 6);
+        this.activeArticleSlide = 0;
+        this.homeNewsLoading = false;
+      },
+      error: () => {
+        this.homeNews = [];
+        this.activeArticleSlide = 0;
+        this.homeNewsLoading = false;
+      }
+    });
+  }
+
+  goToArticleSlide(index: number): void {
+    const swiper = this.getArticleSwiper();
+    if (!swiper) {
+      return;
+    }
+    if (typeof swiper.slideToLoop === 'function') {
+      swiper.slideToLoop(index);
+    } else {
+      swiper.slideTo(index);
+    }
+    this.activeArticleSlide = index;
+  }
+
+  onArticleSwiperInit(): void {
+    const swiper = this.getArticleSwiper();
+    if (!swiper) {
+      return;
+    }
+    this.activeArticleSlide = Number(swiper.realIndex ?? swiper.activeIndex ?? 0);
+  }
+
+  onArticleSwiperChange(event: any): void {
+    const fromEvent = Number(event?.detail?.[0]?.realIndex ?? event?.detail?.realIndex ?? NaN);
+    if (Number.isFinite(fromEvent)) {
+      this.activeArticleSlide = fromEvent;
+      return;
+    }
+    const swiper = this.getArticleSwiper();
+    if (!swiper) {
+      return;
+    }
+    this.activeArticleSlide = Number(swiper.realIndex ?? swiper.activeIndex ?? 0);
+  }
+
+  private getArticleSwiper(): any {
+    return this.articlesSwiper?.nativeElement?.swiper ?? null;
   }
 }

@@ -1,0 +1,44 @@
+<ion-header class="app-back-toolbar" [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button class="app-back-icon-btn" defaultHref="/tabs/home" icon="assets/icon/arrow-left-color.svg" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Поради наших психологів</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="news-page ion-padding">
+  <h2 class="news-title">Статті наших психологів</h2>
+
+  <div class="news-sort-select">
+    <button type="button" class="news-sort-trigger" (click)="toggleSortMenu()">
+      <span>За датою</span>
+      <span class="news-sort-arrow" [class.open]="sortMenuOpen">⌄</span>
+    </button>
+    <div class="news-sort-menu" *ngIf="sortMenuOpen">
+      <button type="button" class="news-sort-option" [class.active]="sort === 'newest'" (click)="changeSort('newest')">Найновіші</button>
+      <button type="button" class="news-sort-option" [class.active]="sort === 'oldest'" (click)="changeSort('oldest')">Давні статті</button>
+    </div>
+  </div>
+
+  <div class="news-loading" *ngIf="loading">
+    <ion-spinner name="dots"></ion-spinner>
+  </div>
+
+  <p class="news-error" *ngIf="error">{{ error }}</p>
+
+  <div class="news-list" *ngIf="!loading && !error">
+    <button type="button" class="news-card" *ngFor="let article of articles" (click)="openArticle(article.id)">
+      <img [src]="article.image" [alt]="article.title">
+      <h3>{{ article.title }}</h3>
+      <p>{{ article.short_description }}</p>
+      <span class="news-date">{{ article.date }}</span>
+    </button>
+  </div>
+
+  <div class="news-pager" *ngIf="!loading && !error && totalPages > 1">
+    <button type="button" class="pager-btn" [disabled]="currentPage <= 1" (click)="prevPage()">Назад</button>
+    <span>Сторінка {{ currentPage }} з {{ totalPages }}</span>
+    <button type="button" class="pager-btn" [disabled]="currentPage >= totalPages" (click)="nextPage()">Далі</button>
+  </div>
+</ion-content>

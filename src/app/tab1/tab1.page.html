@@ -314,20 +314,45 @@
     <app-tests-block></app-tests-block>
   </div>-->
     <!-- Section 11 -->
-    <div class="articles-container">
+    <div *ngIf="!isDoctor()" class="articles-container">
       <div class="section-11">
-        <h2>{{ homepageData.section_11.heading }}</h2>
+        <div class="section-11__head">
+          <h2>Поради наших психологів</h2>
+        </div>
         <div class="articles-slider-container">
-          <swiper-container class="articles-swiper" #articlesSwiper pagination="true" slides-per-view="1" centered-slides="true">
-            <swiper-slide *ngFor="let article of homepageData.section_11.articles">
-            <div class="article-card">
-              <img [src]="article.img" alt="{{ article.title }}">
-              <h3>{{ article.title }}</h3>
-              <p>{{ article.short_description }}</p>
-              <p class="article-date">{{ article.date }}</p>
-            </div>
+          <swiper-container
+            class="articles-swiper"
+            #articlesSwiper
+            pagination="false"
+            slides-per-view="1"
+            centered-slides="true"
+            *ngIf="homeNews.length > 0"
+            (swiperinit)="onArticleSwiperInit()"
+            (swiperslidechange)="onArticleSwiperChange($event)"
+          >
+            <swiper-slide *ngFor="let article of homeNews">
+              <button type="button" class="article-card article-card-btn" (click)="openNewsArticle(article.id)">
+                <img [src]="article.image" [alt]="article.title">
+                <h3>{{ article.title }}</h3>
+                <p>{{ article.short_description }}</p>
+                <p class="article-date">{{ article.date }}</p>
+              </button>
             </swiper-slide>
           </swiper-container>
+          <div class="section-11__footer" *ngIf="homeNews.length > 0">
+            <div class="section-11__pagination">
+              <button
+                type="button"
+                class="section-11__dot"
+                *ngFor="let article of homeNews; let i = index"
+                [class.active]="i === activeArticleSlide"
+                (click)="goToArticleSlide(i)"
+                [attr.aria-label]="'Слайд ' + (i + 1)"
+              ></button>
+            </div>
+            <button type="button" class="section-11__all" (click)="openNewsList()">Дивитись всі</button>
+          </div>
+          <p class="articles-empty" *ngIf="!homeNewsLoading && homeNews.length === 0">Поки що немає статей.</p>
         </div>
       </div>
     </div>

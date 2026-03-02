@@ -1,0 +1,82 @@
+<ion-header class="app-back-toolbar" [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button class="app-back-icon-btn" defaultHref="/tabs/news" icon="assets/icon/arrow-left-color.svg" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Стаття</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="news-article-page ion-padding">
+  <div class="news-article-loading" *ngIf="loading">
+    <ion-spinner name="dots"></ion-spinner>
+  </div>
+
+  <p class="news-article-error" *ngIf="error">{{ error }}</p>
+
+  <article class="news-article-card" *ngIf="!loading && !error && article">
+    <div class="news-author-row">
+      <img [src]="authorPhoto" [alt]="article.fullname || 'Автор'">
+      <div>
+        <p class="news-author-label">Автор</p>
+        <p class="news-author-name">{{ article.fullname || 'Психолог My Sense' }}</p>
+      </div>
+    </div>
+
+    <h1>{{ article.title }}</h1>
+
+    <div class="news-meta-row">
+      <button type="button" class="news-meta-btn" (click)="shareArticle()">
+        <ion-icon name="share-social-outline"></ion-icon>
+      </button>
+      <span class="news-meta-item">
+        <ion-icon name="heart-outline"></ion-icon>
+        <strong>{{ article.liked || 0 }}</strong>
+      </span>
+      <span class="news-meta-item">
+        <ion-icon name="eye-outline"></ion-icon>
+        <strong>{{ article.viewed || 0 }}</strong>
+      </span>
+      <span class="news-article-date">{{ article.date }}</span>
+    </div>
+
+    <img *ngIf="article.image" [src]="article.image" [alt]="article.title">
+
+    <p class="news-article-description" *ngIf="article.description">{{ article.description }}</p>
+    <div class="news-article-body" *ngFor="let part of articleContentParts" [innerHTML]="part"></div>
+  </article>
+
+  <section class="article-author-card" *ngIf="!loading && !error && articleDoctor">
+    <div class="card-header">
+      <img [src]="cardDoctorPhoto" [alt]="doctorFullname" class="psychologist-avatar">
+      <div class="header-info">
+        <div class="online-offline-status">
+          <span *ngIf="doctorOnline" class="status-item online">
+            <ion-icon src="assets/icon/onlain.svg"></ion-icon>
+            Онлайн
+          </span>
+          <span *ngIf="doctorInPerson" class="status-item offline">
+            <ion-icon src="assets/icon/ochno.svg"></ion-icon>
+            Очно
+          </span>
+        </div>
+        <h3 class="psychologist-name">{{ doctorFullname }}</h3>
+        <p class="verified-specialist">
+          <ion-icon src="assets/icon/verified.svg"></ion-icon>
+          Перевірений фахівець
+        </p>
+      </div>
+    </div>
+    <p *ngIf="doctorSpecialisation" class="specialization">{{ doctorSpecialisation }}</p>
+    <div class="stats">
+      <span *ngIf="doctorPracticeYears" class="stat-item">
+        <ion-icon src="assets/icon/praktika.svg"></ion-icon>
+        {{ doctorPracticeYears }} років практики
+      </span>
+    </div>
+    <div class="pricing-and-profile">
+      <span class="availability">Немає вільних годин</span>
+      <ion-button class="profile-button" (click)="openDoctorProfile()">В профіль</ion-button>
+    </div>
+  </section>
+</ion-content>
