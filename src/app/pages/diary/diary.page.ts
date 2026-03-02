@@ -29,6 +29,57 @@ export class DiaryPage implements OnInit {
   bodyById: Record<string, string> = {};
   bodyIconById: Record<string, string> = {};
   questionById: Record<number, string> = {};
+  private readonly goodMoodIds = new Set([
+    'happy', 'joyful', 'energetic', 'great', 'calm', 'inspired', 'proud', 'confident',
+    'optimistic', 'loved', 'excited', 'energized', 'motivated', 'relaxed', 'euphoric'
+  ]);
+  private readonly notGoodMoodIds = new Set([
+    'indifferent', 'melancholic', 'offended', 'disappointed', 'tired', 'lonely', 'powerless',
+    'tense', 'anxious', 'exhausted', 'irritated', 'nervous', 'panicked', 'angry', 'desperate',
+    'apathetic', 'empty'
+  ]);
+  private readonly moodEmojiById: Record<string, string> = {
+    happy: '😊', joyful: '😄', energetic: '⚡', great: '😌', calm: '😇', inspired: '🤗',
+    proud: '🏆', confident: '💪', optimistic: '🌞', loved: '😍', excited: '🤩', energized: '🔋', motivated: '🎯',
+    relaxed: '🧘', euphoric: '🚀', indifferent: '😐', melancholic: '😔', offended: '🥺',
+    disappointed: '😞', tired: '😪', lonely: '🫥', powerless: '🫠', tense: '😣', anxious: '😟',
+    exhausted: '😩', irritated: '😤', nervous: '😬', panicked: '😱', angry: '😡', desperate: '😭',
+    apathetic: '😶', empty: '🕳️'
+  };
+  private readonly moodLabelById: Record<string, string> = {
+    happy: 'Щасливо',
+    joyful: 'Радісно',
+    energetic: 'Бадьоро',
+    great: 'В задоволенні',
+    calm: 'Спокійно',
+    inspired: 'Натхненно',
+    proud: 'Пишаюся собою',
+    confident: 'Впевнено',
+    optimistic: 'Оптимістично',
+    loved: 'Закохано',
+    excited: 'Схвильовано',
+    energized: 'Енергійно',
+    motivated: 'Вмотивовано',
+    relaxed: 'Розслаблено',
+    euphoric: 'Можу гори звернути',
+    indifferent: 'Без емоцій',
+    melancholic: 'Сумно',
+    offended: 'Ображено',
+    disappointed: 'Розчаровано',
+    tired: 'Втомлено',
+    lonely: 'Самотньо',
+    powerless: 'Безсило',
+    tense: 'Напружено',
+    anxious: 'Тривожно',
+    exhausted: 'Виснажено',
+    irritated: 'Роздратовано',
+    nervous: 'Знервовано',
+    panicked: 'В паніці',
+    angry: 'Злюся',
+    desperate: 'В розпачі',
+    apathetic: 'В апатії',
+    empty: 'Спустошено'
+  };
 
   constructor(
     private diaryService: DiaryService,
@@ -270,34 +321,55 @@ export class DiaryPage implements OnInit {
     this.router.navigate(['/tabs/home']);
   }
 
-  displayMood(): string {
-    if (!this.diaryEntry?.mood?.length) {
+  get currentEntryMoodGroup(): 'good' | 'not_good' | '' {
+    const firstMood = this.diaryEntry?.mood?.[0];
+    if (!firstMood) {
       return '';
     }
-    const firstMood = this.diaryEntry.mood[0];
-    return this.moodById[firstMood] ?? firstMood;
+    if (this.goodMoodIds.has(firstMood)) {
+      return 'good';
+    }
+    if (this.notGoodMoodIds.has(firstMood)) {
+      return 'not_good';
+    }
+    return '';
   }
 
-  displayBody(): string {
-    if (!this.diaryEntry?.body?.length) {
-      return '';
+  get currentEntryMoodGroupLabel(): string {
+    if (this.currentEntryMoodGroup === 'good') {
+      return 'Добре';
     }
-    const firstBody = this.diaryEntry.body[0];
-    return this.bodyById[firstBody] ?? firstBody;
+    if (this.currentEntryMoodGroup === 'not_good') {
+      return 'Не дуже';
+    }
+    return '';
   }
 
-  displayMoodIcon(): string {
-    if (!this.diaryEntry?.mood?.length) {
-      return '';
-    }
-    return this.moodIconById[this.diaryEntry.mood[0]] ?? '';
+  get displayMoods(): Array<{ id: string; label: string; icon: string; emoji: string }> {
+    const moods = this.diaryEntry?.mood ?? [];
+    return moods.map((moodId) => ({
+      id: moodId,
+      label: this.moodLabelById[moodId] ?? this.moodById[moodId] ?? moodId,
+      icon: '',
+      emoji: this.moodEmojiById[moodId] ?? '🙂'
+    }));
   }
 
-  displayBodyIcon(): string {
-    if (!this.diaryEntry?.body?.length) {
-      return '';
-    }
-    return this.bodyIconById[this.diaryEntry.body[0]] ?? '';
+  get hasThoughts(): boolean {
+    return String(this.diaryEntry?.text ?? '').trim().length > 0;
+  }
+
+  get isSelectedDateToday(): boolean {
+    return this.selectedDate === this.toLocalDateString(new Date());
+  }
+
+  get todayDate(): string {
+    return this.toLocalDateString(new Date());
+  }
+
+  get answeredQuestions(): Array<{ id: number; answer: string; question?: string; placeholder?: string }> {
+    const answers = this.diaryEntry?.answers ?? [];
+    return answers.filter((answer) => String(answer?.answer ?? '').trim().length > 0);
   }
 
   displayQuestionTitle(answer: { id: number; question?: string }): string {

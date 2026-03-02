@@ -1,5 +1,5 @@
 ion-content {
-  --background: #fff;
+  --background: #f5f1ff;
 }
 
 .calendar-container {
@@ -57,6 +57,13 @@ ion-toolbar ion-button {
     font-weight: 500;
     color: #423f4d;
   }
+}
+
+.past-date-empty-text {
+  margin: 0 0 18px;
+  font-size: 15px;
+  line-height: 1.35;
+  color: #111;
 }
 
 .date-scroller {
@@ -134,21 +141,51 @@ ion-toolbar ion-button {
 
 .entry-content {
   padding: 16px;
-  color: #2f264d;
+  color: #111;
+}
+
+.entry-section {
+  margin-bottom: 20px;
+}
+
+.entry-section:last-of-type {
+  margin-bottom: 8px;
+}
+
+.mood-group-single {
+  margin: 8px 0 12px;
+  max-width: 220px;
+}
+
+.mood-group-btn {
+  min-height: 42px;
+  min-width: 140px;
+  padding: 0 20px;
+  border-radius: 10px;
+  border: 2px solid #7a5bda;
+  background: #fff;
+  color: #111;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.mood-group-btn.active {
+  background: #7a5bda;
+  color: #fff;
 }
 
 .moods-row {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 14px;
+  margin-bottom: 4px;
 }
 
 .emotion-chip {
   min-height: 44px;
   border-radius: 999px;
-  background: #ebe6e3;
-  color: #2d2b33;
+  background: #fff;
+  color: #111;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -157,30 +194,36 @@ ion-toolbar ion-button {
   font-weight: 500;
 }
 
-.emotion-chip img {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  border-radius: 50%;
+.emotion-emoji {
+  font-size: 30px;
+  line-height: 1;
 }
 
 .entry-text {
-  margin: 0 0 18px;
+  margin: 0;
+  padding: 14px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #ece6ff;
   font-size: 16px;
   line-height: 1.35;
-  color: #2f264d;
+  color: #111;
 }
 
 .entry-content h3 {
   margin: 0 0 14px;
   font-size: 16px;
   line-height: 1.2;
-  color: #2f264d;
+  color: #111;
   font-weight: 600;
 }
 
 .question-answer {
-  margin-bottom: 18px;
+  margin-bottom: 12px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #ece6ff;
+  border-radius: 12px;
 }
 
 .question-answer h4 {
@@ -194,7 +237,14 @@ ion-toolbar ion-button {
   margin: 0;
   font-size: 16px;
   line-height: 1.3;
-  color: #2f264d;
+  color: #111;
+}
+
+.empty-block-text {
+  margin: 0;
+  font-size: 15px;
+  color: #111;
+  opacity: 0.7;
 }
 
 .edit-entry-btn {

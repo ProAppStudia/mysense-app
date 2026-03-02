@@ -35,25 +35,46 @@
 
   <div *ngIf="diaryEntry; else noEntry">
     <div class="entry-content">
-      <div class="moods-row">
-        <span class="emotion-chip" *ngIf="displayMood()">
-          <img *ngIf="displayMoodIcon(); else moodFallback" [src]="displayMoodIcon()" alt="">
-          <ng-template #moodFallback>🙂</ng-template>
-          <span>{{ displayMood() }}</span>
-        </span>
-        <span class="emotion-chip" *ngIf="displayBody()">
-          <img *ngIf="displayBodyIcon(); else bodyFallback" [src]="displayBodyIcon()" alt="">
-          <ng-template #bodyFallback>🙂</ng-template>
-          <span>{{ displayBody() }}</span>
-        </span>
-      </div>
-      <p class="entry-text">{{ diaryEntry.text }}</p>
-      <h3>Запитання від нашого психотерапевта</h3>
-      <div *ngFor="let answer of diaryEntry.answers" class="question-answer">
-        <h4>{{ displayQuestionTitle(answer) }}</h4>
-        <p class="answer-text">{{ answer.answer }}</p>
-      </div>
-      <ion-button class="edit-entry-btn" expand="block" routerLink="/tabs/diary-entry" [queryParams]="{date: selectedDate}">
+      <section class="entry-section">
+        <h3>Як я сьогодні почуваюся</h3>
+        <div class="mood-group-single" *ngIf="currentEntryMoodGroupLabel">
+          <button type="button" class="mood-group-btn active">{{ currentEntryMoodGroupLabel }}</button>
+        </div>
+        <div class="moods-row" *ngIf="displayMoods.length; else noMoodSelected">
+          <span class="emotion-chip" *ngFor="let mood of displayMoods">
+            <span class="emotion-emoji">{{ mood.emoji || '🙂' }}</span>
+            <span>{{ mood.label }}</span>
+          </span>
+        </div>
+        <ng-template #noMoodSelected>
+          <p class="empty-block-text">Стан не обраний</p>
+        </ng-template>
+      </section>
+
+      <section class="entry-section">
+        <h3>Мої думки сьогодні</h3>
+        <p class="entry-text" *ngIf="hasThoughts; else noThoughts">{{ diaryEntry.text }}</p>
+        <ng-template #noThoughts>
+          <p class="empty-block-text">Думки не зафіксовані</p>
+        </ng-template>
+      </section>
+
+      <section class="entry-section">
+        <h3>Мої відповіді на запитання для рефлексії</h3>
+        <div *ngFor="let answer of answeredQuestions" class="question-answer">
+          <h4>{{ displayQuestionTitle(answer) }}</h4>
+          <p class="answer-text">{{ answer.answer }}</p>
+        </div>
+        <p class="empty-block-text" *ngIf="!answeredQuestions.length">Немає жодної відповіді</p>
+      </section>
+
+      <ion-button
+        *ngIf="isSelectedDateToday"
+        class="edit-entry-btn"
+        expand="block"
+        routerLink="/tabs/diary-entry"
+        [queryParams]="{date: todayDate}"
+      >
         Редагувати запис
       </ion-button>
     </div>
@@ -62,8 +83,17 @@
   <ng-template #noEntry>
     <div class="no-entry-container">
       <img src="assets/img/problem03.png" alt="No entry">
-      <h3>Сьогодні ще немає запису у вашому щоденнику</h3>
-      <ion-button expand="block" routerLink="/tabs/diary-entry" [queryParams]="{date: selectedDate}">Додати запис</ion-button>
+      <ng-container *ngIf="!isSelectedDateToday; else todayEmptyState">
+        <h3>Цього дня щоденник не заповнювався</h3>
+        <p class="past-date-empty-text">
+          Рекомендуємо вести його кожного дня, щоб відслідковувати динаміку свого стану та отримувати нові усвідомлення
+        </p>
+        <ion-button expand="block" routerLink="/tabs/diary-entry" [queryParams]="{date: todayDate}">Додати запис</ion-button>
+      </ng-container>
+      <ng-template #todayEmptyState>
+        <h3>Сьогодні ще немає запису у вашому щоденнику</h3>
+        <ion-button expand="block" routerLink="/tabs/diary-entry" [queryParams]="{date: todayDate}">Додати запис</ion-button>
+      </ng-template>
     </div>
   </ng-template>
 </ion-content>

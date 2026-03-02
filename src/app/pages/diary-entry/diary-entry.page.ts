@@ -27,6 +27,7 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
     { id: 'optimistic', label: 'Оптимістично', emoji: '🌞' },
     { id: 'loved', label: 'Закохано', emoji: '😍' },
     { id: 'excited', label: 'Схвильовано', emoji: '🤩' },
+    { id: 'energized', label: 'Енергійно', emoji: '🔋' },
     { id: 'motivated', label: 'Вмотивовано', emoji: '🎯' },
     { id: 'relaxed', label: 'Розслаблено', emoji: '🧘' },
     { id: 'euphoric', label: 'Можу гори звернути', emoji: '🚀' }
@@ -56,7 +57,7 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
   diaryData: any;
   questions: DiaryQuestion[] = [];
   moodGroup: 'good' | 'not_good' = 'good';
-  selectedMood = '';
+  selectedMoods: string[] = [];
   selectedBody = '';
   thoughts = '';
   answersMap: Record<number, string> = {};
@@ -121,14 +122,17 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
   }
 
   setMood(mood: string) {
-    this.selectedMood = mood;
+    if (this.selectedMoods.includes(mood)) {
+      this.selectedMoods = this.selectedMoods.filter((item) => item !== mood);
+      return;
+    }
+    this.selectedMoods = [...this.selectedMoods, mood];
   }
 
   setMoodGroup(group: 'good' | 'not_good') {
     this.moodGroup = group;
-    if (!this.currentMoodOptions.some((item) => item.id === this.selectedMood)) {
-      this.selectedMood = '';
-    }
+    const allowedIds = new Set(this.currentMoodOptions.map((item) => item.id));
+    this.selectedMoods = this.selectedMoods.filter((item) => allowedIds.has(item));
   }
 
   get currentMoodOptions(): Array<{ id: string; label: string; emoji: string }> {
@@ -137,11 +141,6 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
 
   saveEntry() {
     this.errorMessage = '';
-
-    if (!this.selectedMood) {
-      this.errorMessage = 'Оберіть настрій.';
-      return;
-    }
 
     const answersToSave: Record<number, string> = {};
     Object.entries(this.answersMap).forEach(([questionId, answer]) => {
@@ -156,7 +155,7 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
     const entryToSave = {
       date: this.date,
       id: this.editingId,
-      mood: [this.selectedMood],
+      mood: this.selectedMoods,
       body: this.selectedBody ? [this.selectedBody] : [],
       text: this.thoughts ?? '',
       answers: answersToSave
@@ -186,7 +185,7 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
       }
 
       this.editingId = entry.id;
-      this.selectedMood = entry.mood?.[0] ?? '';
+      this.selectedMoods = Array.isArray(entry.mood) ? entry.mood.filter((item) => typeof item === 'string') : [];
       this.selectedBody = entry.body?.[0] ?? '';
       this.thoughts = entry.text ?? '';
       this.syncMoodGroupBySelectedMood();
@@ -205,7 +204,7 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
     this.loading = false;
     this.errorMessage = '';
     this.editingId = undefined;
-    this.selectedMood = '';
+    this.selectedMoods = [];
     this.selectedBody = '';
     this.thoughts = '';
     this.answersMap = {};
@@ -263,9 +262,19 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
       this.routeSub?.unsubscribe();
       this.routeSub = this.route.queryParamMap.subscribe((params) => {
         const incomingDate = params.get('date');
-        this.date = incomingDate && /^\d{4}-\d{2}-\d{2}$/.test(incomingDate)
+        const todayDate = this.todayLocalDate();
+        const normalizedIncomingDate = incomingDate && /^\d{4}-\d{2}-\d{2}$/.test(incomingDate)
           ? incomingDate
-          : this.todayLocalDate();
+          : todayDate;
+        this.date = todayDate;
+
+        if (normalizedIncomingDate !== todayDate) {
+          this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { date: todayDate },
+            replaceUrl: true
+          });
+        }
 
         this.resetEntryState();
         this.loadExistingEntry();
@@ -274,14 +283,15 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
   }
 
   private syncMoodGroupBySelectedMood(): void {
-    if (!this.selectedMood) {
+    const firstSelectedMood = this.selectedMoods[0];
+    if (!firstSelectedMood) {
       return;
     }
-    if (this.moodOptionsGood.some((item) => item.id === this.selectedMood)) {
+    if (this.moodOptionsGood.some((item) => item.id === firstSelectedMood)) {
       this.moodGroup = 'good';
       return;
     }
-    if (this.moodOptionsNotGood.some((item) => item.id === this.selectedMood)) {
+    if (this.moodOptionsNotGood.some((item) => item.id === firstSelectedMood)) {
       this.moodGroup = 'not_good';
     }
   }

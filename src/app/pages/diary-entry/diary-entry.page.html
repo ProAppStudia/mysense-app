@@ -31,7 +31,7 @@
         type="button"
         class="mood-option-btn"
         *ngFor="let mood of currentMoodOptions"
-        [class.active]="selectedMood === mood.id"
+        [class.active]="selectedMoods.includes(mood.id)"
         (click)="setMood(mood.id)"
       >
         <span class="mood-option-emoji">{{ mood.emoji }}</span>
@@ -39,7 +39,7 @@
       </button>
     </div>
 
-    <ion-button class="mood-next-btn" expand="block" (click)="nextStep()" [disabled]="!selectedMood">Далі</ion-button>
+    <ion-button class="mood-next-btn" expand="block" (click)="nextStep()">Далі</ion-button>
   </div>
 
   <!-- Step 2: Thoughts -->
