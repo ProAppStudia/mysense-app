@@ -17,7 +17,7 @@ ion-toolbar {
 }
 
 .request-card {
-  background: #f7f6fb;
+  background: #ffffff;
   border-radius: 14px;
   padding: 14px;
 }
@@ -204,6 +204,13 @@ ion-toolbar {
   color: transparent;
 }
 
+.slot-btn.unavailable.booked {
+  color: #b56d7f;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
 .slot-btn.available {
   background: transparent;
   color: #795bda;
@@ -285,6 +292,19 @@ ion-modal.doctor-date-modal::part(content) {
   --max-height: 86vh;
   border-radius: 14px;
   overflow: hidden;
+  background: #ffffff;
+}
+
+ion-modal.doctor-date-modal ion-datetime.doctor-datetime {
+  --background: #ffffff;
+  --background-rgb: 255, 255, 255;
+  --title-color: #222127;
+  --wheel-highlight-background: #f3f4f8;
+  --wheel-fade-background-rgb: 255, 255, 255;
+  --ion-color-primary: #5a9cff;
+  --ion-color-primary-rgb: 90, 156, 255;
+  --ion-text-color: #3f3f45;
+  padding: 0;
 }
 
 ion-datetime-button::part(native) {

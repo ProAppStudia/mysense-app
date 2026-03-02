@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { firstValueFrom, Observable, tap } from 'rxjs';
+import { firstValueFrom, map, Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { TokenStorageService } from './token-storage.service';
 
@@ -96,7 +96,9 @@ export class ChatService {
 
   getMyChats(): Observable<any> {
     const token = this.tokenStorage.getToken();
-    return this.http.get(`${this.apiUrl}?action=get_my_chats&token=${token}`);
+    return this.http
+      .get(`${this.apiUrl}?action=get_my_chats&token=${token}`, { responseType: 'text' })
+      .pipe(map((raw) => this.parseBackendResponse(raw)));
   }
 
   getMyTasks(userId: number): Observable<any> {

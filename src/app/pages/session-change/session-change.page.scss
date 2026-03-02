@@ -78,6 +78,53 @@ h2 {
   font-size: 14px;
 }
 
+.datetime-box {
+  background: #ecebef;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.selected-datetime {
+  height: 52px;
+  border: 1px solid #dfdde4;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0 10px;
+  color: #2f264d;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.selected-datetime.placeholder {
+  color: #7d7d7d;
+}
+
+ion-modal.doctor-date-modal::part(content) {
+  --width: min(94vw, 520px);
+  --height: auto;
+  --max-height: 86vh;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+ion-modal.doctor-date-modal ion-datetime.doctor-datetime {
+  --background: #ffffff;
+  --background-rgb: 255, 255, 255;
+  --title-color: #222127;
+  --wheel-highlight-background: #f3f4f8;
+  --wheel-fade-background-rgb: 255, 255, 255;
+  --ion-color-primary: #5a9cff;
+  --ion-color-primary-rgb: 90, 156, 255;
+  --ion-text-color: #3f3f45;
+  padding: 0;
+}
+
 .week-nav {
   display: flex;
   align-items: center;

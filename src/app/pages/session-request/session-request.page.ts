@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
@@ -83,7 +83,9 @@ export class SessionRequestPage implements OnInit {
     private doctorService: DoctorService,
     private chatService: ChatService,
     private paymentFlowService: PaymentFlowService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+    private zone: NgZone
   ) {
     addIcons({ arrowBackOutline });
   }
@@ -825,9 +827,12 @@ export class SessionRequestPage implements OnInit {
     if (!iso) {
       return;
     }
+    this.error.set('');
+    this.success.set('');
     this.selectedDateTimeIso = iso;
     this.form.date = iso.slice(0, 10);
     this.form.time = Number(iso.slice(11, 13));
+
   }
 
   openDoctorDatePicker() {
@@ -888,6 +893,30 @@ export class SessionRequestPage implements OnInit {
     return slots.some((slot) => Number(slot.time) === Number(hour));
   }
 
+  isHourBooked(dayKey: string, hour: number): boolean {
+    const week = this.currentWeek;
+    const slots = week?.days?.[dayKey]?.times;
+    if (!Array.isArray(slots)) {
+      return false;
+    }
+    const slot = slots.find((item: any) => Number(item?.time) === Number(hour));
+    if (!slot) {
+      return false;
+    }
+    const raw = (slot as any)?.disabled;
+    return raw === true || raw === 1 || raw === '1';
+  }
+
+  getHourLabel(dayKey: string, hour: number): string {
+    if (this.isHourAvailable(dayKey, hour)) {
+      return `${hour}:00`;
+    }
+    if (this.isHourBooked(dayKey, hour)) {
+      return 'Зайнято';
+    }
+    return '';
+  }
+
   getDayLabel(dayKey: string): string {
     const week = this.currentWeek;
     return week?.days[dayKey]?.day_name ?? '';
@@ -936,6 +965,13 @@ export class SessionRequestPage implements OnInit {
     return !!(this.form.date && this.form.time);
   }
 
+  get isSelectedDoctorSlotAvailable(): boolean {
+    if (!this.form.date || !this.form.time) {
+      return false;
+    }
+    return this.isSlotAvailableByDateAndHour(this.form.date, Number(this.form.time));
+  }
+
   get currentWeekLabel(): string {
     const week = this.currentWeek as any;
     if (!week) {
@@ -965,7 +1001,7 @@ export class SessionRequestPage implements OnInit {
   }
 
   onSessionTypeSelect(typeValue: number): void {
-    const normalizedType = Number(typeValue) as 1 | 2 | 3;
+    const normalizedType = Number.parseInt(String(typeValue), 10) as 1 | 2 | 3;
     if (![1, 2, 3].includes(normalizedType)) {
       return;
     }
@@ -973,16 +1009,22 @@ export class SessionRequestPage implements OnInit {
     if (Number(this.form.type) === normalizedType) {
       return;
     }
-    this.form.type = normalizedType;
-    this.onBookingModeChanged();
+    this.zone.run(() => {
+      this.form = { ...this.form, type: normalizedType };
+      this.onBookingModeChanged();
+      this.cdr.detectChanges();
+    });
   }
 
   onSessionFormatSelect(formatValue: 'online' | 'offline'): void {
     if (this.form.format === formatValue) {
       return;
     }
-    this.form.format = formatValue;
-    this.onBookingModeChanged();
+    this.zone.run(() => {
+      this.form = { ...this.form, format: formatValue };
+      this.onBookingModeChanged();
+      this.cdr.detectChanges();
+    });
   }
 
   openChatForSessionArrangement(): void {
@@ -1005,6 +1047,10 @@ export class SessionRequestPage implements OnInit {
     this.error.set('');
     this.success.set('');
 
+    if (this.isDoctor) {
+      return;
+    }
+
     if (this.showContactRequestBlock) {
       this.form.date = '';
       this.form.time = 0;
@@ -1012,6 +1058,31 @@ export class SessionRequestPage implements OnInit {
     }
 
     this.currentWeekIndex = 0;
+  }
+
+  private isSlotAvailableByDateAndHour(date: string, hour: number): boolean {
+    if (!date || !hour) {
+      return false;
+    }
+
+    for (const week of this.weeks) {
+      const dayKeys = Object.keys(week?.days || {});
+      for (const dayKey of dayKeys) {
+        const day = (week as any)?.days?.[dayKey];
+        const dayDate = String(day?.date || '').trim();
+        if (dayDate !== date || !Array.isArray(day?.times)) {
+          continue;
+        }
+        const slot = day.times.find((item: any) => Number(item?.time) === Number(hour));
+        if (!slot) {
+          return false;
+        }
+        const raw = (slot as any)?.disabled;
+        return !(raw === true || raw === 1 || raw === '1');
+      }
+    }
+
+    return false;
   }
 
   private buildDoctorFromProfile(profile: any): DoctorCardView | undefined {

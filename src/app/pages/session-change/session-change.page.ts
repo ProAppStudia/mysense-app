@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonButtons, IonContent, IonDatetime, IonHeader, IonIcon, IonModal, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline } from 'ionicons/icons';
@@ -15,7 +15,7 @@ import { Week } from '../../models/calendar.model';
   templateUrl: './session-change.page.html',
   styleUrls: ['./session-change.page.scss'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonIcon, CommonModule, FormsModule]
+  imports: [IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonIcon, IonDatetime, IonModal, CommonModule, FormsModule]
 })
 export class SessionChangePage implements OnInit {
   sessionId = 0;
@@ -42,6 +42,9 @@ export class SessionChangePage implements OnInit {
   readonly weekHourOptions = Array.from({ length: 13 }, (_, i) => i + 9); // 9:00 - 21:00
   weeks: Week[] = [];
   currentWeekIndex = 0;
+  selectedDateTimeIso = '';
+  doctorDatePickerOpen = false;
+  doctorDateMinIso = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -66,6 +69,7 @@ export class SessionChangePage implements OnInit {
 
   ngOnInit(): void {
     this.form.date = this.getDefaultDate();
+    this.doctorDateMinIso = this.getDoctorDateMinIso();
 
     this.route.queryParamMap.subscribe((params) => {
       this.didFallbackFromSessions = false;
@@ -77,6 +81,9 @@ export class SessionChangePage implements OnInit {
       this.targetPhoto = String(params.get('target_photo') || '').trim();
       this.sessionType = String(params.get('session_type') || '').trim();
       this.fallbackAmount = Number(params.get('amount') || 0);
+      this.selectedDateTimeIso = this.form.date && this.form.time
+        ? `${this.form.date}T${String(this.form.time).padStart(2, '0')}:00:00`
+        : '';
 
       if (!this.sessionId) {
         this.error.set('Не вдалося визначити сесію для перенесення.');
@@ -178,6 +185,26 @@ export class SessionChangePage implements OnInit {
     return this.weeks[this.currentWeekIndex] ?? null;
   }
 
+  onDoctorDateTimeChange(value: string | string[] | null | undefined) {
+    const iso = Array.isArray(value) ? (value[0] || '') : (value || '');
+    if (!iso) {
+      return;
+    }
+    this.error.set('');
+    this.success.set('');
+    this.selectedDateTimeIso = iso;
+    this.form.date = iso.slice(0, 10);
+    this.form.time = Number(iso.slice(11, 13));
+  }
+
+  openDoctorDatePicker() {
+    this.doctorDatePickerOpen = true;
+  }
+
+  closeDoctorDatePicker() {
+    this.doctorDatePickerOpen = false;
+  }
+
   get currentWeekDayKeys(): string[] {
     const week = this.currentWeek;
     return week ? Object.keys(week.days) : [];
@@ -265,6 +292,17 @@ export class SessionChangePage implements OnInit {
     return week?.days[dayKey]?.day_no ?? '';
   }
 
+  get selectedDateTimeLabel(): string {
+    if (!this.form.date || !this.form.time) {
+      return 'Натисніть, щоб обрати дату та час';
+    }
+    return `${this.form.date} ${String(this.form.time).padStart(2, '0')}:00`;
+  }
+
+  get hasSelectedDoctorDateTime(): boolean {
+    return !!(this.form.date && this.form.time);
+  }
+
   private getDefaultDate(): string {
     const now = new Date();
     now.setDate(now.getDate() + 1);
@@ -272,6 +310,16 @@ export class SessionChangePage implements OnInit {
     const m = String(now.getMonth() + 1).padStart(2, '0');
     const d = String(now.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
+  }
+
+  private getDoctorDateMinIso(): string {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    return `${y}-${m}-${d}T${hh}:${mm}:00`;
   }
 
   private loadDoctorCalendar() {

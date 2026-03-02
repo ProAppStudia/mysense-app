@@ -92,19 +92,7 @@ export class ChatPage implements OnInit {
   private loadChats(event?: RefresherCustomEvent) {
     this.chatService.getMyChats().subscribe({
       next: (data: any) => {
-        if (Array.isArray(data)) {
-          this.chats = data.map((chat: any) => ({
-            ...chat,
-            photo: chat.img || chat.photo
-          }));
-        } else if (data && data.chats) {
-          this.chats = data.chats.map((chat: any) => ({
-            ...chat,
-            photo: chat.img || chat.photo
-          }));
-        } else {
-          this.chats = [];
-        }
+        this.chats = this.extractChatsFromResponse(data);
 
         if (this.chats && this.chats.length > 0) {
           const preferredChat = this.findPreferredChat();
@@ -128,6 +116,39 @@ export class ChatPage implements OnInit {
         event?.detail.complete();
       }
     });
+  }
+
+  private extractChatsFromResponse(data: any): any[] {
+    const candidates: any[] = [];
+    if (Array.isArray(data)) {
+      candidates.push(...data);
+    }
+
+    if (data && typeof data === 'object') {
+      const keys = ['chats', 'results', 'items', 'data', 'dialogs', 'users', 'list'];
+      for (const key of keys) {
+        const value = (data as any)[key];
+        if (Array.isArray(value)) {
+          candidates.push(...value);
+        }
+      }
+      if (data.result && Array.isArray(data.result)) {
+        candidates.push(...data.result);
+      }
+    }
+
+    return candidates
+      .filter((item) => item && typeof item === 'object')
+      .map((chat: any) => ({
+        ...chat,
+        fullname:
+          String(chat.fullname ?? chat.name ?? chat.username ?? chat.firstname ?? chat.title ?? '').trim() ||
+          'Користувач',
+        photo: chat.img || chat.photo || chat.avatar || chat.image || '',
+        from_user_id: Number(chat.from_user_id ?? chat.user_id_from ?? chat.sender_id ?? chat.from_id ?? 0) || undefined,
+        to_user_id: Number(chat.to_user_id ?? chat.user_id_to ?? chat.receiver_id ?? chat.to_id ?? 0) || undefined,
+        user_id: Number(chat.user_id ?? chat.peer_user_id ?? chat.id ?? 0) || undefined
+      }));
   }
 
   private findPreferredChat(): any | null {
