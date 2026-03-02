@@ -960,11 +960,20 @@ export class SessionRequestPage implements OnInit {
     return `${fromDay} - ${toDay} ${month}, ${year}`;
   }
 
+  isSessionTypeSelected(typeValue: number): boolean {
+    return Number(this.form.type) === Number(typeValue);
+  }
+
   onSessionTypeSelect(typeValue: number): void {
-    if (this.form.type === typeValue) {
+    const normalizedType = Number(typeValue) as 1 | 2 | 3;
+    if (![1, 2, 3].includes(normalizedType)) {
       return;
     }
-    this.form.type = typeValue;
+
+    if (Number(this.form.type) === normalizedType) {
+      return;
+    }
+    this.form.type = normalizedType;
     this.onBookingModeChanged();
   }
 

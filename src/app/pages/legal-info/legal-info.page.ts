@@ -1,10 +1,10 @@
-import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonList, IonItem, IonLabel } from '@ionic/angular/standalone';
-import { ActivatedRoute, Router } from '@angular/router';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonList, IonItem, IonLabel, IonIcon } from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { documentTextOutline } from 'ionicons/icons';
+import { receiptOutline, shieldCheckmarkOutline, clipboardOutline, cashOutline, chevronForwardOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-legal-info',
@@ -13,21 +13,23 @@ import { documentTextOutline } from 'ionicons/icons';
   standalone: true,
   imports: [
     IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule,
-    IonButtons, IonBackButton, IonList, IonItem, IonLabel
+    IonButtons, IonBackButton, IonList, IonItem, IonLabel, IonIcon
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class LegalInfoPage implements OnInit {
+export class LegalInfoPage {
 
-  constructor(private router: Router, private route: ActivatedRoute) {
-    addIcons({ documentTextOutline });
-  }
-
-  ngOnInit() {
+  constructor(private router: Router) {
+    addIcons({
+      receiptOutline,
+      shieldCheckmarkOutline,
+      clipboardOutline,
+      cashOutline,
+      chevronForwardOutline
+    });
   }
 
   goToSubPage(path: string) {
-    console.log('Navigating to sub-page:', `/${path}`);
-    this.router.navigate([`/${path}`]); // Use absolute navigation for flattened routes
+    this.router.navigate([`/${path}`]);
   }
 }

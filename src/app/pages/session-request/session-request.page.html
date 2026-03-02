@@ -33,7 +33,7 @@
           type="button"
           class="choice-btn"
           *ngFor="let typeOpt of availableSessionTypes"
-          [class.active]="form.type === typeOpt.value"
+          [class.active]="isSessionTypeSelected(typeOpt.value)"
           (click)="onSessionTypeSelect(typeOpt.value)"
         >
           {{ typeOpt.label }}
@@ -161,6 +161,10 @@
       <div class="row">
         <span>Тип терапії</span>
         <strong>{{ selectedTypeLabel }}</strong>
+      </div>
+      <div class="row">
+        <span>Вартість</span>
+        <strong>{{ selectedPrice }} ₴</strong>
       </div>
     </div>
 

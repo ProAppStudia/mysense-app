@@ -3,27 +3,36 @@
     <ion-buttons slot="start">
       <ion-back-button class="app-back-icon-btn" defaultHref="/tabs/profile" icon="assets/icon/arrow-left-color.svg" text=""></ion-back-button>
     </ion-buttons>
-    <ion-title>Правова Інформація</ion-title>
+    <ion-title>Правова інформація</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="ion-padding">
-  <ion-list class="legal-info-menu">
-    <ion-item detail (click)="goToSubPage('offer-agreement')">
-      <ion-icon slot="start" name="document-text-outline"></ion-icon>
-      <ion-label>Договір оферта</ion-label>
-    </ion-item>
-    <ion-item detail (click)="goToSubPage('privacy-policy')">
-      <ion-icon slot="start" name="document-text-outline"></ion-icon>
-      <ion-label>Політика конфіденційності</ion-label>
-    </ion-item>
-    <ion-item detail (click)="goToSubPage('terms-of-service')">
-      <ion-icon slot="start" name="document-text-outline"></ion-icon>
-      <ion-label>Умови надання послуг</ion-label>
-    </ion-item>
-    <ion-item detail (click)="goToSubPage('refund-policy')">
-      <ion-icon slot="start" name="document-text-outline"></ion-icon>
-      <ion-label>Повернення коштів</ion-label>
-    </ion-item>
-  </ion-list>
+<ion-content [fullscreen]="true" class="ion-padding legal-info-page">
+  <div class="legal-info-card">
+    <ion-list class="legal-info-menu" lines="none">
+      <ion-item button detail="false" (click)="goToSubPage('offer-agreement')">
+        <ion-icon slot="start" name="receipt-outline"></ion-icon>
+        <ion-label>Договір оферта</ion-label>
+        <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+      </ion-item>
+
+      <ion-item button detail="false" (click)="goToSubPage('privacy-policy')">
+        <ion-icon slot="start" name="shield-checkmark-outline"></ion-icon>
+        <ion-label>Політика конфіденційності</ion-label>
+        <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+      </ion-item>
+
+      <ion-item button detail="false" (click)="goToSubPage('terms-of-service')">
+        <ion-icon slot="start" name="clipboard-outline"></ion-icon>
+        <ion-label>Умови надання послуг</ion-label>
+        <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+      </ion-item>
+
+      <ion-item button detail="false" (click)="goToSubPage('refund-policy')">
+        <ion-icon slot="start" name="cash-outline"></ion-icon>
+        <ion-label>Повернення коштів</ion-label>
+        <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+      </ion-item>
+    </ion-list>
+  </div>
 </ion-content>

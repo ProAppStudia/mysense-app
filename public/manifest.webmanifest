@@ -1,6 +1,6 @@
 {
-  "name": "app",
-  "short_name": "app",
+  "name": "My Sense",
+  "short_name": "My Sense",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
