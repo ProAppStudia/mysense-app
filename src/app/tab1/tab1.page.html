@@ -217,15 +217,29 @@
         <button type="button" class="how-start__btn how-start__btn--next" (click)="slideNextHowItWorks()" aria-label="Наступний крок"></button>
       </div>
     </div>
-<div *ngIf="!isDoctor()" class="section-1-block">
-      
-      <h2>{{ homepageData.section_1.text_choise_psyhologist }}</h2>
-      <div class="doctor-list">
-          <div *ngFor="let doctor of homepageData.doctors | slice:0:6" class="doctor-card">
+<div *ngIf="!isDoctor()" class="section-1-block psychologists-recommendation-block">
+      <h2>Порекомендуємо психолога під ваш запит</h2>
+      <swiper-container
+        class="featured-doctors-swiper"
+        slides-per-view="2"
+        space-between="8"
+        loop="true"
+        autoplay-delay="2500"
+        autoplay-disable-on-interaction="false"
+        speed="500"
+      >
+        <swiper-slide *ngFor="let doctor of homepageData.doctors">
+          <div class="doctor-card doctor-card--featured">
             <img [src]="'https://mysense.care' + doctor.img" alt="{{ doctor.firstname }}">
+            <div class="doctor-card__overlay">
+              <h3>{{ doctor.firstname }}</h3>
+              <p>{{ doctor.practice_years_text }}</p>
+            </div>
           </div>
-        </div>
-      <ion-button expand="block" class="free-psychologists-button" routerLink="/tabs/filter">В каталог</ion-button>
+        </swiper-slide>
+      </swiper-container>
+      <ion-button expand="block" class="select-psychologist-button recommendation-action-btn" routerLink="/tabs/tests">Підібрати психолога</ion-button>
+      <ion-button expand="block" class="free-psychologists-button recommendation-action-btn recommendation-action-btn--outline" routerLink="/tabs/filter">Усі психологи</ion-button>
     </div>
 <div *ngIf="!isDoctor()" class="diary-block">
   <div class="diary-card diary-card--journal">
