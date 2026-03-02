@@ -67,8 +67,12 @@ ion-toolbar ion-button {
 }
 
 .date-scroller {
+  --date-gap: 8px;
+  --date-width: calc((100% - (var(--date-gap) * 6)) / 7);
   display: flex;
   overflow-x: auto;
+  gap: var(--date-gap);
+  padding-inline: 0;
   padding-bottom: 16px;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none;  /* IE 10+ */
@@ -80,7 +84,9 @@ ion-toolbar ion-button {
 
 .date-item {
   flex: 0 0 auto;
-  width: 48px;
+  width: var(--date-width);
+  min-width: var(--date-width);
+  max-width: var(--date-width);
   height: 58px;
   position: relative;
   display: flex;
@@ -88,7 +94,6 @@ ion-toolbar ion-button {
   justify-content: center;
   align-items: center;
   border-radius: 16px;
-  margin-right: 8px;
   cursor: pointer;
 
   .day-number {

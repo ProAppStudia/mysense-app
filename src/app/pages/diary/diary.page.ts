@@ -18,10 +18,10 @@ import { AuthService } from '../../services/auth.service';
 export class DiaryPage implements OnInit {
   @ViewChild('dateScroller') dateScroller!: ElementRef;
 
+  private readonly windowRadiusDays = 21;
+  private readonly loadedMonthKeys = new Set<string>();
   selectedDate: string;
   diaryEntry: DiaryEntryNormalized | null = null;
-  currentMonth: string = '';
-  currentYear: number = 0;
   dates: Date[] = [];
   entries: Record<string, boolean> = {};
   moodById: Record<string, string> = {};
@@ -91,7 +91,7 @@ export class DiaryPage implements OnInit {
     addIcons({ arrowBack, arrowForward });
     const today = new Date();
     this.selectedDate = this.toLocalDateString(today);
-    this.generateCalendar(today.getFullYear(), today.getMonth());
+    this.buildDatesAround(today);
   }
 
   ngOnInit() {
@@ -119,43 +119,38 @@ export class DiaryPage implements OnInit {
     this.scrollToSelectedDate();
   }
 
-  generateCalendar(year: number, month: number) {
-    this.currentYear = year;
-    const monthNames = ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
-      "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"
+  get headerMonthTitle(): string {
+    const selected = this.parseLocalDate(this.selectedDate);
+    const monthNames = [
+      'Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень',
+      'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'
     ];
-    this.currentMonth = monthNames[month];
-    
-    this.dates = [];
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    return `${monthNames[selected.getMonth()]} ${selected.getFullYear()}`;
+  }
 
-    for (let i = 1; i <= daysInMonth; i++) {
-      this.dates.push(new Date(year, month, i));
+  previousDay() {
+    const selected = this.parseLocalDate(this.selectedDate);
+    selected.setDate(selected.getDate() - 1);
+    this.selectDate(selected);
+  }
+
+  nextDay() {
+    if (!this.canGoNextDay) {
+      return;
     }
-    this.loadMonthEntries();
+    const selected = this.parseLocalDate(this.selectedDate);
+    selected.setDate(selected.getDate() + 1);
+    this.selectDate(selected);
   }
 
-  previousMonth() {
-    const currentDate = new Date(this.currentYear, this.getMonthNumber(this.currentMonth));
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    this.generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-  }
-
-  nextMonth() {
-    const currentDate = new Date(this.currentYear, this.getMonthNumber(this.currentMonth));
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    this.generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-  }
-
-  getMonthNumber(monthName: string): number {
-    const monthNames = ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
-      "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"
-    ];
-    return monthNames.indexOf(monthName);
+  get canGoNextDay(): boolean {
+    return this.selectedDate < this.toLocalDateString(new Date());
   }
 
   selectDate(date: Date) {
     this.selectedDate = this.toLocalDateString(date);
+    this.extendDatesWindowIfNeeded(date);
+    this.ensureMonthEntriesLoaded(date);
     this.loadDiaryEntry();
     this.scrollToSelectedDate();
   }
@@ -181,8 +176,14 @@ export class DiaryPage implements OnInit {
     });
   }
 
-  loadMonthEntries() {
-    this.diaryService.getDiaryEntriesForMonth(this.currentYear, this.getMonthNumber(this.currentMonth)).subscribe((response) => {
+  private loadMonthEntries(year: number, monthIndex: number): void {
+    const monthKey = this.getMonthKey(year, monthIndex);
+    if (this.loadedMonthKeys.has(monthKey)) {
+      return;
+    }
+    this.loadedMonthKeys.add(monthKey);
+
+    this.diaryService.getDiaryEntriesForMonth(year, monthIndex).subscribe((response) => {
       this.entries = { ...this.entries, ...response };
       Object.keys(response).forEach((date) => {
         if (response[date]) {
@@ -190,10 +191,9 @@ export class DiaryPage implements OnInit {
         }
       });
 
-      const monthKey = this.getMonthKey(this.currentYear, this.getMonthNumber(this.currentMonth));
       const hasMonthEntriesFromApi = Object.keys(response).some((date) => date.startsWith(monthKey));
       if (!hasMonthEntriesFromApi) {
-        this.applyKnownDatesForCurrentMonth();
+        this.applyKnownDatesForMonth(monthKey);
       }
     });
   }
@@ -237,16 +237,16 @@ export class DiaryPage implements OnInit {
 
     this.route.queryParams.subscribe(params => {
       if (params['refresh']) {
+        this.loadedMonthKeys.clear();
+        this.ensureEntriesLoadedForWindow();
         this.loadDiaryEntry();
-        this.loadMonthEntries();
       }
     });
     this.loadDiaryEntry();
-    this.loadMonthEntries();
+    this.ensureEntriesLoadedForWindow();
   }
 
-  private applyKnownDatesForCurrentMonth(): void {
-    const monthKey = this.getMonthKey(this.currentYear, this.getMonthNumber(this.currentMonth));
+  private applyKnownDatesForMonth(monthKey: string): void {
     const knownDates = this.getKnownDiaryDates();
     if (!knownDates.length) {
       return;
@@ -297,19 +297,79 @@ export class DiaryPage implements OnInit {
     return `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
   }
 
+  private parseLocalDate(dateString: string): Date {
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, (month || 1) - 1, day || 1);
+  }
+
+  private buildDatesAround(centerDate: Date): void {
+    const normalizedCenter = new Date(centerDate.getFullYear(), centerDate.getMonth(), centerDate.getDate());
+    const nextDates: Date[] = [];
+    for (let offset = -this.windowRadiusDays; offset <= this.windowRadiusDays; offset++) {
+      const date = new Date(normalizedCenter);
+      date.setDate(normalizedCenter.getDate() + offset);
+      nextDates.push(date);
+    }
+    this.dates = nextDates;
+  }
+
+  private extendDatesWindowIfNeeded(selectedDate: Date): void {
+    if (!this.dates.length) {
+      this.buildDatesAround(selectedDate);
+      return;
+    }
+    const first = this.dates[0];
+    const last = this.dates[this.dates.length - 1];
+    const threshold = 5;
+    const millisPerDay = 24 * 60 * 60 * 1000;
+    const daysToStart = Math.round((selectedDate.getTime() - first.getTime()) / millisPerDay);
+    const daysToEnd = Math.round((last.getTime() - selectedDate.getTime()) / millisPerDay);
+    if (daysToStart <= threshold || daysToEnd <= threshold) {
+      this.buildDatesAround(selectedDate);
+      this.ensureEntriesLoadedForWindow();
+    }
+  }
+
+  private ensureMonthEntriesLoaded(date: Date): void {
+    this.loadMonthEntries(date.getFullYear(), date.getMonth());
+  }
+
+  private ensureEntriesLoadedForWindow(): void {
+    const uniqueMonths = new Set<string>();
+    this.dates.forEach((date) => {
+      uniqueMonths.add(this.getMonthKey(date.getFullYear(), date.getMonth()));
+    });
+    uniqueMonths.forEach((monthKey) => {
+      const [year, month] = monthKey.split('-').map(Number);
+      this.loadMonthEntries(year, (month || 1) - 1);
+    });
+  }
+
   private scrollToSelectedDate() {
     setTimeout(() => {
       const scroller = this.dateScroller?.nativeElement as HTMLElement | undefined;
       if (!scroller) {
         return;
       }
-      const selectedElement = scroller.querySelector('.date-item.selected') as HTMLElement | null;
-      if (selectedElement) {
-        const targetLeft = selectedElement.offsetLeft - (scroller.clientWidth - selectedElement.offsetWidth) / 2;
-        const maxLeft = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
-        const clampedLeft = Math.min(Math.max(0, targetLeft), maxLeft);
-        scroller.scrollTo({ left: clampedLeft, behavior: 'smooth' });
+      const items = Array.from(scroller.querySelectorAll('.date-item')) as HTMLElement[];
+      if (!items.length) {
+        return;
       }
+
+      const selectedIndex = items.findIndex((item) => item.classList.contains('selected'));
+      if (selectedIndex < 0) {
+        return;
+      }
+
+      const step = items.length > 1
+        ? items[1].offsetLeft - items[0].offsetLeft
+        : items[0].offsetWidth;
+      const targetStartIndex = Math.max(0, selectedIndex - 3);
+      const targetLeft = targetStartIndex * step;
+
+      const maxLeft = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+      const clampedLeft = Math.min(targetLeft, maxLeft);
+      scroller.scrollTo({ left: clampedLeft, behavior: 'smooth' });
     }, 100);
   }
 
