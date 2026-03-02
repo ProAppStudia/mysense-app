@@ -123,6 +123,7 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
 
     this.diaryService.saveDiaryEntry(entryToSave).subscribe({
       next: () => {
+        this.storeKnownDiaryDate(this.date);
         this.loading = false;
         this.step = 5;
       },
@@ -176,6 +177,39 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
     const m = String(now.getMonth() + 1).padStart(2, '0');
     const d = String(now.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
+  }
+
+  private getKnownDiaryDatesStorageKey(): string {
+    const token = String(this.authService.getToken() ?? '').trim();
+    if (!token) {
+      return 'known_diary_dates_v1_guest';
+    }
+    return `known_diary_dates_v1_${token.slice(0, 20)}`;
+  }
+
+  private getKnownDiaryDates(): string[] {
+    try {
+      const raw = localStorage.getItem(this.getKnownDiaryDatesStorageKey());
+      if (!raw) {
+        return [];
+      }
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+      return parsed.filter((date) => typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date));
+    } catch {
+      return [];
+    }
+  }
+
+  private storeKnownDiaryDate(date: string): void {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return;
+    }
+    const known = new Set(this.getKnownDiaryDates());
+    known.add(date);
+    localStorage.setItem(this.getKnownDiaryDatesStorageKey(), JSON.stringify(Array.from(known)));
   }
 
   private initDiaryEntryView(): void {

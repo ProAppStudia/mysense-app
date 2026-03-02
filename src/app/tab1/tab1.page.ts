@@ -7,8 +7,7 @@ import { register } from 'swiper/element/bundle';
 import { AuthService, MySessionItem } from '../services/auth.service'; // Import AuthService
 import { DiaryEntryNormalized, DiaryService } from '../services/diary.service';
 import { environment } from '../../environments/environment'; // Import environment for base URL
-import { from, of, Subscription, interval } from 'rxjs';
-import { catchError, map, mergeMap, toArray } from 'rxjs/operators';
+import { Subscription, interval } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, checkmarkDoneOutline, heart, checkmarkCircleOutline, walletOutline, copyOutline } from 'ionicons/icons';
 import { Router, RouterLink, NavigationExtras } from '@angular/router';
@@ -118,14 +117,6 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   todayDiaryExists = signal(false);
   todayDiaryEntry = signal<DiaryEntryNormalized | null>(null);
   hasAnyDiaryEntry = signal(false);
-  moodNameById: Record<string, string> = {};
-  moodTypeById: Record<string, string> = {};
-  moodIconById: Record<string, string> = {};
-  bodyNameById: Record<string, string> = {};
-  bodyIconById: Record<string, string> = {};
-  weekMoodDots = signal<Array<{ col: number; row: number }>>([]);
-  private lastWeekDotsKey = '';
-  private lastWeekDotsAt = 0;
 
   // Login Modal States
   loginOpen = signal(false);
@@ -171,25 +162,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.getHomepageData();
     this.isLoggedIn.set(this.authService.isAuthenticated());
-    this.diaryService.getDiaryQuestions().subscribe((response) => {
-      this.moodNameById = {};
-      this.moodTypeById = {};
-      this.moodIconById = {};
-      this.bodyNameById = {};
-      this.bodyIconById = {};
-      (response.mood?.items ?? []).forEach((item) => {
-        this.moodNameById[item.id] = item.name;
-        this.moodTypeById[item.id] = item.type;
-        this.moodIconById[item.id] = item.icon;
-      });
-      (response.body?.items ?? []).forEach((item) => {
-        this.bodyNameById[item.id] = item.name;
-        this.bodyIconById[item.id] = item.icon;
-      });
-      this.refreshDiaryState();
-    }, () => {
-      this.refreshDiaryState();
-    });
+    this.refreshDiaryState();
     if (this.isLoggedIn()) {
       this.loadUserRole();
     }
@@ -1084,7 +1057,6 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       this.todayDiaryEntry.set(null);
       this.todayDiaryExists.set(false);
       this.hasAnyDiaryEntry.set(false);
-      this.weekMoodDots.set([]);
       return;
     }
 
@@ -1101,124 +1073,14 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         this.hasAnyDiaryEntry.set(true);
       }
     });
-    this.loadWeekMoodDots(now);
   }
 
-  openDiaryFromHome(): void {
-    if (!this.authService.isAuthenticated()) {
-      window.alert('Щоб вести щоденник, потрібно авторизуватись.');
-      return;
+  private getKnownDiaryDatesStorageKey(): string {
+    const token = String(this.authService.getToken() ?? '').trim();
+    if (!token) {
+      return 'known_diary_dates_v1_guest';
     }
-    void this.router.navigate(['/tabs/diary']);
-  }
-
-  openTodayDiaryFromHome(): void {
-    if (!this.authService.isAuthenticated()) {
-      window.alert('Щоб вести щоденник, потрібно авторизуватись.');
-      return;
-    }
-    const now = new Date();
-    void this.router.navigate(['/tabs/diary-entry'], {
-      queryParams: { date: this.toLocalDateString(now) }
-    });
-  }
-
-  todayDiaryMoodLabel(): string {
-    const moodId = this.todayDiaryEntry()?.mood?.[0];
-    if (!moodId) {
-      return 'Запис готовий';
-    }
-    return this.moodNameById[moodId] ?? moodId;
-  }
-
-  todayDiaryBodyLabel(): string {
-    const bodyId = this.todayDiaryEntry()?.body?.[0];
-    if (!bodyId) {
-      return '';
-    }
-    return this.bodyNameById[bodyId] ?? bodyId;
-  }
-
-  todayDiaryMoodIcon(): string {
-    const moodId = this.todayDiaryEntry()?.mood?.[0];
-    return moodId ? (this.moodIconById[moodId] ?? '') : '';
-  }
-
-  todayDiaryBodyIcon(): string {
-    const bodyId = this.todayDiaryEntry()?.body?.[0];
-    return bodyId ? (this.bodyIconById[bodyId] ?? '') : '';
-  }
-
-  private resolveMoodRow(moodId: string): number {
-    if (!moodId) {
-      return 3;
-    }
-
-    const severeNegative = ['panicked', 'desperate', 'furious', 'awful', 'distressed'];
-    const mildNegative = ['indifferent', 'melancholic', 'worried', 'nervous', 'annoyed', 'anxious', 'frustrated', 'agitated', 'irritated', 'pessimistic'];
-    const highPositive = ['ecstatic', 'euphoric', 'amazing', 'joyful', 'excited', 'inspired'];
-    const calmPositive = ['happy', 'hopeful', 'calm', 'great', 'proud', 'motivated', 'confident', 'loved', 'energetic'];
-
-    if (severeNegative.includes(moodId)) {
-      return 5;
-    }
-    if (mildNegative.includes(moodId)) {
-      return 4;
-    }
-    if (highPositive.includes(moodId)) {
-      return 1;
-    }
-    if (calmPositive.includes(moodId)) {
-      return 2;
-    }
-
-    return this.moodTypeById[moodId] === 'negative' ? 4 : 2;
-  }
-
-  private loadWeekMoodDots(baseDate: Date): void {
-    const monday = this.startOfWeekMonday(baseDate);
-    const weekKey = this.toLocalDateString(monday);
-    const nowTs = Date.now();
-    if (this.lastWeekDotsKey === weekKey && nowTs - this.lastWeekDotsAt < 120000) {
-      return;
-    }
-    this.lastWeekDotsKey = weekKey;
-    this.lastWeekDotsAt = nowTs;
-
-    const weekDates = Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(monday);
-      date.setDate(monday.getDate() + index);
-      return this.toLocalDateString(date);
-    });
-    from(weekDates.map((date, index) => ({ date, index }))).pipe(
-      mergeMap((item) => this.diaryService.getDiaryByDate(item.date).pipe(
-        map((entry) => ({ index: item.index, date: item.date, entry })),
-        catchError(() => of({ index: item.index, date: item.date, entry: null }))
-      ), 2),
-      toArray()
-    ).subscribe((rows) => {
-      const orderedRows = rows
-        .map((row: any) => ({
-          index: Number(row?.index ?? 0),
-          date: String(row?.date ?? ''),
-          entry: row?.entry ?? null
-        }))
-        .sort((a, b) => a.index - b.index);
-      const dots: Array<{ col: number; row: number }> = [];
-      orderedRows.forEach((row, col) => {
-        const entry = row.entry;
-        const moodId = entry?.mood?.[0] ?? '';
-        if (!moodId) {
-          return;
-        }
-        this.storeKnownDiaryDate(row.date);
-        dots.push({ col, row: this.resolveMoodRow(moodId) });
-      });
-      this.weekMoodDots.set(dots);
-      if (dots.length > 0) {
-        this.hasAnyDiaryEntry.set(true);
-      }
-    });
+    return `known_diary_dates_v1_${token.slice(0, 20)}`;
   }
 
   private getKnownDiaryDates(): string[] {
@@ -1246,21 +1108,23 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     localStorage.setItem(this.getKnownDiaryDatesStorageKey(), JSON.stringify(Array.from(known)));
   }
 
-  private getKnownDiaryDatesStorageKey(): string {
-    const token = String(this.authService.getToken() ?? '').trim();
-    if (!token) {
-      return 'known_diary_dates_v1_guest';
+  openDiaryFromHome(): void {
+    if (!this.authService.isAuthenticated()) {
+      window.alert('Щоб вести щоденник, потрібно авторизуватись.');
+      return;
     }
-    return `known_diary_dates_v1_${token.slice(0, 20)}`;
+    void this.router.navigate(['/tabs/diary']);
   }
 
-  private startOfWeekMonday(date: Date): Date {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
-    const day = d.getDay(); // 0=Sun, 1=Mon
-    const diffToMonday = day === 0 ? -6 : 1 - day;
-    d.setDate(d.getDate() + diffToMonday);
-    return d;
+  openTodayDiaryFromHome(): void {
+    if (!this.authService.isAuthenticated()) {
+      window.alert('Щоб вести щоденник, потрібно авторизуватись.');
+      return;
+    }
+    const now = new Date();
+    void this.router.navigate(['/tabs/diary-entry'], {
+      queryParams: { date: this.toLocalDateString(now) }
+    });
   }
 
   private toLocalDateString(date: Date): string {

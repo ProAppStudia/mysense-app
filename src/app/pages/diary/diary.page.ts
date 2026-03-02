@@ -248,9 +248,16 @@ export class DiaryPage implements OnInit {
 
   private scrollToSelectedDate() {
     setTimeout(() => {
-      const selectedElement = this.dateScroller.nativeElement.querySelector('.date-item.selected');
+      const scroller = this.dateScroller?.nativeElement as HTMLElement | undefined;
+      if (!scroller) {
+        return;
+      }
+      const selectedElement = scroller.querySelector('.date-item.selected') as HTMLElement | null;
       if (selectedElement) {
-        selectedElement.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        const targetLeft = selectedElement.offsetLeft - (scroller.clientWidth - selectedElement.offsetWidth) / 2;
+        const maxLeft = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+        const clampedLeft = Math.min(Math.max(0, targetLeft), maxLeft);
+        scroller.scrollTo({ left: clampedLeft, behavior: 'smooth' });
       }
     }, 100);
   }

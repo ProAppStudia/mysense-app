@@ -73,7 +73,7 @@
     <!-- Tasks Block -->
     <div *ngIf="isLoggedIn() && !isDoctor()" class="diary-block">
       
-      <div class="diary-card">
+      <div class="diary-card diary-card--tasks">
        <ion-icon name="checkmark-circle-outline"></ion-icon>
         <h3>Мої завдання</h3>
         <p>Переглядайте та керуйте своїми завданнями, щоб залишатися організованими.</p>
@@ -228,79 +228,22 @@
       <ion-button expand="block" class="free-psychologists-button" routerLink="/tabs/filter">В каталог</ion-button>
     </div>
 <div *ngIf="!isDoctor()" class="diary-block">
-      
-      <div class="diary-card">
-        <ion-icon name="book-outline"></ion-icon>
-        <ng-container *ngIf="hasAnyDiaryEntry(); else diaryEmptyState">
-          <div class="diary-ready-head">
-            <h3>Записи в щоденнику</h3>
-            <a (click)="openDiaryFromHome()">Всі записи</a>
-          </div>
-          <a class="diary-ready-preview" (click)="openDiaryFromHome()">
-            <div class="diary-ready-preview__chips" *ngIf="todayDiaryExists()">
-              <span class="diary-ready-preview__chip">
-                <img *ngIf="todayDiaryMoodIcon(); else moodEmojiTpl" [src]="todayDiaryMoodIcon()" alt="">
-                <ng-template #moodEmojiTpl>🙂</ng-template>
-                <span>{{ todayDiaryMoodLabel() }}</span>
-              </span>
-              <span class="diary-ready-preview__chip" *ngIf="todayDiaryBodyLabel()">
-                <img *ngIf="todayDiaryBodyIcon(); else bodyEmojiTpl" [src]="todayDiaryBodyIcon()" alt="">
-                <ng-template #bodyEmojiTpl>🙂</ng-template>
-                <span>{{ todayDiaryBodyLabel() }}</span>
-              </span>
-            </div>
-            <div
-              class="diary-ready-preview__chart"
-              aria-hidden="true"
-            >
-              <div class="diary-ready-preview__y">
-                <span>😊</span>
-                <span>🙂</span>
-                <span>😐</span>
-                <span>🙁</span>
-                <span>😭</span>
-              </div>
-              <div class="diary-ready-preview__plot">
-                <span class="diary-ready-preview__line"></span>
-                <span class="diary-ready-preview__line"></span>
-                <span class="diary-ready-preview__line"></span>
-                <span class="diary-ready-preview__line"></span>
-                <span class="diary-ready-preview__line"></span>
-                <span
-                  class="diary-ready-preview__dot"
-                  *ngFor="let dot of weekMoodDots()"
-                  [style.--dot-col]="dot.col"
-                  [style.--dot-row]="dot.row"
-                ></span>
-              </div>
-              <div class="diary-ready-preview__x">
-                <span>Пн</span>
-                <span>Вт</span>
-                <span>Ср</span>
-                <span>Чт</span>
-                <span>Пт</span>
-                <span>Сб</span>
-                <span>Нд</span>
-              </div>
-            </div>
-          </a>
-          <ion-button
-            *ngIf="!todayDiaryExists()"
-            expand="block"
-            class="add-diary-button"
-            (click)="openTodayDiaryFromHome()"
-          >
-            Заповнити сьогодні
-          </ion-button>
-        </ng-container>
-        <ng-template #diaryEmptyState>
-          <h3>Заповніть свій щоденник</h3>
-          <p>Не забувайте вести свій особистий щоденник, відстежувати настрій та записувати свої думки.</p>
-          <ion-button expand="block" class="add-diary-button" (click)="openDiaryFromHome()">
-            Додати запис
-          </ion-button>
-        </ng-template>
-      </div>
+  <div class="diary-card diary-card--journal">
+    <h3>Щоденник</h3>
+    <ion-icon class="diary-card__icon" name="book-outline"></ion-icon>
+    <ng-container *ngIf="hasAnyDiaryEntry(); else diaryFirstEntryBanner">
+      <p>Не забувайте вести свій особистий щоденник, відстежувати настрій та записувати думки</p>
+      <ion-button expand="block" class="add-diary-button" (click)="openDiaryFromHome()">
+        Додати запис
+      </ion-button>
+    </ng-container>
+    <ng-template #diaryFirstEntryBanner>
+      <p>Записуйте свої думки, відмічайте стан та відповідайте на запитання для щоденної рефлексії</p>
+      <ion-button expand="block" class="add-diary-button" (click)="openDiaryFromHome()">
+        Почати
+      </ion-button>
+    </ng-template>
+  </div>
     </div>
 
     <!-- Section 3 -->
