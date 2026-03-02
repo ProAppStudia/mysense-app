@@ -73,6 +73,17 @@ export class ChatService {
         response?.success === true ||
         response?.success === 1 ||
         response?.success === '1' ||
+        response?.ok === true ||
+        response?.ok === 1 ||
+        response?.ok === '1' ||
+        response?.status === 'ok' ||
+        response?.status === 'success' ||
+        Number(response?.order_id ?? 0) > 0 ||
+        Number(response?.id ?? 0) > 0 ||
+        Number(response?.result?.order_id ?? 0) > 0 ||
+        Number(response?.result?.id ?? 0) > 0 ||
+        Number(response?.data?.order_id ?? 0) > 0 ||
+        Number(response?.data?.id ?? 0) > 0 ||
         (!!response?.success && typeof response?.success === 'string') ||
         !!response?.payment_link;
 

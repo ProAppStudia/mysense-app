@@ -815,6 +815,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
 
         this.userSessions = all
           .map((item, index) => this.mapApiSession(item, index))
+          .sort((a, b) => this.compareByOrderCreationDesc(a, b))
           .slice(0, this.isDoctor() ? 2 : all.length);
 
         this.recentPsychologists = this.extractRecentPsychologists(all).slice(0, 3);
@@ -930,6 +931,21 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       return '';
     }
     return period.split('-')[0].trim();
+  }
+
+  private compareByOrderCreationDesc(a: Session, b: Session): number {
+    const aKey = this.getOrderCreationKey(a);
+    const bKey = this.getOrderCreationKey(b);
+    return bKey - aKey;
+  }
+
+  private getOrderCreationKey(session: Session): number {
+    const orderId = Number(session.order_id ?? 0);
+    if (Number.isFinite(orderId) && orderId > 0) {
+      return orderId;
+    }
+    const fallbackId = Number(session.id ?? 0);
+    return Number.isFinite(fallbackId) && fallbackId > 0 ? fallbackId : 0;
   }
 
   private resolveSessionStartAt(session: Session): Date | null {

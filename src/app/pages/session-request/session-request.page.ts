@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 import {
   IonBackButton,
   IonButtons,
@@ -282,7 +283,16 @@ export class SessionRequestPage implements OnInit {
     this.loading.set(false);
 
     if (!result.ok) {
-      const backendError = String(result?.response?.error ?? '').trim();
+      if (!this.isDoctor && this.isRecoverableCreateOrderError(result)) {
+        const recoveredLink = await this.waitForPaymentLinkBySelection();
+        if (recoveredLink) {
+          const recoveredOrderId = this.resolveOrderId(undefined, recoveredLink);
+          const paymentState = await this.paymentFlowService.openPaymentAndCheck(recoveredOrderId, recoveredLink);
+          this.navigateToPaymentResult(paymentState, recoveredOrderId);
+          return;
+        }
+      }
+      const backendError = this.resolveOrderErrorMessage(result);
       this.error.set(backendError || 'Не вдалося створити бронювання.');
       return;
     }
@@ -290,13 +300,18 @@ export class SessionRequestPage implements OnInit {
     this.success.set(String(result?.response?.success ?? 'Бронювання успішно створено').trim());
 
     if (!this.isDoctor) {
-      const paymentLink = String(result?.response?.payment_link ?? '').trim();
+      const orderId = this.resolveOrderId(result?.response);
+      let paymentLink = this.resolvePaymentLink(result?.response);
+      if (!paymentLink && orderId > 0) {
+        paymentLink = await this.waitForPaymentLinkFromSessions(orderId);
+      }
       if (paymentLink) {
-        const orderId = this.resolveOrderId(result?.response, paymentLink);
-        const paymentState = await this.paymentFlowService.openPaymentAndCheck(orderId, paymentLink);
-        this.navigateToPaymentResult(paymentState, orderId);
+        const resolvedOrderId = orderId > 0 ? orderId : this.resolveOrderId(result?.response, paymentLink);
+        const paymentState = await this.paymentFlowService.openPaymentAndCheck(resolvedOrderId, paymentLink);
+        this.navigateToPaymentResult(paymentState, resolvedOrderId);
         return;
       }
+      this.error.set('Сесію створено, але не вдалося отримати посилання на оплату. Спробуйте оновити сторінку або зверніться в підтримку.');
     }
   }
 
@@ -367,6 +382,213 @@ export class SessionRequestPage implements OnInit {
     }
 
     return 0;
+  }
+
+  private resolvePaymentLink(response: any): string {
+    const candidates = [
+      response?.payment_link,
+      response?.checkout_url,
+      response?.payment_url,
+      response?.url,
+      response?.result?.payment_link,
+      response?.result?.checkout_url,
+      response?.result?.payment_url,
+      response?.data?.payment_link
+    ];
+
+    for (const candidate of candidates) {
+      const link = String(candidate ?? '').trim();
+      if (link.startsWith('http://') || link.startsWith('https://')) {
+        return link;
+      }
+    }
+
+    const raw = String(response?.raw ?? '').trim();
+    if (raw) {
+      const urlMatch = raw.match(/https?:\/\/[^\s"']+/i);
+      if (urlMatch?.[0]) {
+        return urlMatch[0].trim();
+      }
+    }
+
+    return '';
+  }
+
+  private async resolvePaymentLinkFromSessions(orderId: number): Promise<string> {
+    if (!orderId) {
+      return '';
+    }
+
+    try {
+      const response = await firstValueFrom(this.authService.getMySessions());
+      const arrays = [
+        Array.isArray((response as any)?.planned) ? (response as any).planned : [],
+        Array.isArray((response as any)?.past) ? (response as any).past : [],
+        Array.isArray((response as any)?.sessions) ? (response as any).sessions : [],
+        Array.isArray((response as any)?.results) ? (response as any).results : [],
+        Array.isArray((response as any)?.items) ? (response as any).items : [],
+        Array.isArray((response as any)?.list) ? (response as any).list : [],
+        Array.isArray((response as any)?.data) ? (response as any).data : []
+      ];
+
+      for (const list of arrays) {
+        const found = list.find((item: any) => Number(item?.order_id ?? 0) === Number(orderId));
+        const link = String(found?.payment_link ?? found?.checkout_url ?? '').trim();
+        if (link.startsWith('http://') || link.startsWith('https://')) {
+          return link;
+        }
+      }
+    } catch {
+      return '';
+    }
+
+    return '';
+  }
+
+  private async waitForPaymentLinkFromSessions(orderId: number): Promise<string> {
+    const maxAttempts = 5;
+    for (let i = 0; i < maxAttempts; i++) {
+      const link = await this.resolvePaymentLinkFromSessions(orderId);
+      if (link) {
+        return link;
+      }
+      if (i < maxAttempts - 1) {
+        await this.sleep(1200);
+      }
+    }
+    return '';
+  }
+
+  private async waitForPaymentLinkBySelection(): Promise<string> {
+    const maxAttempts = 5;
+    for (let i = 0; i < maxAttempts; i++) {
+      const link = await this.resolvePaymentLinkBySelection();
+      if (link) {
+        return link;
+      }
+      if (i < maxAttempts - 1) {
+        await this.sleep(1200);
+      }
+    }
+    return '';
+  }
+
+  private async resolvePaymentLinkBySelection(): Promise<string> {
+    if (!this.form.date || !this.form.time) {
+      return '';
+    }
+
+    try {
+      const response = await firstValueFrom(this.authService.getMySessions());
+      const arrays = [
+        Array.isArray((response as any)?.planned) ? (response as any).planned : [],
+        Array.isArray((response as any)?.past) ? (response as any).past : [],
+        Array.isArray((response as any)?.sessions) ? (response as any).sessions : [],
+        Array.isArray((response as any)?.results) ? (response as any).results : [],
+        Array.isArray((response as any)?.items) ? (response as any).items : [],
+        Array.isArray((response as any)?.list) ? (response as any).list : [],
+        Array.isArray((response as any)?.data) ? (response as any).data : []
+      ];
+
+      const doctorId = Number(this.doctor()?.id ?? this.doctorId ?? 0);
+      const date = String(this.form.date).trim();
+      const time = Number(this.form.time);
+
+      for (const list of arrays) {
+        const match = list.find((item: any) => {
+          const itemDate = String(item?.session_date ?? item?.date ?? '').trim();
+          if (itemDate !== date) {
+            return false;
+          }
+
+          const itemHour = this.extractHourFromSession(item);
+          if (itemHour !== time) {
+            return false;
+          }
+
+          if (doctorId > 0) {
+            const itemDoctorId = Number(item?.doctor_id ?? 0);
+            if (itemDoctorId > 0 && itemDoctorId !== doctorId) {
+              return false;
+            }
+          }
+          return true;
+        });
+
+        const link = String(match?.payment_link ?? match?.checkout_url ?? '').trim();
+        if (link.startsWith('http://') || link.startsWith('https://')) {
+          return link;
+        }
+      }
+    } catch {
+      return '';
+    }
+
+    return '';
+  }
+
+  private extractHourFromSession(item: any): number {
+    const fromPeriod = String(item?.session_time_period ?? '').match(/(\d{1,2})[:.]/);
+    if (fromPeriod?.[1]) {
+      return Number(fromPeriod[1]);
+    }
+    const fromTime = String(item?.session_time ?? '').match(/(\d{1,2})[:.]/);
+    if (fromTime?.[1]) {
+      return Number(fromTime[1]);
+    }
+    return Number(item?.time ?? 0);
+  }
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  private resolveOrderErrorMessage(result: { response?: any; error?: any } | null | undefined): string {
+    const response = result?.response;
+    const errorObj = result?.error;
+
+    const directCandidates = [
+      response?.error,
+      response?.message,
+      response?.msg,
+      response?.detail
+    ];
+    for (const candidate of directCandidates) {
+      const text = String(candidate ?? '').trim();
+      if (text) {
+        return text;
+      }
+    }
+
+    const raw = String(response?.raw ?? '').trim();
+    if (raw) {
+      const start = raw.lastIndexOf('{');
+      const end = raw.lastIndexOf('}');
+      if (start >= 0 && end > start) {
+        try {
+          const parsed = JSON.parse(raw.slice(start, end + 1));
+          const parsedText = String(parsed?.error ?? parsed?.message ?? '').trim();
+          if (parsedText) {
+            return parsedText;
+          }
+        } catch {
+          // fallback to raw
+        }
+      }
+      return raw.length > 220 ? `${raw.slice(0, 220)}...` : raw;
+    }
+
+    const httpErrorText = String(errorObj?.error?.error ?? errorObj?.error?.message ?? errorObj?.message ?? '').trim();
+    if (httpErrorText) {
+      return httpErrorText;
+    }
+
+    return '';
+  }
+
+  private isRecoverableCreateOrderError(result: { response?: any; error?: any } | null | undefined): boolean {
+    const text = this.resolveOrderErrorMessage(result).toLowerCase();
+    return text.includes('непередб') || text.includes('support') || text.includes('підтримк');
   }
 
   private resolveDoctor() {

@@ -149,7 +149,7 @@ export class SessionsPage implements OnInit {
         return past;
       }
       return !past && !archive;
-    });
+    }).sort((a, b) => this.compareByOrderCreationDesc(a, b));
   }
 
   showActions(session: Session): boolean {
@@ -292,6 +292,21 @@ export class SessionsPage implements OnInit {
       }
     }
     return index + 1;
+  }
+
+  private compareByOrderCreationDesc(a: Session, b: Session): number {
+    const aKey = this.getOrderCreationKey(a);
+    const bKey = this.getOrderCreationKey(b);
+    return bKey - aKey;
+  }
+
+  private getOrderCreationKey(session: Session): number {
+    const orderId = Number(session.order_id ?? 0);
+    if (Number.isFinite(orderId) && orderId > 0) {
+      return orderId;
+    }
+    const fallbackId = Number(session.id ?? 0);
+    return Number.isFinite(fallbackId) && fallbackId > 0 ? fallbackId : 0;
   }
 
   private normalizePhoto(photo?: string): string {
