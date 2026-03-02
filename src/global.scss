@@ -122,3 +122,91 @@ ion-header.app-back-toolbar ion-back-button.app-back-icon-btn {
   --padding-start: 0;
   --padding-end: 0;
 }
+
+ion-modal.late-cancel-modal::part(backdrop) {
+  background: rgba(28, 24, 44, 0.45);
+}
+
+ion-modal.late-cancel-modal::part(content) {
+  --width: min(760px, calc(100vw - 24px));
+  --max-width: 760px;
+  --height: auto;
+  --border-radius: 18px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.late-cancel-modal__card {
+  position: relative;
+  background: #fff;
+  border-radius: 18px;
+  padding: 28px 24px 22px;
+}
+
+.late-cancel-modal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: 0;
+  background: transparent;
+  color: #7557da;
+  font-size: 28px;
+  line-height: 0.7;
+  padding: 0;
+}
+
+.late-cancel-modal__title {
+  margin: 0 0 20px;
+  color: #342a56;
+  font-size: 56px;
+  font-weight: 500;
+  line-height: 1.08;
+}
+
+.late-cancel-modal__text {
+  margin: 0;
+  color: #4a4756;
+  text-align: center;
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.late-cancel-modal__submit {
+  margin-top: 24px;
+  width: 100%;
+  min-height: 64px;
+  border: 0;
+  border-radius: 14px;
+  background: #785add;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .late-cancel-modal__card {
+    padding: 22px 16px 16px;
+  }
+
+  .late-cancel-modal__close {
+    top: 14px;
+    right: 14px;
+    font-size: 28px;
+  }
+
+  .late-cancel-modal__title {
+    font-size: 28px;
+    line-height: 1.14;
+    margin-bottom: 14px;
+  }
+
+  .late-cancel-modal__text {
+    font-size: 16px;
+    line-height: 1.3;
+  }
+
+  .late-cancel-modal__submit {
+    min-height: 56px;
+    font-size: 18px;
+  }
+}

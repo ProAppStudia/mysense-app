@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Location } from '@angular/common';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonIcon, IonButton } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonIcon, IonButton, IonModal } from '@ionic/angular/standalone';
 import { AuthService, MySessionItem } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
@@ -35,7 +35,7 @@ interface Session {
   styleUrls: ['./sessions.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, IonButtons, IonIcon, IonButton
+    IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, IonButtons, IonIcon, IonButton, IonModal
   ]
 })
 export class SessionsPage implements OnInit {
@@ -46,6 +46,8 @@ export class SessionsPage implements OnInit {
   loading = false;
   actionLoading = false;
   emptyText = 'Порожньо';
+  lateCancelConfirmOpen = false;
+  private pendingCancelSessionId = 0;
 
   constructor(
     private authService: AuthService,
@@ -152,6 +154,18 @@ export class SessionsPage implements OnInit {
 
   showActions(session: Session): boolean {
     return !this.isPastSession(session) && !this.isFailedSession(session) && !this.isArchiveSession(session);
+  }
+
+  canRescheduleSession(session: Session): boolean {
+    if (!this.showActions(session)) {
+      return false;
+    }
+    const startAt = this.resolveSessionStartAt(session);
+    if (!startAt) {
+      return false;
+    }
+    const minLeadMs = 24 * 60 * 60 * 1000;
+    return (startAt.getTime() - Date.now()) > minLeadMs;
   }
 
   isPastSession(session: Session): boolean {
@@ -314,6 +328,79 @@ export class SessionsPage implements OnInit {
     return parsed;
   }
 
+  private resolveSessionStartAt(session: Session): Date | null {
+    const parsed = this.formatSessionTime(String(session.time_range || ''));
+    const datePart = String(parsed.date || session.session_date || '').trim();
+    const timePart = String(parsed.time || '').trim();
+    if (!datePart || !timePart) {
+      return null;
+    }
+
+    const date = this.parseFlexibleDate(datePart);
+    if (!date) {
+      return null;
+    }
+
+    const timeMatch = timePart.match(/^(\d{1,2}):(\d{2})$/);
+    if (!timeMatch) {
+      return null;
+    }
+
+    date.setHours(Number(timeMatch[1]), Number(timeMatch[2]), 0, 0);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  private parseFlexibleDate(value: string): Date | null {
+    const normalized = String(value || '').trim();
+    if (!normalized) {
+      return null;
+    }
+
+    const iso = normalized.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (iso) {
+      const dt = new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+      return Number.isNaN(dt.getTime()) ? null : dt;
+    }
+
+    const dotted = normalized.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+    if (dotted) {
+      const dt = new Date(Number(dotted[3]), Number(dotted[2]) - 1, Number(dotted[1]));
+      return Number.isNaN(dt.getTime()) ? null : dt;
+    }
+
+    const text = normalized.match(/^(\d{1,2})\s+([^\s]+)\s+(\d{4})$/i);
+    if (text) {
+      const day = Number(text[1]);
+      const year = Number(text[3]);
+      const month = this.parseMonthName(text[2]);
+      if (month >= 0) {
+        const dt = new Date(year, month, day);
+        return Number.isNaN(dt.getTime()) ? null : dt;
+      }
+    }
+
+    const parsed = new Date(normalized);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  private parseMonthName(raw: string): number {
+    const monthMap: Record<string, number> = {
+      січень: 0, січня: 0,
+      лютий: 1, лютого: 1,
+      березень: 2, березня: 2,
+      квітень: 3, квітня: 3,
+      травень: 4, травня: 4,
+      червень: 5, червня: 5,
+      липень: 6, липня: 6,
+      серпень: 7, серпня: 7,
+      вересень: 8, вересня: 8,
+      жовтень: 9, жовтня: 9,
+      листопад: 10, листопада: 10,
+      грудень: 11, грудня: 11
+    };
+    return monthMap[String(raw || '').toLowerCase()] ?? -1;
+  }
+
   private extractStartTime(period?: string): string {
     if (!period) {
       return '';
@@ -336,6 +423,11 @@ export class SessionsPage implements OnInit {
   }
 
   rescheduleSession(session: Session) {
+    if (!this.canRescheduleSession(session)) {
+      window.alert('Перенесення доступне лише більш ніж за 24 години до початку сесії.');
+      return;
+    }
+
     const sessionId = Number(session.meet_id || session.id || 0);
     if (!sessionId) {
       window.alert('Не вдалося визначити сесію для перенесення.');
@@ -355,9 +447,16 @@ export class SessionsPage implements OnInit {
     });
   }
 
-  cancelSession(sessionId: number) {
+  cancelSession(session: Session) {
+    const sessionId = Number(session?.id || 0);
     if (!sessionId) {
       window.alert('Не вдалося визначити сесію для скасування.');
+      return;
+    }
+
+    if (this.shouldShowLateCancelConfirm(session)) {
+      this.pendingCancelSessionId = sessionId;
+      this.lateCancelConfirmOpen = true;
       return;
     }
 
@@ -365,7 +464,34 @@ export class SessionsPage implements OnInit {
     if (!ok) {
       return;
     }
+    this.performCancel(sessionId);
+  }
 
+  closeLateCancelConfirm() {
+    this.lateCancelConfirmOpen = false;
+    this.pendingCancelSessionId = 0;
+  }
+
+  continueLateCancel() {
+    const sessionId = Number(this.pendingCancelSessionId || 0);
+    this.closeLateCancelConfirm();
+    if (!sessionId) {
+      return;
+    }
+    this.performCancel(sessionId);
+  }
+
+  private shouldShowLateCancelConfirm(session: Session): boolean {
+    const startAt = this.resolveSessionStartAt(session);
+    if (!startAt) {
+      return false;
+    }
+    const diff = startAt.getTime() - Date.now();
+    const dayMs = 24 * 60 * 60 * 1000;
+    return diff > 0 && diff < dayMs;
+  }
+
+  private performCancel(sessionId: number) {
     this.actionLoading = true;
     this.authService.deleteSession(sessionId).subscribe({
       next: (resp) => {
