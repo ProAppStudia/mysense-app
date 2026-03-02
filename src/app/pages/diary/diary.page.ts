@@ -173,15 +173,20 @@ export class DiaryPage implements OnInit {
         this.entries[this.selectedDate] = true;
         this.storeKnownDiaryDate(this.selectedDate);
       }
+      this.ensureMonthEntriesLoaded(this.parseLocalDate(this.selectedDate), true);
     });
   }
 
-  private loadMonthEntries(year: number, monthIndex: number): void {
+  private loadMonthEntries(year: number, monthIndex: number, forceReload = false): void {
     const monthKey = this.getMonthKey(year, monthIndex);
+    if (forceReload) {
+      this.loadedMonthKeys.delete(monthKey);
+    }
     if (this.loadedMonthKeys.has(monthKey)) {
       return;
     }
     this.loadedMonthKeys.add(monthKey);
+    this.applyKnownDatesForMonth(monthKey);
 
     this.diaryService.getDiaryEntriesForMonth(year, monthIndex).subscribe((response) => {
       this.entries = { ...this.entries, ...response };
@@ -238,12 +243,12 @@ export class DiaryPage implements OnInit {
     this.route.queryParams.subscribe(params => {
       if (params['refresh']) {
         this.loadedMonthKeys.clear();
-        this.ensureEntriesLoadedForWindow();
+        this.ensureEntriesLoadedForWindow(true);
         this.loadDiaryEntry();
       }
     });
     this.loadDiaryEntry();
-    this.ensureEntriesLoadedForWindow();
+    this.ensureEntriesLoadedForWindow(true);
   }
 
   private applyKnownDatesForMonth(monthKey: string): void {
@@ -330,18 +335,18 @@ export class DiaryPage implements OnInit {
     }
   }
 
-  private ensureMonthEntriesLoaded(date: Date): void {
-    this.loadMonthEntries(date.getFullYear(), date.getMonth());
+  private ensureMonthEntriesLoaded(date: Date, forceReload = false): void {
+    this.loadMonthEntries(date.getFullYear(), date.getMonth(), forceReload);
   }
 
-  private ensureEntriesLoadedForWindow(): void {
+  private ensureEntriesLoadedForWindow(forceReload = false): void {
     const uniqueMonths = new Set<string>();
     this.dates.forEach((date) => {
       uniqueMonths.add(this.getMonthKey(date.getFullYear(), date.getMonth()));
     });
     uniqueMonths.forEach((monthKey) => {
       const [year, month] = monthKey.split('-').map(Number);
-      this.loadMonthEntries(year, (month || 1) - 1);
+      this.loadMonthEntries(year, (month || 1) - 1, forceReload);
     });
   }
 

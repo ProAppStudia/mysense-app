@@ -53,7 +53,7 @@
               Перенести
               <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
             </ion-button>
-            <ion-button fill="clear" class="cancel-button" (click)="cancelSession(session)">
+            <ion-button *ngIf="canCancelHomeSession(session)" fill="clear" class="cancel-button" (click)="cancelSession(session)">
               Відмінити
               <ion-icon slot="end" name="close-outline"></ion-icon>
             </ion-button>

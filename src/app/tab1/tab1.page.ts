@@ -343,6 +343,11 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   }
 
   cancelSession(session: Session) {
+    if (!this.canCancelHomeSession(session)) {
+      window.alert('Не можна скасувати сесію, яка вже пройшла.');
+      return;
+    }
+
     const sessionId = Number(session?.id || 0);
     if (!sessionId) {
       return;
@@ -474,6 +479,17 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
 
   showHomeSessionActions(session: Session): boolean {
     return !this.isCancelledSession(session);
+  }
+
+  canCancelHomeSession(session: Session): boolean {
+    if (this.isCancelledSession(session)) {
+      return false;
+    }
+    const startAt = this.resolveSessionStartAt(session);
+    if (!startAt) {
+      return false;
+    }
+    return startAt.getTime() > Date.now();
   }
 
   canRescheduleHomeSession(session: Session): boolean {
