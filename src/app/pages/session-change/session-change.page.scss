@@ -7,7 +7,7 @@ ion-toolbar {
 }
 
 .change-card {
-  background: #f6f5fa;
+  background: #ffffff;
   border-radius: 16px;
   padding: 16px;
 }
@@ -78,25 +78,123 @@ h2 {
   font-size: 14px;
 }
 
-.datetime-box {
-  background: #ecebf1;
-  border-radius: 12px;
-  padding: 10px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-.datetime-box input,
-.datetime-box select {
-  width: 100%;
-  min-height: 48px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 0 12px;
+.week-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
   background: #fff;
-  color: #4d4d5a;
-  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+}
+
+.week-btn-icon-next {
+  transform: rotate(180deg);
+}
+
+.week-title {
+  color: #3a325c;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.calendar-grid {
+  display: grid;
+  gap: 10px;
+  align-items: start;
+}
+
+.calendar-column {
+  border-top: 1px solid #ddd7e9;
+  padding-top: 8px;
+  display: grid;
+  grid-template-rows: auto repeat(13, 42px);
+  row-gap: 8px;
+}
+
+.calendar-day {
+  text-align: center;
+}
+
+.calendar-day p {
+  margin: 0;
+  color: #8d88a2;
+}
+
+.calendar-day p:first-child {
+  font-size: 16px;
+  color: #2f264d;
+}
+
+.calendar-day p:last-child {
+  font-size: 14px;
+  color: #9895a6;
+  margin-top: 8px;
+}
+
+.slot-btn {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #795bda;
+  border-radius: 8px;
+  height: 42px;
+  margin-top: 0;
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  padding: 0 2px;
+}
+
+.slot-btn.unavailable {
+  background: #ece8f6;
+  color: transparent;
+}
+
+.slot-btn.available {
+  background: transparent;
+  color: #795bda;
+}
+
+.slot-btn.active {
+  background: #6f57d2;
+  color: #fff;
+}
+
+.calendar-grid.full-week {
+  gap: 6px;
+}
+
+.calendar-grid.full-week .calendar-day p:first-child {
+  font-size: 14px;
+}
+
+.calendar-grid.full-week .slot-btn {
+  height: 34px;
+  margin-top: 0;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+.calendar-grid.full-week .calendar-column {
+  grid-template-rows: auto repeat(13, 34px);
+  row-gap: 6px;
+}
+
+.hint-error {
+  margin: 0;
+  color: #8d88a2;
 }
 
 .summary {

@@ -25,14 +25,52 @@
     <div class="block">
       <p class="title">Виберіть дату та час сесії</p>
       <p class="timezone">(за Києвом)</p>
-      <div class="datetime-box">
-        <input type="date" [(ngModel)]="form.date" (ngModelChange)="onDateChange()">
-        <select [(ngModel)]="form.time">
-          <option [ngValue]="0" disabled *ngIf="loadingSlots()">Завантаження...</option>
-          <option [ngValue]="0" disabled *ngIf="!loadingSlots() && !reserveTimeOptions.length">Немає доступних годин</option>
-          <option *ngFor="let hour of reserveTimeOptions" [ngValue]="hour">{{ hour }}:00</option>
-        </select>
+      <div class="week-nav" *ngIf="currentWeek">
+        <button type="button" class="week-btn" (click)="prevWeek()" [disabled]="!canGoPrevWeek()">
+          <img
+            [src]="canGoPrevWeek() ? 'assets/icon/arrow-left-color.svg' : 'assets/icon/arrow-left-grey.svg'"
+            alt="Попередній тиждень"
+          >
+        </button>
+        <button type="button" class="week-btn" (click)="nextWeek()" [disabled]="!canGoNextWeek()">
+          <img
+            [src]="canGoNextWeek() ? 'assets/icon/arrow-left-color.svg' : 'assets/icon/arrow-left-grey.svg'"
+            alt="Наступний тиждень"
+            class="week-btn-icon-next"
+          >
+        </button>
+        <span class="week-title">{{ currentWeekLabel }}</span>
       </div>
+
+      <div
+        class="calendar-grid"
+        [class.full-week]="currentWeekDayKeys.length >= 7"
+        *ngIf="currentWeekDayKeys.length; else noSlots"
+        [style.grid-template-columns]="'repeat(' + currentWeekDayKeys.length + ', minmax(0, 1fr))'"
+      >
+        <div class="calendar-column" *ngFor="let dayKey of currentWeekDayKeys">
+          <div class="calendar-day">
+            <p>{{ getDayLabel(dayKey) }}</p>
+            <p>{{ getDayNumber(dayKey) }}</p>
+          </div>
+          <button
+            *ngFor="let hour of weekHourOptions"
+            type="button"
+            class="slot-btn"
+            [class.available]="isHourAvailable(dayKey, hour)"
+            [class.unavailable]="!isHourAvailable(dayKey, hour)"
+            [class.active]="isSelectedClientSlot(dayKey, hour)"
+            (click)="onClientSlotSelect(dayKey, hour)"
+          >
+            {{ isHourAvailable(dayKey, hour) ? (hour + ':00') : '' }}
+          </button>
+        </div>
+      </div>
+
+      <ng-template #noSlots>
+        <p class="hint-error" *ngIf="loadingSlots()">Завантаження...</p>
+        <p class="hint-error" *ngIf="!loadingSlots()">Немає доступних годин для перенесення</p>
+      </ng-template>
     </div>
 
     <div class="summary" *ngIf="sessionType">

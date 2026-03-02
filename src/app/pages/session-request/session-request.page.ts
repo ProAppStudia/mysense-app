@@ -52,6 +52,8 @@ export class SessionRequestPage implements OnInit {
   doctorUserId = 0;
   doctorId = 0;
   doctorIdFromQuery = 0;
+  sessionIdFromQuery = 0;
+  fallbackAmount = 0;
   private myProfile: any = null;
 
   doctor = signal<DoctorCardView | null>(null);
@@ -99,6 +101,8 @@ export class SessionRequestPage implements OnInit {
       this.doctorHash = String(params.get('hash') || '').trim();
       this.doctorUserId = Number(params.get('doctor_user_id') || 0);
       this.doctorIdFromQuery = Number(params.get('doctor_id') || 0);
+      this.sessionIdFromQuery = Number(params.get('session_id') || 0);
+      this.fallbackAmount = Number(params.get('amount') || 0);
       const preType = Number(params.get('pre_type') || 0);
       const preFormat = String(params.get('pre_format') || '').trim().toLowerCase();
       const preDate = String(params.get('pre_date') || '').trim();
@@ -124,12 +128,14 @@ export class SessionRequestPage implements OnInit {
             this.doctorHash = String((profile as any)?.hash ?? (profile as any)?.doctor_hash ?? '').trim();
           }
           this.resolveDoctor();
+          this.resolveFallbackAmountFromSessions();
         },
         error: () => {
           this.isDoctor = false;
           this.currentUserId = null;
           this.myProfile = null;
           this.resolveDoctor();
+          this.resolveFallbackAmountFromSessions();
         }
       });
     });
@@ -227,13 +233,15 @@ export class SessionRequestPage implements OnInit {
 
   get selectedPrice(): number {
     const doctor = this.doctor();
-    if (!doctor) {
-      return 0;
+    const fromDoctor = Number(
+      doctor
+        ? (Number(this.form.type) === 2 ? (doctor.priceFamily ?? 0) : (doctor.priceIndividual ?? 0))
+        : 0
+    );
+    if (Number.isFinite(fromDoctor) && fromDoctor > 0) {
+      return fromDoctor;
     }
-    if (Number(this.form.type) === 2) {
-      return Number(doctor.priceFamily ?? 0);
-    }
-    return Number(doctor.priceIndividual ?? 0);
+    return Number(this.fallbackAmount || 0);
   }
 
   async submit() {
@@ -1070,5 +1078,34 @@ export class SessionRequestPage implements OnInit {
     }
 
     return Array.from(ids).sort((a, b) => a - b);
+  }
+
+  private resolveFallbackAmountFromSessions(): void {
+    if (this.fallbackAmount > 0 || !this.sessionIdFromQuery) {
+      return;
+    }
+
+    this.authService.getMySessions().subscribe({
+      next: (resp: any) => {
+        const planned = Array.isArray(resp?.planned) ? resp.planned : [];
+        const past = Array.isArray(resp?.past) ? resp.past : [];
+        const fallback = [resp?.sessions, resp?.results, resp?.items, resp?.list, resp?.data]
+          .find((value: any) => Array.isArray(value));
+        const all = [...planned, ...past, ...(Array.isArray(fallback) ? fallback : [])];
+
+        const match = all.find((item: any) => {
+          const candidates = [item?.meet_id, item?.order_id, item?.id, item?.session_id];
+          return candidates.some((candidate) => Number(candidate || 0) === Number(this.sessionIdFromQuery));
+        });
+
+        const amount = Number((match as any)?.amount ?? (match as any)?.session_amount ?? 0);
+        if (Number.isFinite(amount) && amount > 0) {
+          this.fallbackAmount = amount;
+        }
+      },
+      error: () => {
+        // Ignore fallback load errors.
+      }
+    });
   }
 }

@@ -8,6 +8,7 @@ import { arrowBackOutline } from 'ionicons/icons';
 import { AuthService } from '../../services/auth.service';
 import { DoctorService } from '../../services/doctor.service';
 import { DoctorCardView } from '../../models/doctor-card-view.model';
+import { Week } from '../../models/calendar.model';
 
 @Component({
   selector: 'app-session-change',
@@ -24,6 +25,8 @@ export class SessionChangePage implements OnInit {
   targetName = '';
   targetPhoto = '';
   sessionType = '';
+  doctor: DoctorCardView | null = null;
+  fallbackAmount = 0;
 
   loading = signal(false);
   loadingSlots = signal(false);
@@ -36,6 +39,9 @@ export class SessionChangePage implements OnInit {
     date: '',
     time: 0
   };
+  readonly weekHourOptions = Array.from({ length: 13 }, (_, i) => i + 9); // 9:00 - 21:00
+  weeks: Week[] = [];
+  currentWeekIndex = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -45,6 +51,17 @@ export class SessionChangePage implements OnInit {
     private doctorService: DoctorService
   ) {
     addIcons({ arrowBackOutline });
+  }
+
+  get selectedPrice(): number {
+    const doctor = this.doctor;
+    const isFamily = String(this.sessionType || '').toLowerCase().includes('сім')
+      || String(this.sessionType || '').toLowerCase().includes('пар');
+    const fromDoctor = Number(doctor ? (isFamily ? (doctor.priceFamily ?? 0) : (doctor.priceIndividual ?? 0)) : 0);
+    if (Number.isFinite(fromDoctor) && fromDoctor > 0) {
+      return fromDoctor;
+    }
+    return Number(this.fallbackAmount || 0);
   }
 
   ngOnInit(): void {
@@ -59,6 +76,7 @@ export class SessionChangePage implements OnInit {
       this.targetName = String(params.get('target_name') || '').trim();
       this.targetPhoto = String(params.get('target_photo') || '').trim();
       this.sessionType = String(params.get('session_type') || '').trim();
+      this.fallbackAmount = Number(params.get('amount') || 0);
 
       if (!this.sessionId) {
         this.error.set('Не вдалося визначити сесію для перенесення.');
@@ -156,17 +174,95 @@ export class SessionChangePage implements OnInit {
     });
   }
 
-  get reserveTimeOptions(): number[] {
-    const date = String(this.form.date || '').trim();
-    if (!date) {
-      return [];
-    }
-    const slots = this.availableSlotsByDate()[date] || [];
-    return [...slots].sort((a, b) => a - b);
+  get currentWeek(): Week | null {
+    return this.weeks[this.currentWeekIndex] ?? null;
   }
 
-  onDateChange() {
-    this.ensureValidSelectedTime();
+  get currentWeekDayKeys(): string[] {
+    const week = this.currentWeek;
+    return week ? Object.keys(week.days) : [];
+  }
+
+  prevWeek() {
+    if (this.canGoPrevWeek()) {
+      this.currentWeekIndex--;
+      this.ensureValidSelectedTime();
+    }
+  }
+
+  nextWeek() {
+    if (this.canGoNextWeek()) {
+      this.currentWeekIndex++;
+      this.ensureValidSelectedTime();
+    }
+  }
+
+  canGoPrevWeek(): boolean {
+    return this.currentWeekIndex > 0;
+  }
+
+  canGoNextWeek(): boolean {
+    return this.currentWeekIndex < this.weeks.length - 1;
+  }
+
+  get currentWeekLabel(): string {
+    const week = this.currentWeek as any;
+    if (!week) {
+      return '';
+    }
+
+    const fromRaw = String(week['date-form'] ?? '').trim();
+    const toRaw = String(week['date-to'] ?? '').trim();
+    const from = fromRaw ? new Date(fromRaw) : null;
+    const to = toRaw ? new Date(toRaw) : null;
+
+    if (!from || !to || Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) {
+      return String(week.week ?? '');
+    }
+
+    const fromDay = String(from.getDate()).padStart(2, '0');
+    const toDay = String(to.getDate()).padStart(2, '0');
+    let month = to.toLocaleDateString('uk-UA', { month: 'long' });
+    month = month.charAt(0).toUpperCase() + month.slice(1);
+    const year = to.getFullYear();
+
+    return `${fromDay} - ${toDay} ${month}, ${year}`;
+  }
+
+  onClientSlotSelect(dayKey: string, hour: number) {
+    const date = this.resolveDayDate(dayKey);
+    if (!date) {
+      return;
+    }
+    if (!this.isHourAvailable(dayKey, hour)) {
+      return;
+    }
+    this.form.date = date;
+    this.form.time = Number(hour);
+  }
+
+  isSelectedClientSlot(dayKey: string, hour: number): boolean {
+    const date = this.resolveDayDate(dayKey);
+    return this.form.date === date && Number(this.form.time) === Number(hour);
+  }
+
+  isHourAvailable(dayKey: string, hour: number): boolean {
+    const date = this.resolveDayDate(dayKey);
+    if (!date) {
+      return false;
+    }
+    const slots = this.availableSlotsByDate()[date] || [];
+    return slots.some((value) => Number(value) === Number(hour));
+  }
+
+  getDayLabel(dayKey: string): string {
+    const week = this.currentWeek;
+    return week?.days[dayKey]?.day_name ?? '';
+  }
+
+  getDayNumber(dayKey: string): string {
+    const week = this.currentWeek;
+    return week?.days[dayKey]?.day_no ?? '';
   }
 
   private getDefaultDate(): string {
@@ -183,6 +279,7 @@ export class SessionChangePage implements OnInit {
     this.error.set('');
 
     const applyDoctor = (doctor: DoctorCardView | null) => {
+      this.doctor = doctor;
       this.applyCalendarFromDoctor(doctor);
       this.loadingSlots.set(false);
     };
@@ -282,9 +379,17 @@ export class SessionChangePage implements OnInit {
 
   private applyCalendarFromDoctor(doctor: DoctorCardView | null) {
     const weeks = doctor?.calendar?.weeks ? Object.values(doctor.calendar.weeks) : [];
+    this.weeks = weeks.sort((a, b) => {
+      const aTime = new Date(String((a as any)?.['date-form'] ?? '')).getTime();
+      const bTime = new Date(String((b as any)?.['date-form'] ?? '')).getTime();
+      const safeA = Number.isNaN(aTime) ? Number.MAX_SAFE_INTEGER : aTime;
+      const safeB = Number.isNaN(bTime) ? Number.MAX_SAFE_INTEGER : bTime;
+      return safeA - safeB;
+    });
+
     const byDate: Record<string, number[]> = {};
 
-    for (const week of weeks) {
+    for (const week of this.weeks) {
       const days = (week as any)?.days ?? {};
       for (const dayKey of Object.keys(days)) {
         const day = days[dayKey] as any;
@@ -324,6 +429,7 @@ export class SessionChangePage implements OnInit {
     const availableDates = Object.keys(byDate).sort((a, b) => a.localeCompare(b));
     if (availableDates.length === 0) {
       this.form.time = 0;
+      this.form.date = '';
       return;
     }
 
@@ -331,6 +437,9 @@ export class SessionChangePage implements OnInit {
     if (!currentDate || !byDate[currentDate]?.length) {
       this.form.date = availableDates[0];
     }
+
+    const weekIndex = this.findWeekIndexByDate(this.form.date);
+    this.currentWeekIndex = weekIndex >= 0 ? weekIndex : 0;
 
     this.ensureValidSelectedTime();
   }
@@ -346,8 +455,35 @@ export class SessionChangePage implements OnInit {
     return '';
   }
 
+  private resolveDayDate(dayKey: string): string {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dayKey)) {
+      return dayKey;
+    }
+    const week = this.currentWeek;
+    const dayAny = week?.days?.[dayKey] as any;
+    if (dayAny?.date && /^\d{4}-\d{2}-\d{2}$/.test(dayAny.date)) {
+      return dayAny.date;
+    }
+    return '';
+  }
+
+  private findWeekIndexByDate(date: string): number {
+    if (!date) {
+      return -1;
+    }
+    return this.weeks.findIndex((week: any) => {
+      const fromRaw = String(week?.['date-form'] ?? '').trim();
+      const toRaw = String(week?.['date-to'] ?? '').trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(fromRaw) || !/^\d{4}-\d{2}-\d{2}$/.test(toRaw)) {
+        return false;
+      }
+      return date >= fromRaw && date <= toRaw;
+    });
+  }
+
   private ensureValidSelectedTime() {
-    const options = this.reserveTimeOptions;
+    const date = String(this.form.date || '').trim();
+    const options = date ? (this.availableSlotsByDate()[date] || []) : [];
     if (!options.length) {
       this.form.time = 0;
       return;

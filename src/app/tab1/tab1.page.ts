@@ -42,6 +42,7 @@ interface Session {
   doctor_id?: number;
   doctor_user_id?: number;
   doctor_hash?: string;
+  amount?: number;
 }
 
 interface RecentPsychologist {
@@ -336,7 +337,8 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         session_type: session.type,
         doctor_id: session.doctor_id,
         doctor_user_id: session.doctor_user_id,
-        doctor_hash: session.doctor_hash
+        doctor_hash: session.doctor_hash,
+        amount: Number(session.amount ?? 0) > 0 ? String(session.amount) : ''
       }
     };
     void this.router.navigate(['/session-change'], extras);
@@ -882,7 +884,8 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       payment_link: String((item as any)?.payment_link ?? (item as any)?.checkout_url ?? '').trim(),
       doctor_id: Number((item as any)?.doctor_id ?? 0) || undefined,
       doctor_user_id: Number(item.doctor_user_id ?? 0) || undefined,
-      doctor_hash: String((item as any)?.doctor_hash ?? (item as any)?.hash ?? '').trim() || undefined
+      doctor_hash: String((item as any)?.doctor_hash ?? (item as any)?.hash ?? '').trim() || undefined,
+      amount: Number((item as any)?.amount ?? (item as any)?.session_amount ?? 0) || undefined
     };
   }
 

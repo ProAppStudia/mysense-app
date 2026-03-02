@@ -27,6 +27,7 @@ interface Session {
   doctor_id?: number;
   doctor_user_id?: number;
   doctor_hash?: string;
+  amount?: number;
 }
 
 @Component({
@@ -196,10 +197,11 @@ export class SessionsPage implements OnInit {
 
   isArchiveSession(session: Session): boolean {
     const text = String(session.status || '').toLowerCase();
-    if (text.includes('скас') || text.includes('відмін') || text.includes('cancel')) {
+    if (text.includes('скас') || text.includes('відмін') || text.includes('cancel') || text.includes('неусп') || text.includes('failed')) {
       return true;
     }
-    return Number(session.status_id) === 9;
+    const statusId = Number(session.status_id ?? 0);
+    return statusId === 9 || statusId === 4;
   }
 
   isPaidSession(session: Session): boolean {
@@ -279,7 +281,8 @@ export class SessionsPage implements OnInit {
       payment_link: String((item as any)?.payment_link ?? (item as any)?.checkout_url ?? '').trim(),
       doctor_id: Number((item as any)?.doctor_id ?? 0) || undefined,
       doctor_user_id: Number((item as any)?.doctor_user_id ?? 0) || undefined,
-      doctor_hash: String((item as any)?.doctor_hash ?? (item as any)?.hash ?? '').trim() || undefined
+      doctor_hash: String((item as any)?.doctor_hash ?? (item as any)?.hash ?? '').trim() || undefined,
+      amount: Number((item as any)?.amount ?? (item as any)?.session_amount ?? 0) || undefined
     };
   }
 
@@ -457,7 +460,8 @@ export class SessionsPage implements OnInit {
         session_type: session.type,
         doctor_id: session.doctor_id,
         doctor_user_id: session.doctor_user_id,
-        doctor_hash: session.doctor_hash
+        doctor_hash: session.doctor_hash,
+        amount: Number(session.amount ?? 0) > 0 ? String(session.amount) : ''
       }
     });
   }
