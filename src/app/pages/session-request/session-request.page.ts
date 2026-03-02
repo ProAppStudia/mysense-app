@@ -204,6 +204,18 @@ export class SessionRequestPage implements OnInit {
     return this.availableSessionTypes.find((item) => item.value === Number(this.form.type))?.label || '';
   }
 
+  get showPairOnlineRequestBlock(): boolean {
+    return Number(this.form.type) === 2 && this.form.format === 'online';
+  }
+
+  get showOfflineRequestBlock(): boolean {
+    return this.form.format === 'offline';
+  }
+
+  get showContactRequestBlock(): boolean {
+    return this.showPairOnlineRequestBlock || this.showOfflineRequestBlock;
+  }
+
   get currentWeek(): Week | null {
     return this.weeks[this.currentWeekIndex] ?? null;
   }
@@ -242,11 +254,11 @@ export class SessionRequestPage implements OnInit {
       this.error.set('Для цього психолога недоступні потрібні параметри сесії.');
       return;
     }
-    if (!this.form.date || !this.form.time) {
+    if (!this.showContactRequestBlock && (!this.form.date || !this.form.time)) {
       this.error.set('Оберіть дату та час.');
       return;
     }
-    if (!this.isDoctor && !this.hasSelectedClientSlot()) {
+    if (!this.isDoctor && !this.showContactRequestBlock && !this.hasSelectedClientSlot()) {
       this.error.set('Оберіть доступний час із графіка психолога.');
       return;
     }
@@ -745,6 +757,12 @@ export class SessionRequestPage implements OnInit {
       return;
     }
 
+    if (this.showContactRequestBlock) {
+      this.form.date = '';
+      this.form.time = 0;
+      return;
+    }
+
     // Client should choose slot manually; keep preselected slot from profile if passed.
     if (!this.form.date || !this.form.time) {
       this.form.date = '';
@@ -823,6 +841,10 @@ export class SessionRequestPage implements OnInit {
   }
 
   onClientSlotSelect(dayKey: string, hour: number) {
+    if (this.showContactRequestBlock) {
+      return;
+    }
+
     const date = this.resolveDayDate(dayKey);
     if (!date) {
       return;
@@ -928,6 +950,51 @@ export class SessionRequestPage implements OnInit {
     const year = to.getFullYear();
 
     return `${fromDay} - ${toDay} ${month}, ${year}`;
+  }
+
+  onSessionTypeSelect(typeValue: number): void {
+    if (this.form.type === typeValue) {
+      return;
+    }
+    this.form.type = typeValue;
+    this.onBookingModeChanged();
+  }
+
+  onSessionFormatSelect(formatValue: 'online' | 'offline'): void {
+    if (this.form.format === formatValue) {
+      return;
+    }
+    this.form.format = formatValue;
+    this.onBookingModeChanged();
+  }
+
+  openChatForSessionArrangement(): void {
+    const doctor = this.doctor();
+    if (!doctor) {
+      return;
+    }
+
+    const queryParams: Record<string, string | number> = { type: 'write' };
+    if (doctor.hash) {
+      queryParams['hash'] = doctor.hash;
+    }
+    if (doctor.userId) {
+      queryParams['to_user_id'] = Number(doctor.userId);
+    }
+    this.router.navigate(['/tabs/chat'], { queryParams });
+  }
+
+  private onBookingModeChanged(): void {
+    this.error.set('');
+    this.success.set('');
+
+    if (this.showContactRequestBlock) {
+      this.form.date = '';
+      this.form.time = 0;
+      return;
+    }
+
+    this.currentWeekIndex = 0;
   }
 
   private buildDoctorFromProfile(profile: any): DoctorCardView | undefined {
