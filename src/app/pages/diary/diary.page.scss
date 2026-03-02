@@ -74,7 +74,8 @@ ion-toolbar ion-button {
 .date-item {
   flex: 0 0 auto;
   width: 48px;
-  height: 64px;
+  height: 58px;
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -108,14 +109,21 @@ ion-toolbar ion-button {
     }
   }
 
-  &.has-entry .day-number::after {
+  &.has-entry::after {
     content: '';
-    display: block;
-    width: 6px;
-    height: 6px;
+    position: absolute;
+    left: 50%;
+    bottom: -14px;
+    transform: translateX(-50%);
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
-    background: #7a5bda;
-    margin: 4px auto 0;
+    background: #e6468a;
+    z-index: 2;
+  }
+
+  &.has-entry.selected::after {
+    box-sizing: border-box;
   }
 
   &.disabled {

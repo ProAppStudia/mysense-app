@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonTextarea, IonInput, IonButtons, IonLabel } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonTextarea, IonButtons, IonLabel } from '@ionic/angular/standalone';
 import { DiaryService, DiaryQuestion } from '../../services/diary.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -12,13 +12,50 @@ import { Subscription } from 'rxjs';
   templateUrl: './diary-entry.page.html',
   styleUrls: ['./diary-entry.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButton, IonTextarea, IonInput, IonButtons, IonLabel]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButton, IonTextarea, IonButtons, IonLabel]
 })
 export class DiaryEntryPage implements OnInit, OnDestroy {
+  private readonly moodOptionsGood: Array<{ id: string; label: string; emoji: string }> = [
+    { id: 'happy', label: 'Щасливо', emoji: '😊' },
+    { id: 'joyful', label: 'Радісно', emoji: '😄' },
+    { id: 'energetic', label: 'Бадьоро', emoji: '⚡' },
+    { id: 'great', label: 'В задоволенні', emoji: '😌' },
+    { id: 'calm', label: 'Спокійно', emoji: '😇' },
+    { id: 'inspired', label: 'Натхненно', emoji: '🤗' },
+    { id: 'proud', label: 'Пишаюся собою', emoji: '🏆' },
+    { id: 'confident', label: 'Впевнено', emoji: '💪' },
+    { id: 'optimistic', label: 'Оптимістично', emoji: '🌞' },
+    { id: 'loved', label: 'Закохано', emoji: '😍' },
+    { id: 'excited', label: 'Схвильовано', emoji: '🤩' },
+    { id: 'motivated', label: 'Вмотивовано', emoji: '🎯' },
+    { id: 'relaxed', label: 'Розслаблено', emoji: '🧘' },
+    { id: 'euphoric', label: 'Можу гори звернути', emoji: '🚀' }
+  ];
+  private readonly moodOptionsNotGood: Array<{ id: string; label: string; emoji: string }> = [
+    { id: 'indifferent', label: 'Без емоцій', emoji: '😐' },
+    { id: 'melancholic', label: 'Сумно', emoji: '😔' },
+    { id: 'offended', label: 'Ображено', emoji: '🥺' },
+    { id: 'disappointed', label: 'Розчаровано', emoji: '😞' },
+    { id: 'tired', label: 'Втомлено', emoji: '😪' },
+    { id: 'lonely', label: 'Самотньо', emoji: '🫥' },
+    { id: 'powerless', label: 'Безсило', emoji: '🫠' },
+    { id: 'tense', label: 'Напружено', emoji: '😣' },
+    { id: 'anxious', label: 'Тривожно', emoji: '😟' },
+    { id: 'exhausted', label: 'Виснажено', emoji: '😩' },
+    { id: 'irritated', label: 'Роздратовано', emoji: '😤' },
+    { id: 'nervous', label: 'Знервовано', emoji: '😬' },
+    { id: 'panicked', label: 'В паніці', emoji: '😱' },
+    { id: 'angry', label: 'Злюся', emoji: '😡' },
+    { id: 'desperate', label: 'В розпачі', emoji: '😭' },
+    { id: 'apathetic', label: 'В апатії', emoji: '😶' },
+    { id: 'empty', label: 'Спустошено', emoji: '🕳️' }
+  ];
+
   step = 1;
   date = '';
   diaryData: any;
   questions: DiaryQuestion[] = [];
+  moodGroup: 'good' | 'not_good' = 'good';
   selectedMood = '';
   selectedBody = '';
   thoughts = '';
@@ -26,8 +63,6 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
   editingId?: number;
   loading = false;
   errorMessage = '';
-  positiveMoods: any[] = [];
-  negativeMoods: any[] = [];
   private routeSub?: Subscription;
 
   constructor(
@@ -64,7 +99,7 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
   }
 
   nextStep() {
-    if (this.step < 5) {
+    if (this.step < 4) {
       this.step++;
     }
   }
@@ -89,43 +124,49 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
     this.selectedMood = mood;
   }
 
-  setBodyFeeling(feeling: string) {
-    this.selectedBody = feeling;
+  setMoodGroup(group: 'good' | 'not_good') {
+    this.moodGroup = group;
+    if (!this.currentMoodOptions.some((item) => item.id === this.selectedMood)) {
+      this.selectedMood = '';
+    }
   }
 
-  isQuestionMissing(questionId: number): boolean {
-    return !String(this.answersMap[questionId] ?? '').trim();
+  get currentMoodOptions(): Array<{ id: string; label: string; emoji: string }> {
+    return this.moodGroup === 'good' ? this.moodOptionsGood : this.moodOptionsNotGood;
   }
 
   saveEntry() {
     this.errorMessage = '';
 
-    if (!this.selectedMood || !this.selectedBody) {
-      this.errorMessage = 'Оберіть настрій та відчуття тіла.';
+    if (!this.selectedMood) {
+      this.errorMessage = 'Оберіть настрій.';
       return;
     }
 
-    const missingAnswer = this.questions.some((q) => this.isQuestionMissing(q.id));
-    if (missingAnswer) {
-      this.errorMessage = 'Будь ласка, дайте відповідь на всі запитання.';
-      return;
-    }
+    const answersToSave: Record<number, string> = {};
+    Object.entries(this.answersMap).forEach(([questionId, answer]) => {
+      const normalizedAnswer = String(answer ?? '').trim();
+      const normalizedQuestionId = Number(questionId);
+      if (normalizedAnswer && Number.isFinite(normalizedQuestionId)) {
+        answersToSave[normalizedQuestionId] = normalizedAnswer;
+      }
+    });
 
     this.loading = true;
     const entryToSave = {
       date: this.date,
       id: this.editingId,
       mood: [this.selectedMood],
-      body: [this.selectedBody],
+      body: this.selectedBody ? [this.selectedBody] : [],
       text: this.thoughts ?? '',
-      answers: this.answersMap
+      answers: answersToSave
     };
 
     this.diaryService.saveDiaryEntry(entryToSave).subscribe({
       next: () => {
         this.storeKnownDiaryDate(this.date);
         this.loading = false;
-        this.step = 5;
+        this.step = 4;
       },
       error: (err: Error) => {
         this.loading = false;
@@ -148,6 +189,7 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
       this.selectedMood = entry.mood?.[0] ?? '';
       this.selectedBody = entry.body?.[0] ?? '';
       this.thoughts = entry.text ?? '';
+      this.syncMoodGroupBySelectedMood();
 
       (entry.answers ?? []).forEach((item) => {
         if (item?.id) {
@@ -159,6 +201,7 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
 
   private resetEntryState(): void {
     this.step = 1;
+    this.moodGroup = 'good';
     this.loading = false;
     this.errorMessage = '';
     this.editingId = undefined;
@@ -216,8 +259,6 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
     this.diaryService.getDiaryQuestions().subscribe(response => {
       this.diaryData = response;
       this.questions = response.questions ?? [];
-      this.positiveMoods = this.diaryData.mood.items.filter((m: any) => m.type === 'positive');
-      this.negativeMoods = this.diaryData.mood.items.filter((m: any) => m.type === 'negative');
 
       this.routeSub?.unsubscribe();
       this.routeSub = this.route.queryParamMap.subscribe((params) => {
@@ -230,5 +271,18 @@ export class DiaryEntryPage implements OnInit, OnDestroy {
         this.loadExistingEntry();
       });
     });
+  }
+
+  private syncMoodGroupBySelectedMood(): void {
+    if (!this.selectedMood) {
+      return;
+    }
+    if (this.moodOptionsGood.some((item) => item.id === this.selectedMood)) {
+      this.moodGroup = 'good';
+      return;
+    }
+    if (this.moodOptionsNotGood.some((item) => item.id === this.selectedMood)) {
+      this.moodGroup = 'not_good';
+    }
   }
 }

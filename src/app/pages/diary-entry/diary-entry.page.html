@@ -1,7 +1,7 @@
 <ion-header class="app-back-toolbar">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button (click)="previousStep()" *ngIf="step > 1 && step < 5" class="app-back-btn">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+      <ion-button (click)="previousStep()" *ngIf="step > 1 && step < 4" class="app-back-btn">
         <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="header-back-icon">
       </ion-button>
       <ion-button (click)="goBack()" *ngIf="step === 1" class="app-back-btn">
@@ -15,67 +15,68 @@
 <ion-content class="ion-padding">
   <!-- Step 1: Mood -->
   <div *ngIf="step === 1 && diaryData">
-    <h2>{{ diaryData.mood.header }}</h2>
+    <h2 class="entry-mood-title">Як я себе сьогодні почуваю</h2>
+
+    <div class="mood-toggle">
+      <button type="button" class="mood-toggle__btn" [class.active]="moodGroup === 'good'" (click)="setMoodGroup('good')">
+        Добре
+      </button>
+      <button type="button" class="mood-toggle__btn" [class.active]="moodGroup === 'not_good'" (click)="setMoodGroup('not_good')">
+        Не дуже
+      </button>
+    </div>
+
     <div class="mood-options">
-      <ion-button *ngFor="let mood of positiveMoods" (click)="setMood(mood.id); nextStep()">
-        <div class="button-content">
-          <img [src]="mood.icon" alt="">
-          <span>{{ mood.name }}</span>
-        </div>
-      </ion-button>
+      <button
+        type="button"
+        class="mood-option-btn"
+        *ngFor="let mood of currentMoodOptions"
+        [class.active]="selectedMood === mood.id"
+        (click)="setMood(mood.id)"
+      >
+        <span class="mood-option-emoji">{{ mood.emoji }}</span>
+        {{ mood.label }}
+      </button>
     </div>
-    <div class="mood-options">
-      <ion-button *ngFor="let mood of negativeMoods" (click)="setMood(mood.id); nextStep()">
-        <div class="button-content">
-          <img [src]="mood.icon" alt="">
-          <span>{{ mood.name }}</span>
-        </div>
-      </ion-button>
-    </div>
+
+    <ion-button class="mood-next-btn" expand="block" (click)="nextStep()" [disabled]="!selectedMood">Далі</ion-button>
   </div>
 
-  <!-- Step 2: Body Feeling -->
-  <div *ngIf="step === 2 && diaryData">
-    <h2>{{ diaryData.body.header }}</h2>
-    <div class="feeling-options">
-      <ion-button *ngFor="let feeling of diaryData.body.items" (click)="setBodyFeeling(feeling.id); nextStep()">
-        <div class="button-content">
-          <img [src]="feeling.icon" alt="">
-          <span>{{ feeling.name }}</span>
-        </div>
-      </ion-button>
-    </div>
+  <!-- Step 2: Thoughts -->
+  <div *ngIf="step === 2">
+    <h2 class="entry-mood-title">Мої думки сьогодні</h2>
+    <ion-textarea
+      class="diary-thoughts-textarea"
+      [(ngModel)]="thoughts"
+      rows="6"
+      placeholder="Напишіть, що для вас сьогодні важливо..."
+    ></ion-textarea>
+    <ion-button class="thoughts-next-btn" expand="block" (click)="nextStep()">Далі</ion-button>
   </div>
 
-  <!-- Step 3: Thoughts -->
-  <div *ngIf="step === 3">
-    <h2>Використовуйте цей простір, щоб записати свої думки.</h2>
-    <ion-textarea [(ngModel)]="thoughts" rows="6"></ion-textarea>
-    <ion-button expand="block" (click)="nextStep()">Далі</ion-button>
-  </div>
-
-  <!-- Step 4: Therapeutic Questions -->
-  <div *ngIf="step === 4 && diaryData">
-    <h2>{{ diaryData.questionsHeader || 'Запитання від нашого психотерапевта' }}</h2>
-    <div *ngFor="let question of questions">
-      <ion-label>{{ question.title }}</ion-label>
-      <ion-input
+  <!-- Step 3: Therapeutic Questions -->
+  <div *ngIf="step === 3 && diaryData">
+    <h2 class="entry-mood-title questions-screen-title">Запитання для щоденної рефлексії</h2>
+    <div class="question-block" *ngFor="let question of questions">
+      <ion-label class="question-title">{{ question.title }}</ion-label>
+      <ion-textarea
+        class="question-input"
         [(ngModel)]="answersMap[question.id]"
+        rows="3"
         [placeholder]="question.placeholder"
-        [class.ion-invalid]="isQuestionMissing(question.id) && errorMessage"
-      ></ion-input>
+      ></ion-textarea>
     </div>
     <p class="ion-padding-top ion-text-danger" *ngIf="errorMessage">{{ errorMessage }}</p>
-    <ion-button expand="block" (click)="saveEntry()" [disabled]="loading">
+    <ion-button class="questions-next-btn" expand="block" (click)="saveEntry()" [disabled]="loading">
       {{ loading ? 'Збереження...' : 'Далі' }}
     </ion-button>
   </div>
 
-  <!-- Step 5: Confirmation -->
-  <div *ngIf="step === 5" class="confirmation-container">
+  <!-- Step 4: Confirmation -->
+  <div *ngIf="step === 4" class="confirmation-container">
     <img src="assets/img/problem06.png" alt="Confirmation">
-    <h2>Ваш запис у щоденнику створено</h2>
-    <p>Новий запис у щоденнику створено. Ви можете редагувати свої записи в будь-який час.</p>
-    <ion-button expand="block" (click)="finish()">Добре</ion-button>
+    <h2>Запис створено</h2>
+    <p>Її можна передивитися в любий момент</p>
+    <ion-button expand="block" (click)="finish()">До щоденника</ion-button>
   </div>
 </ion-content>
