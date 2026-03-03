@@ -183,25 +183,61 @@ export class DiaryService {
 
   private normalizeMonthEntries(response: any): Record<string, boolean> {
     const result: Record<string, boolean> = {};
-
-    if (Array.isArray(response?.results)) {
-      response.results.forEach((item: any) => {
-        const date = String(item?.date ?? item?.day ?? '').slice(0, 10);
-        if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-          result[date] = true;
-        }
-      });
-      return result;
-    }
-
-    if (response && typeof response === 'object') {
-      Object.entries(response).forEach(([key, value]) => {
-        if (/^\d{4}-\d{2}-\d{2}$/.test(key) && !!value) {
-          result[key] = true;
-        }
-      });
-    }
-
+    this.extractMonthEntryDates(response).forEach((date) => {
+      result[date] = true;
+    });
     return result;
+  }
+
+  private extractMonthEntryDates(source: any): string[] {
+    const found = new Set<string>();
+    const visited = new Set<any>();
+    const dateRegex = /^(\d{4}-\d{2}-\d{2})/;
+
+    const addDate = (value: any): void => {
+      const normalized = String(value ?? '').trim();
+      const match = normalized.match(dateRegex);
+      if (match?.[1]) {
+        found.add(match[1]);
+      }
+    };
+
+    const walk = (node: any): void => {
+      if (node == null) {
+        return;
+      }
+
+      if (typeof node === 'string' || typeof node === 'number') {
+        addDate(node);
+        return;
+      }
+
+      if (typeof node !== 'object') {
+        return;
+      }
+
+      if (visited.has(node)) {
+        return;
+      }
+      visited.add(node);
+
+      if (Array.isArray(node)) {
+        node.forEach((item) => walk(item));
+        return;
+      }
+
+      Object.entries(node).forEach(([key, value]) => {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(key) && !!value) {
+          found.add(key);
+        }
+        if (key === 'date' || key === 'day' || key === 'created_at' || key === 'updated_at') {
+          addDate(value);
+        }
+        walk(value);
+      });
+    };
+
+    walk(source);
+    return Array.from(found);
   }
 }

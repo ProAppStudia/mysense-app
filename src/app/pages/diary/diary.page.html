@@ -9,7 +9,7 @@
   </ion-toolbar>
 
 
-<ion-content>
+<ion-content [class.has-entry-day]="isSelectedDateFilled">
   <div class="calendar-container">
     <div class="calendar-header">
       <ion-button fill="clear" (click)="previousDay()">

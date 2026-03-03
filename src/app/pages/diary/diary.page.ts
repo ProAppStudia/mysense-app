@@ -19,7 +19,7 @@ export class DiaryPage implements OnInit {
   @ViewChild('dateScroller') dateScroller!: ElementRef;
 
   private readonly windowRadiusDays = 21;
-  private readonly loadedMonthKeys = new Set<string>();
+  private readonly loadingEntryDates = new Set<string>();
   selectedDate: string;
   diaryEntry: DiaryEntryNormalized | null = null;
   dates: Date[] = [];
@@ -150,8 +150,8 @@ export class DiaryPage implements OnInit {
   selectDate(date: Date) {
     this.selectedDate = this.toLocalDateString(date);
     this.extendDatesWindowIfNeeded(date);
-    this.ensureMonthEntriesLoaded(date);
     this.loadDiaryEntry();
+    this.ensureEntriesLoadedForWindow();
     this.scrollToSelectedDate();
   }
 
@@ -173,33 +173,7 @@ export class DiaryPage implements OnInit {
         this.entries[this.selectedDate] = true;
         this.storeKnownDiaryDate(this.selectedDate);
       }
-      this.ensureMonthEntriesLoaded(this.parseLocalDate(this.selectedDate), true);
-    });
-  }
-
-  private loadMonthEntries(year: number, monthIndex: number, forceReload = false): void {
-    const monthKey = this.getMonthKey(year, monthIndex);
-    if (forceReload) {
-      this.loadedMonthKeys.delete(monthKey);
-    }
-    if (this.loadedMonthKeys.has(monthKey)) {
-      return;
-    }
-    this.loadedMonthKeys.add(monthKey);
-    this.applyKnownDatesForMonth(monthKey);
-
-    this.diaryService.getDiaryEntriesForMonth(year, monthIndex).subscribe((response) => {
-      this.entries = { ...this.entries, ...response };
-      Object.keys(response).forEach((date) => {
-        if (response[date]) {
-          this.storeKnownDiaryDate(date);
-        }
-      });
-
-      const hasMonthEntriesFromApi = Object.keys(response).some((date) => date.startsWith(monthKey));
-      if (!hasMonthEntriesFromApi) {
-        this.applyKnownDatesForMonth(monthKey);
-      }
+      this.ensureEntriesLoadedForWindow(true);
     });
   }
 
@@ -242,27 +216,12 @@ export class DiaryPage implements OnInit {
 
     this.route.queryParams.subscribe(params => {
       if (params['refresh']) {
-        this.loadedMonthKeys.clear();
         this.ensureEntriesLoadedForWindow(true);
         this.loadDiaryEntry();
       }
     });
     this.loadDiaryEntry();
     this.ensureEntriesLoadedForWindow(true);
-  }
-
-  private applyKnownDatesForMonth(monthKey: string): void {
-    const knownDates = this.getKnownDiaryDates();
-    if (!knownDates.length) {
-      return;
-    }
-    const nextEntries = { ...this.entries };
-    knownDates.forEach((date) => {
-      if (date.startsWith(monthKey)) {
-        nextEntries[date] = true;
-      }
-    });
-    this.entries = nextEntries;
   }
 
   private getKnownDiaryDatesStorageKey(): string {
@@ -298,10 +257,6 @@ export class DiaryPage implements OnInit {
     localStorage.setItem(this.getKnownDiaryDatesStorageKey(), JSON.stringify(Array.from(known)));
   }
 
-  private getMonthKey(year: number, monthIndex: number): string {
-    return `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
-  }
-
   private parseLocalDate(dateString: string): Date {
     const [year, month, day] = dateString.split('-').map(Number);
     return new Date(year, (month || 1) - 1, day || 1);
@@ -335,18 +290,39 @@ export class DiaryPage implements OnInit {
     }
   }
 
-  private ensureMonthEntriesLoaded(date: Date, forceReload = false): void {
-    this.loadMonthEntries(date.getFullYear(), date.getMonth(), forceReload);
-  }
-
   private ensureEntriesLoadedForWindow(forceReload = false): void {
-    const uniqueMonths = new Set<string>();
+    const knownDates = new Set(this.getKnownDiaryDates());
+    const todayString = this.toLocalDateString(new Date());
+
     this.dates.forEach((date) => {
-      uniqueMonths.add(this.getMonthKey(date.getFullYear(), date.getMonth()));
-    });
-    uniqueMonths.forEach((monthKey) => {
-      const [year, month] = monthKey.split('-').map(Number);
-      this.loadMonthEntries(year, (month || 1) - 1, forceReload);
+      const dateString = this.toLocalDateString(date);
+      if (dateString > todayString) {
+        return;
+      }
+
+      if (!forceReload && this.entries[dateString]) {
+        return;
+      }
+
+      if (!forceReload && knownDates.has(dateString)) {
+        this.entries[dateString] = true;
+        return;
+      }
+
+      if (this.loadingEntryDates.has(dateString)) {
+        return;
+      }
+
+      this.loadingEntryDates.add(dateString);
+      this.diaryService.getDiaryByDate(dateString).subscribe((response) => {
+        if (response) {
+          this.entries[dateString] = true;
+          this.storeKnownDiaryDate(dateString);
+        } else if (forceReload && dateString !== this.selectedDate) {
+          delete this.entries[dateString];
+        }
+        this.loadingEntryDates.delete(dateString);
+      });
     });
   }
 
@@ -426,6 +402,10 @@ export class DiaryPage implements OnInit {
 
   get isSelectedDateToday(): boolean {
     return this.selectedDate === this.toLocalDateString(new Date());
+  }
+
+  get isSelectedDateFilled(): boolean {
+    return !!this.entries[this.selectedDate];
   }
 
   get todayDate(): string {
