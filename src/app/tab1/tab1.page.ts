@@ -125,6 +125,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   homeClientName = signal('Головний');
   homeClientBalance = signal(0);
   homeClientAvatar = signal('');
+  hasSuccessfulClientSession = signal(false);
   homeProfileEditorOpen = signal(false);
   homeProfileEditorLoading = signal(false);
   homeProfileEditorError = signal<string | null>(null);
@@ -1031,11 +1032,18 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         if (resp?.error && all.length === 0) {
           this.userSessions = [];
           this.recentPsychologists = [];
+          this.hasSuccessfulClientSession.set(false);
           return;
         }
 
-        this.userSessions = all
-          .map((item, index) => this.mapApiSession(item, index))
+        const mappedSessions = all
+          .map((item, index) => this.mapApiSession(item, index));
+
+        this.hasSuccessfulClientSession.set(
+          mappedSessions.some((session) => this.isSuccessfulClientSession(session))
+        );
+
+        this.userSessions = mappedSessions
           .sort((a, b) => this.compareByOrderCreationDesc(a, b))
           .slice(0, this.isDoctor() ? 2 : all.length);
 
@@ -1044,8 +1052,26 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       error: () => {
         this.userSessions = [];
         this.recentPsychologists = [];
+        this.hasSuccessfulClientSession.set(false);
       }
     });
+  }
+
+  showClientPromoContent(): boolean {
+    if (this.isDoctor()) {
+      return false;
+    }
+    if (!this.isLoggedIn()) {
+      return true;
+    }
+    return !this.hasSuccessfulClientSession();
+  }
+
+  private isSuccessfulClientSession(session: Session): boolean {
+    const statusId = Number(session.status_id ?? 0);
+    const statusText = String(session.status || '').toLowerCase();
+    const statusColor = String(session.status_color || '').toLowerCase();
+    return statusId === 5 || statusText.includes('успіш') || statusColor === 'success';
   }
 
   private extractSessionsFromResponse(resp: any): { all: MySessionItem[] } {

@@ -152,6 +152,10 @@
         <ion-icon slot="start" name="information-circle-outline"></ion-icon>
         <ion-label>Як користуватись додатком</ion-label>
       </ion-item>
+      <ion-item button="true" detail routerLink="/tabs/news" (click)="ionViewWillLeave()">
+        <ion-icon slot="start" name="document-text-outline"></ion-icon>
+        <ion-label>Поради психологів</ion-label>
+      </ion-item>
       <ion-item detail (click)="goToFaq()">
         <ion-icon slot="start" name="help-circle-outline"></ion-icon>
         <ion-label>Питання/Відповіді</ion-label>
