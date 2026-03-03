@@ -35,6 +35,7 @@ export interface NewsArticle {
   text_banner?: string;
   text_after_banner?: string;
   text_after_img?: string;
+  text_purple_banner?: string;
   text_after_purple_banner?: string;
   text_white_banner?: string;
   text_after_white_banner?: string;

@@ -43,7 +43,47 @@
     <img *ngIf="article.image" [src]="article.image" [alt]="article.title">
 
     <p class="news-article-description" *ngIf="article.description">{{ article.description }}</p>
-    <div class="news-article-body" *ngFor="let part of articleContentParts" [innerHTML]="part"></div>
+
+    <div
+      class="news-article-body news-article-body--text-before-banner"
+      *ngIf="article.text_before_banner"
+      [innerHTML]="article.text_before_banner"
+    ></div>
+    <div
+      class="news-article-body news-article-body--text-banner"
+      *ngIf="article.text_banner"
+      [innerHTML]="article.text_banner"
+    ></div>
+    <div
+      class="news-article-body news-article-body--text-after-banner"
+      *ngIf="article.text_after_banner"
+      [innerHTML]="article.text_after_banner"
+    ></div>
+    <div
+      class="news-article-body news-article-body--text-after-img"
+      *ngIf="article.text_after_img"
+      [innerHTML]="article.text_after_img"
+    ></div>
+    <div
+      class="news-article-body news-article-body--text-purple-banner"
+      *ngIf="article.text_purple_banner"
+      [innerHTML]="article.text_purple_banner"
+    ></div>
+    <div
+      class="news-article-body news-article-body--text-after-purple-banner"
+      *ngIf="article.text_after_purple_banner"
+      [innerHTML]="article.text_after_purple_banner"
+    ></div>
+    <div
+      class="news-article-body news-article-body--text-white-banner"
+      *ngIf="article.text_white_banner"
+      [innerHTML]="article.text_white_banner"
+    ></div>
+    <div
+      class="news-article-body news-article-body--text-after-white-banner"
+      *ngIf="article.text_after_white_banner"
+      [innerHTML]="article.text_after_white_banner"
+    ></div>
   </article>
 
   <section class="article-author-card" *ngIf="!loading && !error && articleDoctor">

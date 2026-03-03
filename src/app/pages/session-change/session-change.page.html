@@ -1,19 +1,12 @@
-<ion-header class="app-back-toolbar">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <button type="button" class="back-btn app-back-btn" (click)="goBack()">
-        <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="back-btn-icon">
-        Повернутися
-      </button>
-    </ion-buttons>
-    <ion-title></ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content class="session-change-page ion-padding">
-  <section class="change-card">
-    <h2>Перенести сесію</h2>
+  <div class="inline-back-toolbar">
+    <button type="button" class="back-btn app-back-btn" (click)="goBack()" aria-label="Назад">
+      <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="back-btn-icon">
+    </button>
+    <h1>Перенести сесію</h1>
+  </div>
 
+  <section class="change-card">
     <div class="person-row">
       <img [src]="targetPhoto || 'assets/icon/favicon.png'" alt="">
       <div>
@@ -25,35 +18,89 @@
     <div class="block">
       <p class="title">Виберіть дату та час сесії</p>
       <p class="timezone">(за Києвом)</p>
-      <div class="datetime-box">
-        <button type="button" class="selected-datetime" [class.placeholder]="!hasSelectedDoctorDateTime" (click)="openDoctorDatePicker()">
-          {{ selectedDateTimeLabel }}
-        </button>
-      </div>
 
-      <ion-modal
-        cssClass="doctor-date-modal"
-        [isOpen]="doctorDatePickerOpen"
-        (didDismiss)="closeDoctorDatePicker()"
-        [keepContentsMounted]="true"
-      >
-        <ng-template>
-          <ion-datetime
-            id="doctor-session-change-datetime"
-            class="doctor-datetime"
-            mode="md"
-            presentation="date-time"
-            locale="uk-UA"
-            [preferWheel]="false"
-            [firstDayOfWeek]="1"
-            [showDefaultButtons]="false"
-            [value]="selectedDateTimeIso || undefined"
-            [min]="doctorDateMinIso"
-            [minuteValues]="[0]"
-            (ionChange)="onDoctorDateTimeChange($event.detail.value)"
-          ></ion-datetime>
+      <ng-container *ngIf="!isDoctor; else doctorPicker">
+        <div class="week-nav" *ngIf="currentWeek">
+          <button type="button" class="week-btn" (click)="prevWeek()" [disabled]="!canGoPrevWeek()">
+            <img
+              [src]="canGoPrevWeek() ? 'assets/icon/arrow-left-color.svg' : 'assets/icon/arrow-left-grey.svg'"
+              alt="Попередній тиждень"
+            >
+          </button>
+          <button type="button" class="week-btn" (click)="nextWeek()" [disabled]="!canGoNextWeek()">
+            <img
+              [src]="canGoNextWeek() ? 'assets/icon/arrow-left-color.svg' : 'assets/icon/arrow-left-grey.svg'"
+              alt="Наступний тиждень"
+              class="week-btn-icon-next"
+            >
+          </button>
+          <span class="week-title">{{ currentWeekLabel }}</span>
+        </div>
+
+        <div
+          class="calendar-grid"
+          [class.full-week]="currentWeekDayKeys.length >= 7"
+          *ngIf="currentWeekDayKeys.length; else noSlots"
+          [style.grid-template-columns]="'repeat(' + currentWeekDayKeys.length + ', minmax(0, 1fr))'"
+        >
+          <div class="calendar-column" *ngFor="let dayKey of currentWeekDayKeys">
+            <div class="calendar-day">
+              <p>{{ getDayLabel(dayKey) }}</p>
+              <p>{{ getDayNumber(dayKey) }}</p>
+            </div>
+            <button
+              *ngFor="let hour of weekHourOptions"
+              type="button"
+              class="slot-btn"
+              [class.available]="isHourAvailable(dayKey, hour)"
+              [class.unavailable]="!isHourAvailable(dayKey, hour)"
+              [class.active]="isSelectedClientSlot(dayKey, hour)"
+              (click)="onClientSlotSelect(dayKey, hour)"
+            >
+              {{ hour }}:00
+            </button>
+          </div>
+        </div>
+
+        <ng-template #noSlots>
+          <p class="hint-error">Немає доступних годин для бронювання</p>
         </ng-template>
-      </ion-modal>
+      </ng-container>
+
+      <ng-template #doctorPicker>
+        <div class="datetime-box">
+          <button type="button" class="selected-datetime" [class.placeholder]="!hasSelectedDoctorDateTime" (click)="openDoctorDatePicker()">
+            {{ selectedDateTimeLabel }}
+          </button>
+        </div>
+
+        <ion-modal
+          cssClass="doctor-date-modal"
+          [isOpen]="doctorDatePickerOpen"
+          (didDismiss)="closeDoctorDatePicker()"
+          [keepContentsMounted]="true"
+        >
+          <ng-template>
+            <div class="doctor-date-modal-inner">
+              <button type="button" class="doctor-date-modal-close" (click)="closeDoctorDatePicker()" aria-label="Закрити">×</button>
+              <ion-datetime
+                id="doctor-session-change-datetime"
+                class="doctor-datetime"
+                mode="md"
+                presentation="date-time"
+                locale="uk-UA"
+                [preferWheel]="false"
+                [firstDayOfWeek]="1"
+                [showDefaultButtons]="false"
+                [value]="selectedDateTimeIso || undefined"
+                [min]="doctorDateMinIso"
+                [minuteValues]="[0]"
+                (ionChange)="onDoctorDateTimeChange($event.detail.value)"
+              ></ion-datetime>
+            </div>
+          </ng-template>
+        </ion-modal>
+      </ng-template>
     </div>
 
     <div class="summary" *ngIf="sessionType">

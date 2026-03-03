@@ -10,6 +10,30 @@
     <button class="register-button" (click)="openRegisterModal()">Реєстрація</button>
   </div>
   <div class="main-content" *ngIf="homepageData">
+    <div *ngIf="isLoggedIn() && !isDoctor()" class="client-home-brief">
+      <div class="client-home-brief__top">
+        <img class="client-home-brief__avatar" [src]="homeClientAvatarSrc" alt="Аватар">
+        <div class="client-home-brief__title-wrap">
+          <h2 class="client-home-brief__title">
+            <span class="client-home-brief__name">{{ homeClientName() }}</span>, вітаємо!
+          </h2>
+        </div>
+        <button type="button" class="client-home-brief__edit-btn" (click)="openProfileEditor()" aria-label="Редагувати профіль">
+          <ion-icon class="client-home-brief__edit" name="create-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="client-home-brief__bottom">
+        <button type="button" class="client-home-brief__sessions" (click)="viewAllSessions()">
+          <ion-icon name="list-outline"></ion-icon>
+          <span>Мої сесії</span>
+        </button>
+        <span class="client-home-brief__divider">|</span>
+        <p class="client-home-brief__balance">
+          Ваш баланс <strong>{{ homeClientBalance() | number:'1.0-0' }} грн.</strong>
+        </p>
+      </div>
+    </div>
+
     <!-- My Sessions Block -->
     <div *ngIf="isLoggedIn() && userSessions.length > 0" class="my-sessions-block">
       <div class="sessions-header">
@@ -74,9 +98,7 @@
     <div *ngIf="isLoggedIn() && !isDoctor()" class="diary-block">
       
       <div class="diary-card diary-card--tasks">
-       <ion-icon name="checkmark-circle-outline"></ion-icon>
-        <h3>Мої завдання</h3>
-        <p>Переглядайте та керуйте своїми завданнями, щоб залишатися організованими.</p>
+        <h3><ion-icon name="checkmark-circle-outline"></ion-icon>Мої завдання</h3>
         <ion-button expand="block" class="add-diary-button" routerLink="/tabs/tasks">Дивитись завдання</ion-button>
       </div>
     </div>
@@ -532,6 +554,59 @@
           </ion-button>
         </form>
       </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal [isOpen]="homeProfileEditorOpen()" cssClass="home-profile-modal" (didDismiss)="closeHomeProfileEditor()">
+    <ng-template>
+      <div class="home-profile-modal__card">
+        <button type="button" class="home-profile-modal__close" (click)="closeHomeProfileEditor()" aria-label="Закрити">
+          ×
+        </button>
+
+        <h2 class="home-profile-modal__title">Редагувати профіль</h2>
+
+        <div class="home-profile-modal__photo">
+          <img [src]="homeProfilePhotoPreview() || homeClientAvatarSrc" alt="Фото профілю">
+          <button type="button" [disabled]="homeProfilePhotoUploading()" (click)="onHomeProfilePhotoClick(homeProfilePhotoInput)">
+            {{ homeProfilePhotoUploading() ? 'Завантаження...' : 'Змінити фото' }}
+          </button>
+          <input #homeProfilePhotoInput type="file" accept="image/*" hidden (change)="onHomeProfilePhotoSelected($event)">
+        </div>
+
+        <form [formGroup]="homeProfileForm" class="home-profile-modal__form" (ngSubmit)="saveHomeProfileEditor()">
+          <ion-item>
+            <ion-input label="Ім'я" labelPlacement="floating" formControlName="name" type="text"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-input label="Прізвище" labelPlacement="floating" formControlName="surname" type="text"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-input label="Електронна пошта" labelPlacement="floating" formControlName="email" type="email"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-input label="Телефон" labelPlacement="floating" formControlName="phone" type="tel"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-input label="Новий пароль" labelPlacement="floating" formControlName="password" type="password"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-input label="Повторити пароль" labelPlacement="floating" formControlName="confirm" type="password"></ion-input>
+          </ion-item>
+
+          <ion-text color="danger" *ngIf="homeProfileEditorError()">
+            <p>{{ homeProfileEditorError() }}</p>
+          </ion-text>
+          <ion-text color="success" *ngIf="homeProfileEditorSuccess()">
+            <p>{{ homeProfileEditorSuccess() }}</p>
+          </ion-text>
+
+          <ion-button expand="block" type="submit" [disabled]="homeProfileEditorLoading() || homeProfilePhotoUploading()">
+            <ion-spinner *ngIf="homeProfileEditorLoading()" name="lines-small"></ion-spinner>
+            <span *ngIf="!homeProfileEditorLoading()">Зберегти</span>
+          </ion-button>
+        </form>
+      </div>
     </ng-template>
   </ion-modal>
 

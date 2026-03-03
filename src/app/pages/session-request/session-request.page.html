@@ -1,19 +1,12 @@
-<ion-header class="app-back-toolbar">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <button type="button" class="back-btn app-back-btn" (click)="goBack()">
-        <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="back-btn-icon">
-        Повернутися
-      </button>
-    </ion-buttons>
-    <ion-title></ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content class="session-request-page ion-padding">
-  <section class="request-card">
-    <h2>Бронювання сесії</h2>
+  <div class="inline-back-toolbar">
+    <button type="button" class="back-btn app-back-btn" (click)="goBack()" aria-label="Назад">
+      <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="back-btn-icon">
+    </button>
+    <h1>Бронювання сесії</h1>
+  </div>
 
+  <section class="request-card">
     <div class="person-row">
       <img [src]="targetPhoto || 'assets/icon/favicon.png'" alt="">
       <div>
@@ -35,7 +28,6 @@
           *ngFor="let typeOpt of availableSessionTypes"
           [class.active]="isSessionTypeSelected(typeOpt.value)"
           (click)="onSessionTypeSelect(typeOpt.value)"
-          (touchend)="onSessionTypeSelect(typeOpt.value)"
         >
           {{ typeOpt.label }}
         </button>
@@ -58,7 +50,6 @@
           *ngFor="let formatOpt of availableFormats"
           [class.active]="form.format === formatOpt.value"
           (click)="onSessionFormatSelect(formatOpt.value)"
-          (touchend)="onSessionFormatSelect(formatOpt.value)"
         >
           {{ formatOpt.label }}
         </button>

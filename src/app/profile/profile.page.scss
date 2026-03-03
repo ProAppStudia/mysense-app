@@ -131,3 +131,38 @@ ion-content {
 .doctor-links-group ion-item {
   --background: #fff;
 }
+
+.profile-photo-edit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.profile-photo-edit img {
+  width: 76px;
+  height: 76px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #ece9f8;
+}
+
+.profile-photo-edit__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.profile-photo-edit__btn {
+  border: 0;
+  background: transparent;
+  color: #7a5bda;
+  font-size: 20px;
+  font-weight: 500;
+  padding: 0;
+  margin: 0;
+}

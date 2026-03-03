@@ -1,10 +1,8 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonButtons, IonContent, IonDatetime, IonHeader, IonIcon, IonModal, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonContent, IonDatetime, IonModal } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
-import { addIcons } from 'ionicons';
-import { arrowBackOutline } from 'ionicons/icons';
 import { AuthService } from '../../services/auth.service';
 import { DoctorService } from '../../services/doctor.service';
 import { DoctorCardView } from '../../models/doctor-card-view.model';
@@ -15,9 +13,11 @@ import { Week } from '../../models/calendar.model';
   templateUrl: './session-change.page.html',
   styleUrls: ['./session-change.page.scss'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonIcon, IonDatetime, IonModal, CommonModule, FormsModule]
+  imports: [IonContent, IonDatetime, IonModal, CommonModule, FormsModule]
 })
 export class SessionChangePage implements OnInit {
+  isDoctor = false;
+  currentUserId: number | null = null;
   sessionId = 0;
   doctorId = 0;
   doctorUserId = 0;
@@ -52,9 +52,7 @@ export class SessionChangePage implements OnInit {
     private router: Router,
     private authService: AuthService,
     private doctorService: DoctorService
-  ) {
-    addIcons({ arrowBackOutline });
-  }
+  ) {}
 
   get selectedPrice(): number {
     const doctor = this.doctor;
@@ -89,8 +87,18 @@ export class SessionChangePage implements OnInit {
         this.error.set('Не вдалося визначити сесію для перенесення.');
         return;
       }
-
-      this.loadDoctorCalendar();
+      this.authService.getProfile().subscribe({
+        next: (profile) => {
+          this.isDoctor = !!(profile?.is_doctor === true || profile?.is_doctor === 1 || profile?.is_doctor === '1');
+          this.currentUserId = Number(profile?.user_id) || null;
+          this.loadDoctorCalendar();
+        },
+        error: () => {
+          this.isDoctor = false;
+          this.currentUserId = null;
+          this.loadDoctorCalendar();
+        }
+      });
     });
   }
 
@@ -266,6 +274,7 @@ export class SessionChangePage implements OnInit {
     }
     this.form.date = date;
     this.form.time = Number(hour);
+    this.selectedDateTimeIso = `${date}T${String(hour).padStart(2, '0')}:00:00`;
   }
 
   isSelectedClientSlot(dayKey: string, hour: number): boolean {
@@ -534,12 +543,14 @@ export class SessionChangePage implements OnInit {
     const options = date ? (this.availableSlotsByDate()[date] || []) : [];
     if (!options.length) {
       this.form.time = 0;
+      this.selectedDateTimeIso = '';
       return;
     }
     const selected = Number(this.form.time);
     if (!options.includes(selected)) {
       this.form.time = options[0];
     }
+    this.selectedDateTimeIso = `${date}T${String(this.form.time).padStart(2, '0')}:00:00`;
   }
 
   private blurActiveElement() {

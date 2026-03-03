@@ -19,6 +19,13 @@ export interface UserProfile {
   phone: string;
   success: boolean;
   user_id: number;
+  fullname?: string;
+  photo?: string;
+  balance?: number | string;
+  wallet?: number | string;
+  user_balance?: number | string;
+  amount?: number | string;
+  extended?: Record<string, any>;
   is_doctor?: boolean | number | string;
   error?: string;
 }
@@ -36,6 +43,14 @@ export interface UpdateProfilePayload {
 export interface UpdateProfileResponse {
     success?: string;
     error?: string;
+}
+
+export interface UploadFileResponse {
+  success?: boolean | number | string;
+  error?: string;
+  path?: string;
+  results?: Array<{ path?: string }>;
+  files?: Array<{ path?: string }>;
 }
 
 export interface DoctorStatsResponse {
@@ -321,6 +336,14 @@ export class AuthService {
     });
 
     return this.http.post<UpdateProfileResponse>(this.UPDATE_PROFILE_URL, body.toString(), { headers });
+  }
+
+  uploadProfilePhoto(file: File): Observable<UploadFileResponse> {
+    const token = this.tokenStorage.getToken();
+    const formData = new FormData();
+    formData.append('file[]', file, file.name);
+    const url = `${environment.baseUrl}/connector.php?action=upload_file&token=${encodeURIComponent(String(token ?? ''))}`;
+    return this.http.post<UploadFileResponse>(url, formData);
   }
 
   getMyDoctorStats(period: 'day' | 'week' | 'month' | 'half_year' = 'week'): Observable<DoctorStatsResponse> {

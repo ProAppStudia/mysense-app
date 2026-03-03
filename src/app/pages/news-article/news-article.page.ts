@@ -34,24 +34,6 @@ export class NewsArticlePage implements OnInit {
     });
   }
 
-  get articleContentParts(): string[] {
-    const a = this.article;
-    if (!a) {
-      return [];
-    }
-    return [
-      a.text_before_banner,
-      a.text_banner,
-      a.text_after_banner,
-      a.text_after_img,
-      a.text_after_purple_banner,
-      a.text_white_banner,
-      a.text_after_white_banner
-    ]
-      .map((item) => String(item || '').trim())
-      .filter(Boolean);
-  }
-
   get authorPhoto(): string {
     const raw = String(this.article?.photo || '').trim();
     return this.resolvePhoto(raw);

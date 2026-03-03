@@ -4,18 +4,18 @@ import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } 
 import { IonContent, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel, IonHeader, IonToolbar, IonModal, IonInput, IonSpinner, IonText, IonButtons, IonCheckbox, RefresherCustomEvent } from '@ionic/angular/standalone';
 import { HttpClient } from '@angular/common/http';
 import { register } from 'swiper/element/bundle';
-import { AuthService, MySessionItem } from '../services/auth.service'; // Import AuthService
+import { AuthService, MySessionItem, UserProfile, UpdateProfilePayload } from '../services/auth.service'; // Import AuthService
 import { DiaryEntryNormalized, DiaryService } from '../services/diary.service';
 import { environment } from '../../environments/environment'; // Import environment for base URL
 import { Subscription, interval } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, checkmarkDoneOutline, heart, checkmarkCircleOutline, walletOutline, copyOutline } from 'ionicons/icons';
+import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, checkmarkDoneOutline, heart, checkmarkCircleOutline, walletOutline, copyOutline, createOutline, listOutline } from 'ionicons/icons';
 import { Router, RouterLink, NavigationExtras } from '@angular/router';
 import { TestsBlockComponent } from '../components/tests-block/tests-block.component';
 import { PaymentFlowService, PaymentState } from '../services/payment-flow.service';
 import { NewsListItem, NewsService } from '../services/news.service';
 
-addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, walletOutline, copyOutline });
+addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, walletOutline, copyOutline, createOutline, listOutline });
 register();
 
 interface Doctor {
@@ -122,6 +122,25 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   homeNews: NewsListItem[] = [];
   homeNewsLoading = false;
   activeArticleSlide = 0;
+  homeClientName = signal('Головний');
+  homeClientBalance = signal(0);
+  homeClientAvatar = signal('');
+  homeProfileEditorOpen = signal(false);
+  homeProfileEditorLoading = signal(false);
+  homeProfileEditorError = signal<string | null>(null);
+  homeProfileEditorSuccess = signal<string | null>(null);
+  homeProfilePhotoUploading = signal(false);
+  homeProfilePhotoPreview = signal('');
+  homeProfilePendingPhotoPath = signal('');
+
+  homeProfileForm = new FormGroup({
+    name: new FormControl('', [Validators.required, Validators.minLength(2)]),
+    surname: new FormControl('', [Validators.required, Validators.minLength(2)]),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    phone: new FormControl('', [Validators.required, Validators.pattern(/^\+?[0-9\s\-()]{7,25}$/)]),
+    password: new FormControl('', [Validators.minLength(6)]),
+    confirm: new FormControl('')
+  });
 
   // Login Modal States
   loginOpen = signal(false);
@@ -723,6 +742,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   private loadUserRole() {
     this.authService.getProfile().subscribe({
       next: (profile) => {
+        this.applyHomeClientInfo(profile);
         this.isDoctor.set(
           !!(profile?.is_doctor === true || profile?.is_doctor === 1 || profile?.is_doctor === '1')
         );
@@ -733,6 +753,47 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         this.userSessions = [];
       }
     });
+  }
+
+  private applyHomeClientInfo(profile: any): void {
+    const firstName = String(profile?.firstname || '').trim();
+    const fullName = String(profile?.fullname || '').trim();
+    const fallback = 'Головний';
+    const name = firstName || (fullName ? fullName.split(/\s+/)[0] : fallback);
+    this.homeClientName.set(name || fallback);
+
+    const avatarRaw = String(profile?.avatar || profile?.photo || '').trim();
+    this.homeClientAvatar.set(avatarRaw);
+
+    const extended = (profile && typeof profile.extended === 'object' && profile.extended) ? profile.extended : {};
+    const balanceCandidates = [
+      profile?.balance,
+      profile?.wallet,
+      profile?.user_balance,
+      profile?.amount,
+      extended?.balance,
+      extended?.wallet,
+      extended?.user_balance,
+      extended?.amount
+    ];
+    const resolved = balanceCandidates
+      .map((value) => Number(String(value ?? '').replace(',', '.')))
+      .find((value) => Number.isFinite(value));
+    this.homeClientBalance.set(Number.isFinite(resolved as number) ? Math.max(0, Number(resolved)) : 0);
+  }
+
+  get homeClientAvatarSrc(): string {
+    const raw = String(this.homeClientAvatar() || '').trim();
+    if (!raw) {
+      return 'assets/icon/favicon.png';
+    }
+    if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('data:')) {
+      return raw;
+    }
+    if (raw.startsWith('/')) {
+      return `https://mysense.care${raw}`;
+    }
+    return `https://mysense.care/${raw}`;
   }
 
   private syncHomeAuthState() {
@@ -793,6 +854,165 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       }
     };
     this.closeReservePicker();
+  }
+
+  openProfileEditor() {
+    this.homeProfileEditorError.set(null);
+    this.homeProfileEditorSuccess.set(null);
+    this.homeProfilePendingPhotoPath.set('');
+    this.homeProfileEditorLoading.set(true);
+    this.homeProfileEditorOpen.set(true);
+
+    this.authService.getProfile().subscribe({
+      next: (profile) => {
+        this.homeProfileEditorLoading.set(false);
+        if (!profile?.success) {
+          this.homeProfileEditorError.set(profile?.error || 'Не вдалося завантажити профіль.');
+          return;
+        }
+        this.patchHomeProfileForm(profile);
+      },
+      error: () => {
+        this.homeProfileEditorLoading.set(false);
+        this.homeProfileEditorError.set('Не вдалося завантажити профіль.');
+      }
+    });
+  }
+
+  closeHomeProfileEditor() {
+    this.homeProfileEditorOpen.set(false);
+    this.homeProfileEditorError.set(null);
+    this.homeProfileEditorSuccess.set(null);
+    this.homeProfilePhotoUploading.set(false);
+    this.homeProfilePendingPhotoPath.set('');
+    this.homeProfileForm.patchValue({ password: '', confirm: '' });
+  }
+
+  onHomeProfilePhotoClick(input: HTMLInputElement) {
+    input.click();
+  }
+
+  onHomeProfilePhotoSelected(event: Event) {
+    const target = event.target as HTMLInputElement | null;
+    const file = target?.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    this.homeProfileEditorError.set(null);
+    this.homeProfilePhotoUploading.set(true);
+
+    this.authService.uploadProfilePhoto(file).subscribe({
+      next: (response) => {
+        this.homeProfilePhotoUploading.set(false);
+        const uploadedPath = this.extractUploadedPath(response);
+        if (!uploadedPath) {
+          this.homeProfileEditorError.set(response?.error || 'Не вдалося завантажити фото.');
+          return;
+        }
+        this.homeProfilePendingPhotoPath.set(uploadedPath);
+        this.homeProfilePhotoPreview.set(this.resolveHomeProfilePhoto(uploadedPath));
+      },
+      error: () => {
+        this.homeProfilePhotoUploading.set(false);
+        this.homeProfileEditorError.set('Не вдалося завантажити фото.');
+      }
+    });
+  }
+
+  saveHomeProfileEditor() {
+    if (this.homeProfileForm.invalid) {
+      this.homeProfileForm.markAllAsTouched();
+      return;
+    }
+
+    const { name, surname, email, phone, password, confirm } = this.homeProfileForm.value;
+    const payload: UpdateProfilePayload = {
+      name: String(name || '').trim(),
+      surname: String(surname || '').trim(),
+      email: String(email || '').trim(),
+      phone: String(phone || '').trim()
+    };
+
+    if (password || confirm) {
+      if (!password || !confirm || String(password) !== String(confirm)) {
+        this.homeProfileEditorError.set('Паролі не співпадають.');
+        return;
+      }
+      payload.password = String(password);
+      payload.confirm = String(confirm);
+    }
+
+    const photoPath = String(this.homeProfilePendingPhotoPath() || '').trim();
+    if (photoPath) {
+      payload.photo = photoPath;
+    }
+
+    this.homeProfileEditorLoading.set(true);
+    this.homeProfileEditorError.set(null);
+    this.homeProfileEditorSuccess.set(null);
+
+    this.authService.updateProfile(payload).subscribe({
+      next: (response) => {
+        this.homeProfileEditorLoading.set(false);
+        if (response?.error) {
+          this.homeProfileEditorError.set(response.error);
+          return;
+        }
+        this.homeProfileEditorSuccess.set(response?.success || 'Профіль оновлено.');
+        this.loadUserRole();
+        this.homeProfileForm.patchValue({ password: '', confirm: '' });
+      },
+      error: () => {
+        this.homeProfileEditorLoading.set(false);
+        this.homeProfileEditorError.set('Не вдалося зберегти зміни.');
+      }
+    });
+  }
+
+  private patchHomeProfileForm(profile: UserProfile) {
+    const firstName = String(profile?.firstname || '').trim();
+    const lastName = String(profile?.lastname || '').trim();
+    this.homeProfileForm.patchValue({
+      name: firstName,
+      surname: lastName,
+      email: String(profile?.email || '').trim(),
+      phone: String(profile?.phone || '').trim(),
+      password: '',
+      confirm: ''
+    });
+    const profilePhoto = String((profile as any)?.photo || (profile as any)?.avatar || '').trim();
+    this.homeProfilePhotoPreview.set(this.resolveHomeProfilePhoto(profilePhoto));
+  }
+
+  private extractUploadedPath(response: any): string {
+    const directPath = String(response?.path || '').trim();
+    if (directPath) {
+      return directPath;
+    }
+    const firstResultPath = String(response?.results?.[0]?.path || '').trim();
+    if (firstResultPath) {
+      return firstResultPath;
+    }
+    const firstFilePath = String(response?.files?.[0]?.path || '').trim();
+    if (firstFilePath) {
+      return firstFilePath;
+    }
+    return '';
+  }
+
+  private resolveHomeProfilePhoto(path: string): string {
+    const raw = String(path || '').trim();
+    if (!raw) {
+      return 'assets/icon/favicon.png';
+    }
+    if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('data:')) {
+      return raw;
+    }
+    if (raw.startsWith('/')) {
+      return `https://mysense.care${raw}`;
+    }
+    return `https://mysense.care/${raw}`;
   }
 
   onReservePickerDidDismiss() {

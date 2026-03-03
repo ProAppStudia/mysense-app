@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } 
 import { IonContent, IonButton, IonList, IonItem, IonIcon, IonLabel, IonInput, IonSpinner, IonText } from '@ionic/angular/standalone';
 import { AuthService, UserProfile, UpdateProfilePayload } from '../services/auth.service';
 import { DoctorService } from '../services/doctor.service';
-import { Router, NavigationExtras, RouterLink } from '@angular/router';
+import { Router, NavigationExtras, RouterLink, ActivatedRoute } from '@angular/router';
 import { DoctorCardView } from '../models/doctor-card-view.model';
 import { addIcons } from 'ionicons';
 import {
@@ -42,11 +42,16 @@ export class ProfilePage implements OnInit {
   profileErrorMsg = signal<string | null>(null);
   profileSuccessMsg = signal<string | null>(null);
   isEditing = signal(false);
+  photoUploading = signal(false);
+  photoErrorMsg = signal<string | null>(null);
+  pendingPhotoPath = signal<string | null>(null);
+  profilePhotoPreview = signal<string | null>(null);
 
   constructor(
     private authService: AuthService,
     private doctorService: DoctorService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     addIcons({personCircleOutline,createOutline,calendarOutline,addCircleOutline,bookOutline,checkboxOutline,libraryOutline,informationCircleOutline,helpCircleOutline,notificationsOutline,headsetOutline,documentTextOutline,warningOutline,logOutOutline,personOutline,statsChartOutline,timeOutline,peopleOutline,clipboardOutline});
   }
@@ -54,6 +59,11 @@ export class ProfilePage implements OnInit {
   ngOnInit() {
     this.isLoggedIn.set(this.authService.isAuthenticated());
     if (this.isLoggedIn()) {
+      this.route.queryParamMap.subscribe((params) => {
+        if (params.get('edit') === '1') {
+          this.isEditing.set(true);
+        }
+      });
       this.loadProfile();
       this.doctorService.getPsychologists().subscribe(psychologists => {
         this.doctors = psychologists;
@@ -115,6 +125,8 @@ export class ProfilePage implements OnInit {
       next: (profile) => {
         if (profile.success) {
           this.userProfile.set(profile);
+          this.profilePhotoPreview.set(this.resolveProfilePhoto(profile));
+          this.pendingPhotoPath.set(null);
           this.isDoctor.set(
             profile.is_doctor === true ||
             profile.is_doctor === 1 ||
@@ -168,6 +180,10 @@ export class ProfilePage implements OnInit {
       payload.confirm = confirm;
     }
 
+    if (this.pendingPhotoPath()) {
+      payload.photo = String(this.pendingPhotoPath());
+    }
+
     this.authService.updateProfile(payload).subscribe({
       next: (response) => {
         this.profileLoading.set(false);
@@ -201,9 +217,83 @@ export class ProfilePage implements OnInit {
           password: '',
           confirm: ''
         });
+        this.profilePhotoPreview.set(this.resolveProfilePhoto(profile));
+        this.pendingPhotoPath.set(null);
+        this.photoErrorMsg.set(null);
       }
     }
     this.isEditing.update(value => !value);
+  }
+
+  onChangePhotoClick(input: HTMLInputElement) {
+    input.click();
+  }
+
+  onPhotoFileSelected(event: Event) {
+    const target = event.target as HTMLInputElement | null;
+    const file = target?.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    this.photoErrorMsg.set(null);
+    this.photoUploading.set(true);
+    this.authService.uploadProfilePhoto(file).subscribe({
+      next: (response) => {
+        this.photoUploading.set(false);
+        const uploadedPath = this.extractUploadedPath(response);
+        if (!uploadedPath) {
+          this.photoErrorMsg.set(response?.error || 'Не вдалося завантажити фото.');
+          return;
+        }
+        this.pendingPhotoPath.set(uploadedPath);
+        this.profilePhotoPreview.set(this.resolvePhotoUrl(uploadedPath));
+      },
+      error: () => {
+        this.photoUploading.set(false);
+        this.photoErrorMsg.set('Не вдалося завантажити фото.');
+      }
+    });
+  }
+
+  private extractUploadedPath(response: any): string {
+    const directPath = String(response?.path || '').trim();
+    if (directPath) {
+      return directPath;
+    }
+
+    const firstResultPath = String(response?.results?.[0]?.path || '').trim();
+    if (firstResultPath) {
+      return firstResultPath;
+    }
+
+    const firstFilePath = String(response?.files?.[0]?.path || '').trim();
+    if (firstFilePath) {
+      return firstFilePath;
+    }
+
+    return '';
+  }
+
+  private resolveProfilePhoto(profile: UserProfile): string {
+    const photo = String((profile as any)?.photo || '').trim();
+    const avatar = String((profile as any)?.avatar || '').trim();
+    const raw = photo || avatar;
+    return raw ? this.resolvePhotoUrl(raw) : 'assets/icon/favicon.png';
+  }
+
+  private resolvePhotoUrl(path: string): string {
+    const raw = String(path || '').trim();
+    if (!raw) {
+      return 'assets/icon/favicon.png';
+    }
+    if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('data:')) {
+      return raw;
+    }
+    if (raw.startsWith('/')) {
+      return `https://mysense.care${raw}`;
+    }
+    return `https://mysense.care/${raw}`;
   }
 
   goToHowToUse() {

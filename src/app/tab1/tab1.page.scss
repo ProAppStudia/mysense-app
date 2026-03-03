@@ -11,6 +11,143 @@ ion-content {
   gap: 30px;
 }
 
+.client-home-brief {
+  width: 100%;
+  max-width: 500px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  text-align: left;
+}
+
+.client-home-brief__top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.client-home-brief__avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #ece9f8;
+  flex: 0 0 72px;
+}
+
+.client-home-brief__title-wrap {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.client-home-brief__title {
+  margin: 0;
+  color: #2f264d;
+  font-size: 22px;
+  line-height: 1.1;
+  font-weight: 400;
+}
+
+.client-home-brief__name {
+  color: #7157dc;
+}
+
+.client-home-brief__edit {
+  color: #7a5bda;
+  font-size: 26px;
+  flex: 0 0 auto;
+}
+
+.client-home-brief__edit-btn {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.client-home-brief__bottom {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.client-home-brief__sessions {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #2f264d;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.client-home-brief__sessions ion-icon {
+  font-size: 22px;
+}
+
+.client-home-brief__divider {
+  color: #b2adbf;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.client-home-brief__balance {
+  margin: 0;
+  color: #9895a6;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.client-home-brief__balance strong {
+  color: #2f264d;
+  font-weight: 600;
+}
+
+:host ::ng-deep ion-modal.home-profile-modal {
+  --width: min(92vw, 520px);
+}
+
+.home-profile-modal__card {
+  background: #fff;
+  padding: 16px;
+  position: relative;
+}
+
+.home-profile-modal__close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  border: 0;
+  background: transparent;
+  color: #7a5bda;
+  font-size: 30px;
+}
+
+.home-profile-modal__photo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.home-profile-modal__photo img {
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+
 .section-1-block {
   background-color: #ffffff; /* White background */
   background-image: url('/assets/icon/unihome.png');
@@ -1034,30 +1171,11 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
   text-align: left;
 }
 
-.quick-actions-block {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between; /* Distribute items evenly */
-  gap: 10px; /* Space between items */
-  margin-top: 20px;
-  margin-bottom: 30px;
-  width: 100%;
-  max-width: 500px;
-}
-
 /* Diary Block Styles */
 .diary-block {
   width: 100%;
   max-width: 500px;
   text-align: left;
-}
-
-.diary-block h2 {
-  font-size: 22px;
-  font-weight: bold;
-  color: #333;
-  margin: 0 0 15px 0;
-  text-align: center;
 }
 
 .diary-card {
@@ -1079,16 +1197,35 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
 .diary-card--tasks ion-icon {
   background-color: var(--ion-color-mysense-light-purple);
   border-radius: 50%;
-  padding: 15px;
-  font-size: 30px;
+  padding: 8px;
+  font-size: 20px;
   color: var(--ion-color-primary);
-  margin-bottom: 15px;
 }
 
 .diary-card h3 {
   font-size: 18px;
   font-weight: bold;
   color: #333;
+}
+
+.diary-card--tasks {
+  padding: 14px 16px;
+}
+
+.diary-card--tasks h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px;
+  font-size: 22px;
+  color: #2f264d;
+}
+
+.diary-card--tasks .add-diary-button {
+  height: 50px;
+  --border-radius: 16px;
+  font-size: 18px;
+  font-weight: 500;
 }
 
 .diary-card p {
