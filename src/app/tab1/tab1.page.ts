@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA, ViewChild, ElementRef, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { IonContent, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel, IonHeader, IonToolbar, IonModal, IonInput, IonSpinner, IonText, IonButtons, IonCheckbox, RefresherCustomEvent } from '@ionic/angular/standalone';
+import { IonContent, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel, IonHeader, IonToolbar, IonModal, IonInput, IonSpinner, IonText, IonButtons, IonCheckbox, IonTitle, IonIcon, RefresherCustomEvent } from '@ionic/angular/standalone';
 import { HttpClient } from '@angular/common/http';
 import { register } from 'swiper/element/bundle';
 import { AuthService, MySessionItem, UserProfile, UpdateProfilePayload } from '../services/auth.service'; // Import AuthService
@@ -93,7 +93,7 @@ interface HomepageData {
   standalone: true,
   imports: [
     IonContent, IonButton, CommonModule, IonAccordionGroup, IonAccordion, IonItem, IonLabel, RouterLink,
-    FormsModule, ReactiveFormsModule, IonHeader, IonToolbar, IonModal, IonInput, IonSpinner, IonText, IonButtons, IonCheckbox,
+    FormsModule, ReactiveFormsModule, IonHeader, IonToolbar, IonModal, IonInput, IonSpinner, IonText, IonButtons, IonCheckbox, IonTitle, IonIcon,
     TestsBlockComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

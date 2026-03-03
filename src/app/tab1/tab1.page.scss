@@ -119,26 +119,10 @@ ion-content {
   --width: min(92vw, 520px);
 }
 
-.home-profile-modal__card {
-  background: #fff;
-  padding: 16px;
-  position: relative;
-}
-
-.home-profile-modal__close {
-  position: absolute;
-  right: 10px;
-  top: 8px;
-  border: 0;
-  background: transparent;
-  color: #7a5bda;
-  font-size: 30px;
-}
-
 .home-profile-modal__photo {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .home-profile-modal__photo img {
@@ -1217,14 +1201,16 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
   align-items: center;
   gap: 10px;
   margin: 0 0 10px;
-  font-size: 22px;
+  font-size: 26px;
   color: #2f264d;
+  font-weight: 400;
 }
 
 .diary-card--tasks .add-diary-button {
   height: 50px;
   --border-radius: 16px;
   font-size: 18px;
+  font-weight: 400;
 }
 
 .diary-card p {
@@ -1256,11 +1242,12 @@ cubic-bezier(0.25, 0.8, 0.5, 1);
   --color: #fff;
   font-size: 18px;
   height: 50px;
-  border-radius: 8px;
-  text-transform: none;
-  width: 100%;
-  max-width: 250px; /* Adjust button width */
-  box-shadow: none;
+  --border-radius: 16px;
+    text-transform: none;
+    width: 100%;
+    max-width: 250px;
+    box-shadow: none;
+    font-weight: 400;
 }
 
 /* My Tasks Block Styles */

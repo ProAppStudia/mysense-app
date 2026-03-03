@@ -90,13 +90,20 @@ ion-header.app-back-toolbar ion-buttons[slot='start'] {
 }
 
 ion-header.app-back-toolbar .app-back-btn,
-ion-header.app-back-toolbar .back-btn {
+ion-header.app-back-toolbar .back-btn,
+ion-toolbar.app-back-toolbar .app-back-btn,
+ion-toolbar.app-back-toolbar .back-btn {
   border: 0;
   background: transparent;
   padding: 0;
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  min-height: 46px;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 0;
   color: #4c4a6f;
   font-size: 20px;
   font-weight: 400;
@@ -121,6 +128,11 @@ ion-header.app-back-toolbar ion-back-button.app-back-icon-btn {
   --icon-font-size: 30px;
   --padding-start: 0;
   --padding-end: 0;
+  --min-height: 46px;
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  min-height: 46px;
 }
 
 ion-modal.late-cancel-modal::part(backdrop) {

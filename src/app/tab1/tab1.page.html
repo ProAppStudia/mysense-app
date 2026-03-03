@@ -559,59 +559,66 @@
 
   <ion-modal [isOpen]="homeProfileEditorOpen()" cssClass="home-profile-modal" (didDismiss)="closeHomeProfileEditor()">
     <ng-template>
-      <div class="home-profile-modal__card">
-        <button type="button" class="home-profile-modal__close" (click)="closeHomeProfileEditor()" aria-label="Закрити">
-          ×
-        </button>
+      <ion-header>
+        <ion-toolbar mode="ios" style="--background:#fff;--border-color:#e4e4e7;--padding-start:12px;--padding-end:6px;--padding-top:max(8px, var(--ion-safe-area-top));">
+          <ion-title>Редагувати профіль</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeHomeProfileEditor()" aria-label="Закрити">
+              <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
 
-        <h2 class="home-profile-modal__title">Редагувати профіль</h2>
+      <ion-content class="home-profile-modal__content" [fullscreen]="true" style="--background:#fff;--padding-start:16px;--padding-end:16px;--padding-top:12px;--padding-bottom:calc(16px + var(--ion-safe-area-bottom));">
+        <div class="home-profile-modal__card">
+          <div class="home-profile-modal__photo">
+            <img [src]="homeProfilePhotoPreview() || homeClientAvatarSrc" alt="Фото профілю">
+            <button
+              type="button"
+              [disabled]="homeProfilePhotoUploading()"
+              (click)="onHomeProfilePhotoClick(homeProfilePhotoInput)"
+              style="margin-left:12px;height:40px;padding:0 12px;border-radius:10px;border:1px solid #7a5bda;background:#f2edff;color:#7a5bda;font-size:15px;font-weight:500;"
+            >
+              {{ homeProfilePhotoUploading() ? 'Завантаження...' : 'Змінити фото' }}
+            </button>
+            <input #homeProfilePhotoInput type="file" accept="image/*" hidden (change)="onHomeProfilePhotoSelected($event)">
+          </div>
 
-        <div class="home-profile-modal__photo">
-          <img [src]="homeProfilePhotoPreview() || homeClientAvatarSrc" alt="Фото профілю">
-          <button
-            type="button"
-            [disabled]="homeProfilePhotoUploading()"
-            (click)="onHomeProfilePhotoClick(homeProfilePhotoInput)"
-            style="margin-left:12px;height:40px;padding:0 12px;border-radius:10px;border:1px solid #7a5bda;background:#f2edff;color:#7a5bda;font-size:15px;font-weight:500;"
-          >
-            {{ homeProfilePhotoUploading() ? 'Завантаження...' : 'Змінити фото' }}
-          </button>
-          <input #homeProfilePhotoInput type="file" accept="image/*" hidden (change)="onHomeProfilePhotoSelected($event)">
+          <form [formGroup]="homeProfileForm" class="home-profile-modal__form" (ngSubmit)="saveHomeProfileEditor()">
+            <ion-item>
+              <ion-input label="Ім'я" labelPlacement="floating" formControlName="name" type="text"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Прізвище" labelPlacement="floating" formControlName="surname" type="text"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Електронна пошта" labelPlacement="floating" formControlName="email" type="email"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Телефон" labelPlacement="floating" formControlName="phone" type="tel"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Новий пароль" labelPlacement="floating" formControlName="password" type="password"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Повторити пароль" labelPlacement="floating" formControlName="confirm" type="password"></ion-input>
+            </ion-item>
+
+            <ion-text color="danger" *ngIf="homeProfileEditorError()">
+              <p>{{ homeProfileEditorError() }}</p>
+            </ion-text>
+            <ion-text color="success" *ngIf="homeProfileEditorSuccess()">
+              <p>{{ homeProfileEditorSuccess() }}</p>
+            </ion-text>
+
+            <ion-button expand="block" type="submit" [disabled]="homeProfileEditorLoading() || homeProfilePhotoUploading()">
+              <ion-spinner *ngIf="homeProfileEditorLoading()" name="lines-small"></ion-spinner>
+              <span *ngIf="!homeProfileEditorLoading()">Зберегти</span>
+            </ion-button>
+          </form>
         </div>
-
-        <form [formGroup]="homeProfileForm" class="home-profile-modal__form" (ngSubmit)="saveHomeProfileEditor()">
-          <ion-item>
-            <ion-input label="Ім'я" labelPlacement="floating" formControlName="name" type="text"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-input label="Прізвище" labelPlacement="floating" formControlName="surname" type="text"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-input label="Електронна пошта" labelPlacement="floating" formControlName="email" type="email"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-input label="Телефон" labelPlacement="floating" formControlName="phone" type="tel"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-input label="Новий пароль" labelPlacement="floating" formControlName="password" type="password"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-input label="Повторити пароль" labelPlacement="floating" formControlName="confirm" type="password"></ion-input>
-          </ion-item>
-
-          <ion-text color="danger" *ngIf="homeProfileEditorError()">
-            <p>{{ homeProfileEditorError() }}</p>
-          </ion-text>
-          <ion-text color="success" *ngIf="homeProfileEditorSuccess()">
-            <p>{{ homeProfileEditorSuccess() }}</p>
-          </ion-text>
-
-          <ion-button expand="block" type="submit" [disabled]="homeProfileEditorLoading() || homeProfilePhotoUploading()">
-            <ion-spinner *ngIf="homeProfileEditorLoading()" name="lines-small"></ion-spinner>
-            <span *ngIf="!homeProfileEditorLoading()">Зберегти</span>
-          </ion-button>
-        </form>
-      </div>
+      </ion-content>
     </ng-template>
   </ion-modal>
 
