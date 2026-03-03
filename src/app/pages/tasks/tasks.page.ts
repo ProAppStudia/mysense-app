@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { CommonModule, Location } from '@angular/common';
+import { IonButton, IonButtons, IonContent, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { ChatService } from '../../services/chat.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -9,7 +9,7 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './tasks.page.html',
   styleUrls: ['./tasks.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, CommonModule]
+  imports: [IonContent, IonToolbar, IonTitle, IonButtons, IonButton, CommonModule]
 })
 export class TasksPage implements OnInit {
   isLoggedIn = false;
@@ -18,7 +18,11 @@ export class TasksPage implements OnInit {
   selectedChat: any = null;
   tasks: any[] = [];
 
-  constructor(private chatService: ChatService, private authService: AuthService) {}
+  constructor(private chatService: ChatService, private authService: AuthService, private location: Location) {}
+
+  goBack() {
+    this.location.back();
+  }
 
   ngOnInit(): void {
     this.isLoggedIn = this.authService.isAuthenticated();

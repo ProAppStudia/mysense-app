@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, IonSpinner } from '@ionic/angular/standalone';
+import { CommonModule, Location } from '@angular/common';
+import { IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonSpinner } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { NewsListItem, NewsService } from '../../services/news.service';
 import { firstValueFrom } from 'rxjs';
@@ -12,7 +12,7 @@ type NewsSort = 'newest' | 'oldest';
   templateUrl: './news.page.html',
   styleUrls: ['./news.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, IonSpinner]
+  imports: [CommonModule, IonToolbar, IonButtons, IonButton, IonTitle, IonContent, IonSpinner]
 })
 export class NewsPage implements OnInit {
   loading = false;
@@ -26,7 +26,7 @@ export class NewsPage implements OnInit {
   currentPage = 1;
   totalPages = 1;
 
-  constructor(private newsService: NewsService, private router: Router) {}
+  constructor(private newsService: NewsService, private router: Router, private location: Location) {}
 
   ngOnInit(): void {
     this.loadNews(1);
@@ -106,6 +106,10 @@ export class NewsPage implements OnInit {
       return;
     }
     void this.router.navigate(['/tabs/news', articleId]);
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   private sortArticles(items: NewsListItem[]): NewsListItem[] {

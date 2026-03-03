@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonDatetime, IonModal } from '@ionic/angular/standalone';
+import { IonContent, IonDatetime, IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { DoctorService } from '../../services/doctor.service';
@@ -13,7 +13,7 @@ import { Week } from '../../models/calendar.model';
   templateUrl: './session-change.page.html',
   styleUrls: ['./session-change.page.scss'],
   standalone: true,
-  imports: [IonContent, IonDatetime, IonModal, CommonModule, FormsModule]
+  imports: [IonContent, IonDatetime, IonModal, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, CommonModule, FormsModule]
 })
 export class SessionChangePage implements OnInit {
   isDoctor = false;

@@ -1,7 +1,7 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel, IonSpinner, IonText } from '@ionic/angular/standalone';
+import { IonAccordion, IonAccordionGroup, IonButton, IonButtons, IonContent, IonItem, IonLabel, IonSpinner, IonText, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { addIcons } from 'ionicons';
@@ -26,8 +26,8 @@ interface HomepageData {
   styleUrls: ['./faq.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule,
-    IonButtons, IonBackButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel,
+    IonContent, IonTitle, IonToolbar, CommonModule, FormsModule,
+    IonButtons, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel,
     IonSpinner, IonText
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -38,7 +38,7 @@ export class FaqPage implements OnInit {
   isLoading: boolean = true;
   error: string | null = null;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private location: Location) {
     addIcons({ addOutline });
   }
 
@@ -64,5 +64,9 @@ export class FaqPage implements OnInit {
         console.error(err);
       }
     });
+  }
+
+  goBack() {
+    this.location.back();
   }
 }

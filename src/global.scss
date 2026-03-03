@@ -85,6 +85,13 @@ ion-header.app-back-toolbar ion-toolbar {
   --min-height: 54px;
 }
 
+ion-toolbar.app-back-toolbar {
+  --background: #fff;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --min-height: 54px;
+}
+
 ion-header.app-back-toolbar ion-buttons[slot='start'] {
   margin-inline-start: 0;
 }
@@ -114,7 +121,11 @@ ion-toolbar.app-back-toolbar .back-btn {
 ion-header.app-back-toolbar .app-back-btn-icon,
 ion-header.app-back-toolbar .back-btn-icon,
 ion-header.app-back-toolbar .custom-back-icon,
-ion-header.app-back-toolbar .header-back-icon {
+ion-header.app-back-toolbar .header-back-icon,
+ion-toolbar.app-back-toolbar .app-back-btn-icon,
+ion-toolbar.app-back-toolbar .back-btn-icon,
+ion-toolbar.app-back-toolbar .custom-back-icon,
+ion-toolbar.app-back-toolbar .header-back-icon {
   width: 30px;
   height: 30px;
   min-width: 30px;

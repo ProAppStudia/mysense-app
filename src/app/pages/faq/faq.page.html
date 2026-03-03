@@ -1,11 +1,11 @@
-<ion-header class="app-back-toolbar" [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button class="app-back-icon-btn" defaultHref="/tabs/profile" icon="assets/icon/arrow-left-color.svg" text=""></ion-back-button>
-    </ion-buttons>
-    <ion-title>{{ faqHeading }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-toolbar class="app-back-toolbar">
+  <ion-buttons slot="start">
+    <ion-button (click)="goBack()" class="app-back-btn" aria-label="Назад">
+      <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="header-back-icon">
+    </ion-button>
+  </ion-buttons>
+  <ion-title>{{ faqHeading }}</ion-title>
+</ion-toolbar>
 
 <ion-content [fullscreen]="true" class="ion-padding">
   <div *ngIf="isLoading" class="ion-text-center">

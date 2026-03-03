@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import {
   IonBackButton,
+  IonButton,
   IonButtons,
   IonContent,
   IonDatetime,
@@ -33,6 +34,7 @@ import { PaymentFlowService } from '../../services/payment-flow.service';
     IonToolbar,
     IonTitle,
     IonButtons,
+    IonButton,
     IonBackButton,
     IonContent,
     IonIcon,
