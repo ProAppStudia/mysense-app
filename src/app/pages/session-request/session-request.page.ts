@@ -75,6 +75,7 @@ export class SessionRequestPage implements OnInit {
   selectedDateTimeIso = '';
   doctorDatePickerOpen = false;
   doctorDateMinIso = '';
+  private resolveSeq = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -97,6 +98,9 @@ export class SessionRequestPage implements OnInit {
     this.doctorDateMinIso = this.getDoctorDateMinIso();
 
     this.route.queryParamMap.subscribe((params) => {
+      const seq = ++this.resolveSeq;
+      this.resetStateForNavigation();
+
       this.targetUserId = Number(params.get('to_user_id') || 0);
       this.targetName = String(params.get('target_name') || '').trim();
       this.targetPhoto = String(params.get('target_photo') || '').trim();
@@ -122,6 +126,9 @@ export class SessionRequestPage implements OnInit {
 
       this.authService.getProfile().subscribe({
         next: (profile) => {
+          if (!this.isActualSeq(seq)) {
+            return;
+          }
           this.myProfile = profile;
           this.isDoctor = !!(profile?.is_doctor === true || profile?.is_doctor === 1 || profile?.is_doctor === '1');
           this.currentUserId = Number(profile?.user_id) || null;
@@ -129,14 +136,17 @@ export class SessionRequestPage implements OnInit {
           if (!this.doctorHash) {
             this.doctorHash = String((profile as any)?.hash ?? (profile as any)?.doctor_hash ?? '').trim();
           }
-          this.resolveDoctor();
+          this.resolveDoctor(seq);
           this.resolveFallbackAmountFromSessions();
         },
         error: () => {
+          if (!this.isActualSeq(seq)) {
+            return;
+          }
           this.isDoctor = false;
           this.currentUserId = null;
           this.myProfile = null;
-          this.resolveDoctor();
+          this.resolveDoctor(seq);
           this.resolveFallbackAmountFromSessions();
         }
       });
@@ -613,15 +623,21 @@ export class SessionRequestPage implements OnInit {
     return text.includes('непередб') || text.includes('support') || text.includes('підтримк');
   }
 
-  private resolveDoctor() {
+  private resolveDoctor(seq: number) {
+    if (!this.isActualSeq(seq)) {
+      return;
+    }
     this.loading.set(true);
     this.error.set('');
 
     if (this.doctorHash) {
       this.doctorService.getDoctorProfileByHash(this.doctorHash).subscribe({
         next: (result) => {
+          if (!this.isActualSeq(seq)) {
+            return;
+          }
           if ((result as any)?.error) {
-            this.resolveDoctorByIdOrDirectoryFallback();
+            this.resolveDoctorByIdOrDirectoryFallback(seq);
             return;
           }
 
@@ -631,19 +647,28 @@ export class SessionRequestPage implements OnInit {
           this.loading.set(false);
         },
         error: () => {
-          this.resolveDoctorByIdOrDirectoryFallback();
+          if (!this.isActualSeq(seq)) {
+            return;
+          }
+          this.resolveDoctorByIdOrDirectoryFallback(seq);
         }
       });
       return;
     }
 
-    this.resolveDoctorByIdOrDirectoryFallback();
+    this.resolveDoctorByIdOrDirectoryFallback(seq);
   }
 
-  private resolveDoctorByIdOrDirectoryFallback() {
+  private resolveDoctorByIdOrDirectoryFallback(seq: number) {
+    if (!this.isActualSeq(seq)) {
+      return;
+    }
     if (this.doctorId > 0) {
       this.doctorService.getDoctorProfile(this.doctorId).subscribe({
         next: (result) => {
+          if (!this.isActualSeq(seq)) {
+            return;
+          }
           if (!(result as any)?.error) {
             this.doctor.set(result as DoctorCardView);
             this.setupCalendarFromDoctor(result as DoctorCardView);
@@ -651,10 +676,13 @@ export class SessionRequestPage implements OnInit {
             this.loading.set(false);
             return;
           }
-          this.resolveDoctorByDirectoryFallback();
+          this.resolveDoctorByDirectoryFallback(seq);
         },
         error: () => {
-          this.resolveDoctorByDirectoryFallback();
+          if (!this.isActualSeq(seq)) {
+            return;
+          }
+          this.resolveDoctorByDirectoryFallback(seq);
         }
       });
       return;
@@ -663,6 +691,9 @@ export class SessionRequestPage implements OnInit {
     if (this.doctorUserId > 0) {
       this.doctorService.getDoctorProfileByUserId(this.doctorUserId).subscribe({
         next: (result) => {
+          if (!this.isActualSeq(seq)) {
+            return;
+          }
           if (!(result as any)?.error) {
             this.doctor.set(result as DoctorCardView);
             this.setupCalendarFromDoctor(result as DoctorCardView);
@@ -670,23 +701,32 @@ export class SessionRequestPage implements OnInit {
             this.loading.set(false);
             return;
           }
-          this.resolveDoctorByDirectoryFallback();
+          this.resolveDoctorByDirectoryFallback(seq);
         },
         error: () => {
-          this.resolveDoctorByDirectoryFallback();
+          if (!this.isActualSeq(seq)) {
+            return;
+          }
+          this.resolveDoctorByDirectoryFallback(seq);
         }
       });
       return;
     }
 
-    this.resolveDoctorByDirectoryFallback();
+    this.resolveDoctorByDirectoryFallback(seq);
   }
 
-  private resolveDoctorByDirectoryFallback() {
+  private resolveDoctorByDirectoryFallback(seq: number) {
+    if (!this.isActualSeq(seq)) {
+      return;
+    }
     this.loading.set(true);
 
     this.doctorService.getPsychologists().subscribe({
       next: (doctors) => {
+        if (!this.isActualSeq(seq)) {
+          return;
+        }
         const normalized = doctors || [];
         const foundByHash = this.doctorHash
           ? normalized.find((doctor) => String(doctor.hash ?? '').trim() === this.doctorHash)
@@ -712,6 +752,9 @@ export class SessionRequestPage implements OnInit {
         if (fallbackDoctorId > 0) {
           this.doctorService.getDoctorProfile(fallbackDoctorId).subscribe({
             next: (fullDoctor) => {
+              if (!this.isActualSeq(seq)) {
+                return;
+              }
               if (!(fullDoctor as any)?.error) {
                 this.doctor.set(fullDoctor as DoctorCardView);
                 this.setupCalendarFromDoctor(fullDoctor as DoctorCardView);
@@ -722,6 +765,9 @@ export class SessionRequestPage implements OnInit {
               this.loading.set(false);
             },
             error: () => {
+              if (!this.isActualSeq(seq)) {
+                return;
+              }
               if (found) {
                 this.setupCalendarFromDoctor(found as DoctorCardView);
               }
@@ -742,10 +788,26 @@ export class SessionRequestPage implements OnInit {
         }
       },
       error: () => {
+        if (!this.isActualSeq(seq)) {
+          return;
+        }
         this.loading.set(false);
         this.error.set('Не вдалося підвантажити дані психолога.');
       }
     });
+  }
+
+  private resetStateForNavigation(): void {
+    this.loading.set(false);
+    this.error.set('');
+    this.success.set('');
+    this.doctor.set(null);
+    this.weeks = [];
+    this.currentWeekIndex = 0;
+  }
+
+  private isActualSeq(seq: number): boolean {
+    return seq === this.resolveSeq;
   }
 
   private applyDefaultsByDoctor() {
