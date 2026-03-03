@@ -48,6 +48,7 @@ export class SessionsPage implements OnInit {
   actionLoading = false;
   emptyText = 'Порожньо';
   lateCancelConfirmOpen = false;
+  lateCancelIsUrgent = false;
   private pendingCancelSessionId = 0;
 
   constructor(
@@ -473,21 +474,14 @@ export class SessionsPage implements OnInit {
       return;
     }
 
-    if (this.shouldShowLateCancelConfirm(session)) {
-      this.pendingCancelSessionId = sessionId;
-      this.lateCancelConfirmOpen = true;
-      return;
-    }
-
-    const ok = window.confirm('Скасувати цю сесію?');
-    if (!ok) {
-      return;
-    }
-    this.performCancel(sessionId);
+    this.pendingCancelSessionId = sessionId;
+    this.lateCancelIsUrgent = this.shouldShowLateCancelConfirm(session);
+    this.lateCancelConfirmOpen = true;
   }
 
   closeLateCancelConfirm() {
     this.lateCancelConfirmOpen = false;
+    this.lateCancelIsUrgent = false;
     this.pendingCancelSessionId = 0;
   }
 

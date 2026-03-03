@@ -88,15 +88,23 @@
       <button type="button" class="late-cancel-modal__close" (click)="closeLateCancelConfirm()" aria-label="Закрити">
         ×
       </button>
-      <h2 class="late-cancel-modal__title">Будь ласка, підтвердіть скасування сесії</h2>
-      <p class="late-cancel-modal__text">
+      <h2 class="late-cancel-modal__title">Підтвердіть скасування сесії</h2>
+      <p class="late-cancel-modal__text" *ngIf="lateCancelIsUrgent; else regularCancelTextSessions">
         Ви скасовуєте сесію менш ніж за 24 години до її початку.<br>
         За правилами платформи кошти в такому разі не повертаються.<br>
         Продовжити скасування?
       </p>
-      <button type="button" class="late-cancel-modal__submit" (click)="continueLateCancel()">
-        Продовжити
-      </button>
+      <ng-template #regularCancelTextSessions>
+        <p class="late-cancel-modal__text">Ви дійсно хочете скасувати цю сесію?</p>
+      </ng-template>
+      <div class="late-cancel-modal__actions">
+        <button type="button" class="late-cancel-modal__cancel" (click)="closeLateCancelConfirm()">
+          Не скасовувати
+        </button>
+        <button type="button" class="late-cancel-modal__submit" (click)="continueLateCancel()">
+          {{ lateCancelIsUrgent ? 'Продовжити' : 'Скасувати' }}
+        </button>
+      </div>
     </div>
   </ng-template>
 </ion-modal>

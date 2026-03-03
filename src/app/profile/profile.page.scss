@@ -103,6 +103,15 @@ ion-content {
   font-weight: 500;
 }
 
+.profile-avatar-chip {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #ece9f8;
+  margin-inline-end: 14px;
+}
+
 .profile-menu-group ion-item.item-button {
   --background-activated: #f0f0f0;
   --background-focused: #f0f0f0;
@@ -118,6 +127,7 @@ ion-content {
   color: var(--ion-color-step-600, #666666);
   align-self: center;
   margin: 0;
+  transform: translateY(2px);
 }
 
 .ion-item-link {

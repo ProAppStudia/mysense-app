@@ -112,6 +112,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   userSessions: Session[] = [];
   reservePickerOpen = signal(false);
   lateCancelConfirmOpen = signal(false);
+  lateCancelIsUrgent = signal(false);
   recentPsychologists: RecentPsychologist[] = [];
   selectedReserveDoctorUserId: number | null = null;
   private pendingReserveNavigationExtras: NavigationExtras | null = null;
@@ -373,21 +374,14 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    if (this.shouldShowLateCancelConfirm(session)) {
-      this.pendingCancelSessionId = sessionId;
-      this.lateCancelConfirmOpen.set(true);
-      return;
-    }
-
-    const ok = window.confirm('Скасувати цю сесію?');
-    if (!ok) {
-      return;
-    }
-    this.performCancelSession(sessionId);
+    this.pendingCancelSessionId = sessionId;
+    this.lateCancelIsUrgent.set(this.shouldShowLateCancelConfirm(session));
+    this.lateCancelConfirmOpen.set(true);
   }
 
   closeLateCancelConfirm() {
     this.lateCancelConfirmOpen.set(false);
+    this.lateCancelIsUrgent.set(false);
     this.pendingCancelSessionId = null;
   }
 

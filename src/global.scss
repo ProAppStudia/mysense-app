@@ -195,7 +195,6 @@ ion-modal.late-cancel-modal::part(content) {
 }
 
 .late-cancel-modal__submit {
-  margin-top: 24px;
   width: 100%;
   min-height: 64px;
   border: 0;
@@ -204,6 +203,27 @@ ion-modal.late-cancel-modal::part(content) {
   color: #fff;
   font-size: 20px;
   font-weight: 500;
+}
+
+.late-cancel-modal__actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+}
+
+.late-cancel-modal__actions .late-cancel-modal__submit,
+.late-cancel-modal__actions .late-cancel-modal__cancel {
+  flex: 1 1 0;
+  min-height: 64px;
+  border: 0;
+  border-radius: 14px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.late-cancel-modal__cancel {
+  background: #f1edff;
+  color: #7557da;
 }
 
 @media (max-width: 640px) {
@@ -229,6 +249,16 @@ ion-modal.late-cancel-modal::part(content) {
   }
 
   .late-cancel-modal__submit {
+    min-height: 56px;
+    font-size: 18px;
+  }
+
+  .late-cancel-modal__actions {
+    gap: 10px;
+  }
+
+  .late-cancel-modal__actions .late-cancel-modal__submit,
+  .late-cancel-modal__actions .late-cancel-modal__cancel {
     min-height: 56px;
     font-size: 18px;
   }
