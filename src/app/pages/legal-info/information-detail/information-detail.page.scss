@@ -1,0 +1,79 @@
+.legal-info-detail-page {
+  --background: #f1edff;
+  --padding-top: 16px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-bottom: 16px;
+}
+
+.legal-info-detail-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.legal-info-detail-loading {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.legal-info-detail-error {
+  margin: 12px 0;
+}
+
+.legal-info-detail-card h1 {
+  margin: 0 0 14px;
+  color: #2f264d;
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.legal-info-detail-content {
+  color: #2f264d;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.legal-info-detail-pdf p {
+  margin: 0 0 12px;
+  color: #2f264d;
+  font-size: 16px;
+}
+
+.legal-info-detail-pdf a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: #7a5bda;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.legal-info-detail-pdf-viewer {
+  margin: 12px 0;
+}
+
+.legal-info-detail-pdf-fallback {
+  width: 100%;
+  min-height: 60vh;
+  border: 1px solid #ddd7f5;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  background: #fff;
+}
+
+.legal-info-detail-pdf-state {
+  margin: 8px 0 12px;
+  color: #6f6c82;
+  font-size: 14px;
+}
+
+.legal-info-detail-pdf-state--error {
+  color: #d64545;
+}

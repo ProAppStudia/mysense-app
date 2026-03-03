@@ -911,9 +911,6 @@ export class SessionRequestPage implements OnInit {
     if (this.isHourAvailable(dayKey, hour)) {
       return `${hour}:00`;
     }
-    if (this.isHourBooked(dayKey, hour)) {
-      return 'Зайнято';
-    }
     return '';
   }
 

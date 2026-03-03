@@ -1,0 +1,43 @@
+<ion-header class="app-back-toolbar" [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button class="app-back-icon-btn" defaultHref="/legal-info" icon="assets/icon/arrow-left-color.svg" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ detail()?.title || 'Правова інформація' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding legal-info-detail-page">
+  <div class="legal-info-detail-card">
+    <div class="legal-info-detail-loading" *ngIf="loading()">
+      <ion-spinner name="lines-small"></ion-spinner>
+    </div>
+
+    <ion-text color="danger" *ngIf="errorText()">
+      <p class="legal-info-detail-error">{{ errorText() }}</p>
+    </ion-text>
+
+    <ng-container *ngIf="!loading() && detail() as info">
+      <h1>{{ info.title }}</h1>
+
+      <div *ngIf="!info.isPdf || info.content" class="legal-info-detail-content" [innerHTML]="info.content"></div>
+
+      <div *ngIf="info.isPdf && !info.content" class="legal-info-detail-pdf">
+        <p>Ця сторінка доступна у PDF-форматі.</p>
+        <div class="legal-info-detail-pdf-viewer" #pdfContainer></div>
+        <iframe
+          *ngIf="!isPdfReady() && !pdfLoading() && safePdfUrl()"
+          class="legal-info-detail-pdf-fallback"
+          [src]="safePdfUrl()"
+          title="PDF document">
+        </iframe>
+        <p class="legal-info-detail-pdf-state" *ngIf="pdfLoading()">Завантаження PDF...</p>
+        <p class="legal-info-detail-pdf-state legal-info-detail-pdf-state--error" *ngIf="pdfErrorText()">{{ pdfErrorText() }}</p>
+        <a *ngIf="info.pdfUrl" [href]="info.pdfUrl" target="_blank" rel="noopener noreferrer">Відкрити PDF</a>
+        <p class="legal-info-detail-pdf-state legal-info-detail-pdf-state--error" *ngIf="!info.pdfUrl">
+          PDF-посилання не знайдено у відповіді API.
+        </p>
+      </div>
+    </ng-container>
+  </div>
+</ion-content>

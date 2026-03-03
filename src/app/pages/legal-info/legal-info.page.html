@@ -9,28 +9,18 @@
 
 <ion-content [fullscreen]="true" class="ion-padding legal-info-page">
   <div class="legal-info-card">
-    <ion-list class="legal-info-menu" lines="none">
-      <ion-item button detail="false" (click)="goToSubPage('offer-agreement')">
-        <ion-icon slot="start" name="receipt-outline"></ion-icon>
-        <ion-label>Договір оферта</ion-label>
-        <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
-      </ion-item>
+    <div class="legal-info-loading" *ngIf="loading()">
+      <ion-spinner name="lines-small"></ion-spinner>
+    </div>
 
-      <ion-item button detail="false" (click)="goToSubPage('privacy-policy')">
-        <ion-icon slot="start" name="shield-checkmark-outline"></ion-icon>
-        <ion-label>Політика конфіденційності</ion-label>
-        <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
-      </ion-item>
+    <ion-text color="danger" *ngIf="errorText()">
+      <p class="legal-info-error">{{ errorText() }}</p>
+    </ion-text>
 
-      <ion-item button detail="false" (click)="goToSubPage('terms-of-service')">
-        <ion-icon slot="start" name="clipboard-outline"></ion-icon>
-        <ion-label>Умови надання послуг</ion-label>
-        <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
-      </ion-item>
-
-      <ion-item button detail="false" (click)="goToSubPage('refund-policy')">
-        <ion-icon slot="start" name="cash-outline"></ion-icon>
-        <ion-label>Повернення коштів</ion-label>
+    <ion-list class="legal-info-menu" lines="none" *ngIf="!loading() && informations().length > 0">
+      <ion-item button detail="false" *ngFor="let item of informations()" (click)="openInformation(item)">
+        <ion-icon slot="start" [name]="getItemIcon(item.title)"></ion-icon>
+        <ion-label>{{ item.title }}</ion-label>
         <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
       </ion-item>
     </ion-list>

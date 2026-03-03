@@ -30,6 +30,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/legal-info/legal-info.page').then( m => m.LegalInfoPage)
   },
   {
+    path: 'legal-info/:informationId',
+    loadComponent: () => import('./pages/legal-info/information-detail/information-detail.page').then( m => m.InformationDetailPage)
+  },
+  {
     path: 'offer-agreement',
     loadComponent: () => import('./pages/legal-info/offer-agreement/offer-agreement.page').then( m => m.OfferAgreementPage)
   },
