@@ -137,10 +137,13 @@
               locale="uk-UA"
               [preferWheel]="false"
               [firstDayOfWeek]="1"
-              [showDefaultButtons]="false"
+              [showDefaultButtons]="true"
+              cancelText="Скасувати"
+              doneText="Готово"
               [value]="selectedDateTimeIso || undefined"
               [min]="doctorDateMinIso"
               [minuteValues]="[0]"
+              (ionCancel)="closeDoctorDatePicker()"
               (ionChange)="onDoctorDateTimeChange($event.detail.value)"
             ></ion-datetime>
           </ng-template>

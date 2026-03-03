@@ -3,7 +3,6 @@ import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent,
-  IonHeader,
   IonToolbar,
   IonTitle,
   IonButtons,
@@ -23,7 +22,6 @@ type StatsPeriod = 'day' | 'week' | 'month' | 'half_year';
   standalone: true,
   imports: [
     IonContent,
-    IonHeader,
     IonToolbar,
     IonTitle,
     IonButtons,

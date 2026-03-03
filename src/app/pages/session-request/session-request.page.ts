@@ -896,7 +896,7 @@ export class SessionRequestPage implements OnInit {
     this.selectedDateTimeIso = iso;
     this.form.date = iso.slice(0, 10);
     this.form.time = Number(iso.slice(11, 13));
-
+    this.closeDoctorDatePicker();
   }
 
   openDoctorDatePicker() {

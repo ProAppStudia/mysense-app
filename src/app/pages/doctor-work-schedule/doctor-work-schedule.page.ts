@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import {
   IonButtons,
   IonContent,
-  IonHeader,
   IonSpinner,
   IonTitle,
   IonToolbar
@@ -19,7 +18,6 @@ import { AuthService, DoctorWorkScheduleResponse, WorkScheduleDay } from '../../
   standalone: true,
   imports: [
     IonContent,
-    IonHeader,
     IonToolbar,
     IonTitle,
     IonButtons,

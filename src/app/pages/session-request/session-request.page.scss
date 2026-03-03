@@ -298,10 +298,31 @@ ion-modal.doctor-date-modal ion-datetime.doctor-datetime {
   --title-color: #222127;
   --wheel-highlight-background: #f3f4f8;
   --wheel-fade-background-rgb: 255, 255, 255;
-  --ion-color-primary: #5a9cff;
-  --ion-color-primary-rgb: 90, 156, 255;
+  --ion-color-primary: #7a5bda;
+  --ion-color-primary-rgb: 122, 91, 218;
   --ion-text-color: #3f3f45;
   padding: 0;
+}
+
+ion-modal.doctor-date-modal ion-datetime.doctor-datetime::part(month-year-button) {
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+ion-modal.doctor-date-modal ion-datetime.doctor-datetime::part(calendar-next-prev) {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+ion-modal.doctor-date-modal ion-datetime.doctor-datetime::part(previous-month-button),
+ion-modal.doctor-date-modal ion-datetime.doctor-datetime::part(next-month-button) {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 ion-datetime-button::part(native) {
