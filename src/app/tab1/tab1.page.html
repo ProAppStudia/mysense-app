@@ -568,7 +568,12 @@
 
         <div class="home-profile-modal__photo">
           <img [src]="homeProfilePhotoPreview() || homeClientAvatarSrc" alt="Фото профілю">
-          <button type="button" [disabled]="homeProfilePhotoUploading()" (click)="onHomeProfilePhotoClick(homeProfilePhotoInput)">
+          <button
+            type="button"
+            [disabled]="homeProfilePhotoUploading()"
+            (click)="onHomeProfilePhotoClick(homeProfilePhotoInput)"
+            style="margin-left:12px;height:40px;padding:0 12px;border-radius:10px;border:1px solid #7a5bda;background:#f2edff;color:#7a5bda;font-size:15px;font-weight:500;"
+          >
             {{ homeProfilePhotoUploading() ? 'Завантаження...' : 'Змінити фото' }}
           </button>
           <input #homeProfilePhotoInput type="file" accept="image/*" hidden (change)="onHomeProfilePhotoSelected($event)">

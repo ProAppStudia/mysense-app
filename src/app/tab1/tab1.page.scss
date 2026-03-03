@@ -150,7 +150,7 @@ ion-content {
 
 
 .section-1-block {
-  background-color: #ffffff; /* White background */
+  background-color: #ffffff;
   background-image: url('/assets/icon/unihome.png');
   background-repeat: no-repeat;
   background-position: right center;
@@ -167,18 +167,17 @@ ion-content {
 }
 
 .section-1-block .main-title {
-  margin-bottom: 10px; /* Adjust margin for consistency */
+  margin-bottom: 10px;
 }
 
 .section-1-block .or-text {
-  margin-top: 30px; /* Add margin above "or-text" */
+  margin-top: 30px;
 }
 
 .main-title {
   font-size: 40px;
     font-weight: 400;
     color: #2f264d;
-    margin-bottom: 20px;
     line-height: 1.2;
     margin-bottom: 0;
     margin-top: 0;
@@ -222,7 +221,7 @@ ion-content {
       transform: translate(50%, -50%);
     }
 .free-consultation-banner {
-  background-color: #a498d9; /* Purple background */
+  background-color: #a498d9;
   border-radius: 16px;
   padding: 30px 20px;
   
@@ -267,11 +266,11 @@ ion-content {
   --background-activated: var(--ion-color-primary-shade);
   --background-focused: var(--ion-color-primary-shade);
   --background-hover: var(--ion-color-primary-shade);
-  --color: #fff; /* White text */
+  --color: #fff;
   font-size: 20px;
   height: 60px;
   --border-radius: 8px;
-  text-transform: none; /* Keep text as is */
+  text-transform: none;
   width: 100%;
   
   --box-shadow: none;
