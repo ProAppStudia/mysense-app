@@ -274,7 +274,7 @@ ion-modal.auth-login-modal {
 }
 
 ion-modal.auth-login-modal::part(backdrop) {
-  background: rgba(30, 24, 47, 0.48);
+  background: rgba(40, 37, 49, 0.75);
   -webkit-backdrop-filter: blur(7px);
   backdrop-filter: blur(7px);
   opacity: 1;
@@ -297,9 +297,9 @@ ion-modal.auth-login-modal::part(content) {
   padding: 20px;
   box-sizing: border-box;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-      background: rgba(40, 37, 49, .75);
+
 }
 
 .auth-login-modal__shell {
@@ -320,7 +320,7 @@ ion-modal.auth-login-modal::part(content) {
   background-repeat: no-repeat;
   background-position: 0 0;
   background-size: 100% 100%;
-  border-radius: 18px;
+  border-radius: 8px;
   padding: 24px;
   max-height: calc(100vh - 16px);
   overflow: auto;
@@ -356,13 +356,37 @@ ion-modal.auth-login-modal::part(content) {
 }
 
 .auth-login-modal__field {
-      border: 2px solid #dfdce7;
+    border: 1px solid #e3e1e5;
     border-radius: 8px;
     height: 50px;
     display: flex;
     align-items: center;
-    padding: 0 26px;
+    padding: 16px 0 8px 16px;
     margin-bottom: 22px;
+    position: relative;
+}
+
+.auth-login-modal__label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9d98ac;
+  font-size: 14px;
+  line-height: 1;
+  background: #fff;
+  padding: 0 6px;
+  margin-left: -6px;
+  transition: top 0.18s ease, transform 0.18s ease, font-size 0.18s ease, color 0.18s ease;
+  pointer-events: none;
+}
+
+.auth-login-modal__field:focus-within .auth-login-modal__label,
+.auth-login-modal__field.is-filled .auth-login-modal__label {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #8a86a0;
 }
 
 .auth-login-modal__field input {
@@ -379,9 +403,6 @@ ion-modal.auth-login-modal::part(content) {
   color: #9d98ac;
 }
 
-.auth-login-modal__field--password {
-  padding-right: 16px;
-}
 
 .auth-login-modal__eye {
   width: 56px;
@@ -402,13 +423,13 @@ ion-modal.auth-login-modal::part(content) {
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  margin: 16px 10px 34px;
+      margin: 24px 0;
 }
 
 .auth-login-modal__links a {
-  color: #6f53d6;
-  font-size: 14px;
-  text-decoration: none;
+     color: #795bda;
+    font-size: 14px;
+    text-decoration: none;
 }
 
 .auth-login-modal__submit {
@@ -435,5 +456,5 @@ ion-modal.auth-login-modal::part(content) {
 
 .auth-login-modal__error {
   margin: -8px 0 14px;
-  font-size: 22px;
+  font-size: 14px;
 }

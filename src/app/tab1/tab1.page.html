@@ -381,32 +381,41 @@
 
   </div>
 
-  <ion-modal [isOpen]="loginOpen()" cssClass="auth-login-modal" (willDismiss)="closeLoginModal()">
+  <ion-modal
+    [isOpen]="loginOpen()"
+    cssClass="auth-login-modal"
+    [enterAnimation]="loginModalEnterAnimation"
+    [leaveAnimation]="loginModalLeaveAnimation"
+    (willDismiss)="closeLoginModal()">
     <ng-template>
       <div class="auth-login-modal__content">
         <div class="auth-login-modal__shell">
           <button type="button" class="auth-login-modal__close" (click)="closeLoginModal()" aria-label="Закрити">
-            ×
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M7 17L16.8995 7.10051" stroke="#795BDA" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M7 7.00001L16.8995 16.8995" stroke="#795BDA" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
           </button>
 
           <form class="auth-login-modal__card" [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()">
             <h1 class="auth-login-modal__title">Вхід в особистий кабінет</h1>
             <p class="auth-login-modal__subtitle">Увійдіть до свого облікового запису</p>
 
-            <div class="auth-login-modal__field">
-              <input formControlName="email" autocomplete="email" type="email" placeholder="Ел. адреса">
+            <div class="auth-login-modal__field" [class.is-filled]="!!loginForm.get('email')?.value">
+              <label class="auth-login-modal__label">Ел. адреса</label>
+              <input formControlName="email" autocomplete="email" type="email">
             </div>
             <ion-text color="danger" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
               <p class="auth-login-modal__error" *ngIf="loginForm.get('email')?.errors?.['required']">Ел. адреса обов'язкова.</p>
               <p class="auth-login-modal__error" *ngIf="loginForm.get('email')?.errors?.['email']">Будь ласка, введіть дійсну ел. адресу.</p>
             </ion-text>
 
-            <div class="auth-login-modal__field auth-login-modal__field--password">
+            <div class="auth-login-modal__field auth-login-modal__field--password" [class.is-filled]="!!loginForm.get('password')?.value">
+              <label class="auth-login-modal__label">Пароль</label>
               <input
                 formControlName="password"
                 autocomplete="current-password"
                 [type]="passwordVisible() ? 'text' : 'password'"
-                placeholder="Пароль"
               >
               <button type="button" class="auth-login-modal__eye" (click)="togglePasswordVisibility()" aria-label="Показати або приховати пароль">
                 <img src="assets/icon/eye.svg" alt="">

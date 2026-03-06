@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA, ViewChild, El
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { IonContent, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel, IonHeader, IonToolbar, IonModal, IonInput, IonSpinner, IonText, IonButtons, IonCheckbox, IonTitle, IonIcon, RefresherCustomEvent } from '@ionic/angular/standalone';
+import { Animation, createAnimation } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { register } from 'swiper/element/bundle';
 import { AuthService, MySessionItem, UserProfile, UpdateProfilePayload } from '../services/auth.service'; // Import AuthService
@@ -134,6 +135,54 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   homeProfilePhotoUploading = signal(false);
   homeProfilePhotoPreview = signal('');
   homeProfilePendingPhotoPath = signal('');
+
+  loginModalEnterAnimation = (baseEl: HTMLElement): Animation => {
+    const root = baseEl.shadowRoot;
+    const backdrop = root?.querySelector('ion-backdrop');
+    const wrapper = root?.querySelector('.modal-wrapper');
+
+    const backdropAnimation = createAnimation()
+      .addElement(backdrop as any)
+      .fromTo('opacity', '0', '1');
+
+    const wrapperAnimation = createAnimation()
+      .addElement(wrapper as any)
+      .beforeStyles({ opacity: '1' })
+      .keyframes([
+        { offset: 0, opacity: '0', transform: 'scale(0.98)' },
+        { offset: 1, opacity: '1', transform: 'scale(1)' }
+      ]);
+
+    return createAnimation()
+      .addElement(baseEl)
+      .duration(180)
+      .easing('cubic-bezier(0.2, 0, 0, 1)')
+      .addAnimation([backdropAnimation, wrapperAnimation]);
+  };
+
+  loginModalLeaveAnimation = (baseEl: HTMLElement): Animation => {
+    const root = baseEl.shadowRoot;
+    const backdrop = root?.querySelector('ion-backdrop');
+    const wrapper = root?.querySelector('.modal-wrapper');
+
+    const backdropAnimation = createAnimation()
+      .addElement(backdrop as any)
+      .fromTo('opacity', '1', '0');
+
+    const wrapperAnimation = createAnimation()
+      .addElement(wrapper as any)
+      .beforeStyles({ opacity: '1' })
+      .keyframes([
+        { offset: 0, opacity: '1', transform: 'scale(1)' },
+        { offset: 1, opacity: '0', transform: 'scale(0.98)' }
+      ]);
+
+    return createAnimation()
+      .addElement(baseEl)
+      .duration(140)
+      .easing('cubic-bezier(0.4, 0, 1, 1)')
+      .addAnimation([backdropAnimation, wrapperAnimation]);
+  };
 
   homeProfileForm = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.minLength(2)]),
