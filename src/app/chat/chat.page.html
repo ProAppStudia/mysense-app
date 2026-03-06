@@ -4,8 +4,8 @@
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <div *ngIf="isLoggedIn && chats.length > 0">
-    <div class="psychologists-container">
+  <div *ngIf="isLoggedIn && (chats.length > 0 || selectedChat)">
+    <div class="psychologists-container" *ngIf="chats.length > 0">
       <div class="psychologist-card" *ngFor="let chat of chats" (click)="selectChat(chat)" [class.active]="chat === selectedChat">
         <div class="psychologist-avatar">
           <img [src]="chat.photo || 'assets/icon/favicon.png'" />
@@ -68,7 +68,7 @@
     </div>
   </div>
 
-  <div *ngIf="!isLoggedIn || chats.length === 0" class="no-chats-container ion-padding">
+  <div *ngIf="!isLoggedIn || (chats.length === 0 && !selectedChat)" class="no-chats-container ion-padding">
     <p class="ion-text-center">У вас ще немає чатів</p>
     <ion-button expand="block" routerLink="/tabs/tests" class="ion-margin-top">Пройдіть тест</ion-button>
     <p class="ion-text-center ion-margin-top">або </p>

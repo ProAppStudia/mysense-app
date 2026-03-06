@@ -71,7 +71,7 @@
         <video controls [src]="doctor.videoAppealUrl" width="100%"></video>
       </div>
 
-      <ion-button *ngIf="doctor.introMinutes" class="intro-button" expand="block" fill="outline" (click)="openChat('15min')">
+      <ion-button *ngIf="doctor.introMinutes" class="intro-button" expand="block" fill="outline" [disabled]="isOpeningChat" (click)="openChat('15min')">
         <ion-icon src="assets/icon/hello.svg" slot="start"></ion-icon>
         Домовитись про знайомство {{ doctor.introMinutes }} хв
       </ion-button>
@@ -203,7 +203,7 @@
             <p class="pair-online-request__text">
               Відправте запит і я звʼяжуся з вами найближчим часом, щоб домовитися про сесію
             </p>
-            <button type="button" class="pair-online-request__btn" (click)="openChat('write')">
+            <button type="button" class="pair-online-request__btn" [disabled]="isOpeningChat" (click)="openChat('write')">
               Домовитися про сесію
             </button>
           </div>
@@ -278,7 +278,7 @@
       <ion-icon slot="start" src="assets/icon/hand-waving 1.svg"></ion-icon>
       Забронювати зустріч
     </ion-button>
-    <ion-button class="message-button" fill="outline" (click)="openChat('write')">
+    <ion-button class="message-button" fill="outline" [disabled]="isOpeningChat" (click)="openChat('write')">
       <ion-icon slot="start" src="assets/icon/hand-waving2.svg"></ion-icon>
       Написати психологу
     </ion-button>

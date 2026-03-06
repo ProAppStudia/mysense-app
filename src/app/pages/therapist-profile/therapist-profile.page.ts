@@ -9,6 +9,7 @@ import { DoctorService } from '../../services/doctor.service';
 import { DoctorCardView } from '../../models/doctor-card-view.model';
 import { register } from 'swiper/element/bundle';
 import { Week } from 'src/app/models/calendar.model';
+import { NavController } from '@ionic/angular';
 
 register();
 
@@ -38,12 +39,14 @@ export class TherapistProfilePage implements OnInit {
   weeks: Week[] = [];
   selectedDayKey: string | null = null;
   selectedTime: number | null = null;
+  isOpeningChat = false;
   
   constructor(
     private route: ActivatedRoute,
     private doctorService: DoctorService,
     private location: Location, // Inject Location service
-    private router: Router // Inject Router
+    private router: Router, // Inject Router
+    private navCtrl: NavController
   ) {
     addIcons({ calendarOutline, chatbubbleEllipsesOutline, arrowBackOutline }); // Add arrowBackOutline
   }
@@ -253,18 +256,43 @@ export class TherapistProfilePage implements OnInit {
     if (!this.isDoctorCardView(this.doctor)) {
       return;
     }
+    if (this.isOpeningChat) {
+      return;
+    }
 
     const queryParams: Record<string, string | number> = { type };
+    const hash = String(this.doctor.hash ?? '').trim();
+    const toUserId = Number(this.doctor.userId ?? 0);
 
-    if (this.doctor.hash) {
-      queryParams['hash'] = this.doctor.hash;
+    if (hash) {
+      queryParams['hash'] = hash;
     }
 
-    if (this.doctor.userId) {
-      queryParams['to_user_id'] = this.doctor.userId;
+    if (Number.isFinite(toUserId) && toUserId > 0) {
+      queryParams['to_user_id'] = toUserId;
     }
 
-    this.router.navigate(['/tabs/chat'], { queryParams });
+    if (!queryParams['hash'] && !queryParams['to_user_id']) {
+      return;
+    }
+
+    this.isOpeningChat = true;
+    const targetUrl = this.router.serializeUrl(
+      this.router.createUrlTree(['/tabs/chat'], { queryParams })
+    );
+
+    // iOS can hang on animated route transitions from deeply nested views.
+    void this.navCtrl.navigateForward(targetUrl, { animated: false });
+
+    setTimeout(() => {
+      if (window.location.pathname.includes('/tabs/therapist-profile')) {
+        void this.router.navigateByUrl(targetUrl);
+      }
+    }, 550);
+
+    setTimeout(() => {
+      this.isOpeningChat = false;
+    }, 700);
   }
 
   openSessionRequest() {

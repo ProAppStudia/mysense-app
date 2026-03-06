@@ -8,6 +8,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { addOutline, attachOutline, createOutline, send, trashOutline } from 'ionicons/icons';
+import { DoctorService } from '../services/doctor.service';
 
 @Component({
   selector: 'app-chat',
@@ -36,6 +37,7 @@ export class ChatPage implements OnInit {
   pendingHash: string | null = null;
   pendingType: '15min' | 'write' | null = null;
   pendingToUserId: number | null = null;
+  pendingDoctorId: number | null = null;
   shouldAutoEnhanceOnOpen = false;
   selectedTaskFiles: File[] = [];
 
@@ -43,7 +45,8 @@ export class ChatPage implements OnInit {
     private chatService: ChatService,
     private authService: AuthService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private doctorService: DoctorService
   ) { // Inject AuthService
     addIcons({ send, addOutline, trashOutline, attachOutline, createOutline });
   }
@@ -80,13 +83,124 @@ export class ChatPage implements OnInit {
   private initChatAndLoad() {
     if (this.pendingHash) {
       this.chatService.initChatByHash(this.pendingHash, this.pendingType ?? undefined).subscribe({
-        next: () => this.loadChats(),
+        next: (data: any) => {
+          this.hydratePendingChatFromInit(data);
+          if (this.pendingToUserId) {
+            this.loadChats();
+            return;
+          }
+
+          this.resolvePendingUserId(this.pendingHash as string, this.pendingDoctorId, () => this.loadChats());
+        },
         error: () => this.loadChats()
       });
       return;
     }
 
     this.loadChats();
+  }
+
+  private hydratePendingChatFromInit(data: any): void {
+    if (!data || typeof data !== 'object') {
+      return;
+    }
+
+    const resolvedToUserId = this.extractFirstPositiveNumberByKeys(data, [
+      'doctor_user_id',
+      'to_user_id',
+      'user_id',
+      'peer_user_id'
+    ]);
+    const resolvedDoctorId = this.extractFirstPositiveNumberByKeys(data, ['doctor_id', 'id']);
+
+    if (Number.isFinite(resolvedToUserId) && resolvedToUserId > 0) {
+      this.pendingToUserId = resolvedToUserId;
+    }
+    if (Number.isFinite(resolvedDoctorId) && resolvedDoctorId > 0) {
+      this.pendingDoctorId = resolvedDoctorId;
+    }
+  }
+
+  private resolvePendingUserId(hash: string, doctorId: number | null, done: () => void): void {
+    const safeDoctorId = Number(doctorId ?? 0);
+    if (Number.isFinite(safeDoctorId) && safeDoctorId > 0) {
+      this.doctorService.getDoctorProfile(safeDoctorId).subscribe({
+        next: (doctor: any) => {
+          const resolvedId = Number(doctor?.userId ?? doctor?.user_id ?? 0);
+          if (Number.isFinite(resolvedId) && resolvedId > 0) {
+            this.pendingToUserId = resolvedId;
+            done();
+            return;
+          }
+          this.resolvePendingUserIdByHash(hash, done);
+        },
+        error: () => this.resolvePendingUserIdByHash(hash, done)
+      });
+      return;
+    }
+
+    this.resolvePendingUserIdByHash(hash, done);
+  }
+
+  private resolvePendingUserIdByHash(hash: string, done: () => void): void {
+    const safeHash = String(hash || '').trim();
+    if (!safeHash) {
+      done();
+      return;
+    }
+
+    this.doctorService.getDoctorProfileByHash(safeHash).subscribe({
+      next: (doctor: any) => {
+        const resolvedId = Number(doctor?.userId ?? doctor?.user_id ?? doctor?.id ?? 0);
+        if (Number.isFinite(resolvedId) && resolvedId > 0) {
+          this.pendingToUserId = resolvedId;
+        }
+        done();
+      },
+      error: () => done()
+    });
+  }
+
+  private extractFirstPositiveNumberByKeys(source: any, keys: string[]): number {
+    if (!source || typeof source !== 'object' || !Array.isArray(keys) || !keys.length) {
+      return 0;
+    }
+
+    const wanted = new Set(keys.map((k) => String(k).toLowerCase()));
+    const queue: any[] = [source];
+    const visited = new Set<any>();
+
+    while (queue.length) {
+      const current = queue.shift();
+      if (!current || visited.has(current)) {
+        continue;
+      }
+      visited.add(current);
+
+      if (Array.isArray(current)) {
+        queue.push(...current);
+        continue;
+      }
+
+      if (typeof current !== 'object') {
+        continue;
+      }
+
+      for (const key of Object.keys(current)) {
+        const value = current[key];
+        if (wanted.has(String(key).toLowerCase())) {
+          const num = Number(value);
+          if (Number.isFinite(num) && num > 0) {
+            return num;
+          }
+        }
+        if (value && typeof value === 'object') {
+          queue.push(value);
+        }
+      }
+    }
+
+    return 0;
   }
 
   private loadChats(event?: RefresherCustomEvent) {
@@ -98,13 +212,13 @@ export class ChatPage implements OnInit {
           const preferredChat = this.findPreferredChat();
           this.selectChat(preferredChat ?? this.chats[0]);
         } else if (this.pendingToUserId) {
-          this.selectedChat = {
+          const pendingChat = {
             from_user_id: this.pendingToUserId,
             to_user_id: this.pendingToUserId,
             user_id: this.pendingToUserId,
             fullname: 'Психолог'
           };
-          this.messages = [];
+          this.selectChat(pendingChat);
         } else {
           this.selectedChat = null;
           this.messages = [];
