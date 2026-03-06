@@ -10,6 +10,7 @@ import { DoctorCardView } from '../../models/doctor-card-view.model';
 import { register } from 'swiper/element/bundle';
 import { Week } from 'src/app/models/calendar.model';
 import { NavController } from '@ionic/angular';
+import { ChatService } from '../../services/chat.service';
 
 register();
 
@@ -44,6 +45,7 @@ export class TherapistProfilePage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private doctorService: DoctorService,
+    private chatService: ChatService,
     private location: Location, // Inject Location service
     private router: Router, // Inject Router
     private navCtrl: NavController
@@ -252,7 +254,7 @@ export class TherapistProfilePage implements OnInit {
     return '';
   }
 
-  openChat(type: '15min' | 'write') {
+  async openChat(type: '15min' | 'write') {
     if (!this.isDoctorCardView(this.doctor)) {
       return;
     }
@@ -277,6 +279,32 @@ export class TherapistProfilePage implements OnInit {
     }
 
     this.isOpeningChat = true;
+
+    if (hash) {
+      const firstMessageType: 'session' | '15min' | 'family' =
+        type === '15min' ? '15min' : (this.bookingFor === 'pair' ? 'family' : 'session');
+
+      const firstMessageResult = await this.chatService.setFirstMessageToChat({
+        hash,
+        type: firstMessageType,
+        format: this.sessionType
+      });
+
+      if (!firstMessageResult.ok) {
+        const backendError = String(
+          firstMessageResult.response?.error ??
+          firstMessageResult.error?.message ??
+          firstMessageResult.error ??
+          ''
+        ).trim();
+        this.isOpeningChat = false;
+        if (backendError) {
+          window.alert(backendError);
+        }
+        return;
+      }
+    }
+
     const targetUrl = this.router.serializeUrl(
       this.router.createUrlTree(['/tabs/chat'], { queryParams })
     );

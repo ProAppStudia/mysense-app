@@ -306,6 +306,53 @@ export class ChatService {
     }
   }
 
+  async setFirstMessageToChat(payload: {
+    hash: string;
+    type: 'session' | '15min' | 'family';
+    format: 'online' | 'offline';
+  }): Promise<{ ok: boolean; action?: string; response?: any; error?: any }> {
+    const token = this.tokenStorage.getToken();
+    if (!token) {
+      return { ok: false, error: 'No token' };
+    }
+
+    const body = new URLSearchParams();
+    body.set('hash', payload.hash);
+    body.set('type', payload.type);
+    body.set('format', payload.format);
+    body.set('token', token);
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    });
+
+    const action = 'set_first_message_to_chat';
+
+    try {
+      const rawResponse = await firstValueFrom(
+        this.http.post(`${this.apiUrl}?action=${action}&token=${token}`, body.toString(), {
+          headers,
+          responseType: 'text'
+        })
+      );
+
+      const response = this.parseBackendResponse(rawResponse);
+      const code = String(response?.code ?? '');
+      const redirect = String(response?.redirect ?? '');
+      const isSuccess = response?.success === true || response?.success === 1 || response?.success === '1';
+      const isKnownCode = code === 'chat_found' || code === 'message_created';
+      const isChatRedirect = !redirect || redirect === 'chat_page';
+
+      if (isSuccess && isKnownCode && isChatRedirect) {
+        return { ok: true, action, response };
+      }
+
+      return { ok: false, action, response };
+    } catch (error) {
+      return { ok: false, action, error };
+    }
+  }
+
   private parseBackendResponse(raw: unknown): any {
     if (typeof raw !== 'string') {
       return raw;
