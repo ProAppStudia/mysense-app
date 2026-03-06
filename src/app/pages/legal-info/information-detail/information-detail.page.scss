@@ -42,7 +42,8 @@
   font-size: 16px;
 }
 
-.legal-info-detail-pdf a {
+.legal-info-detail-pdf a,
+.legal-info-detail-pdf-open-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -51,8 +52,10 @@
   border-radius: 12px;
   background: #7a5bda;
   color: #fff;
+  border: 0;
   text-decoration: none;
   font-weight: 500;
+  font-size: 18px;
 }
 
 .legal-info-detail-pdf-viewer {
@@ -61,11 +64,14 @@
 
 .legal-info-detail-pdf-fallback {
   width: 100%;
-  min-height: 60vh;
+  min-height: 72vh;
+  height: 72vh;
   border: 1px solid #ddd7f5;
   border-radius: 10px;
   margin-bottom: 12px;
   background: #fff;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .legal-info-detail-pdf-state {

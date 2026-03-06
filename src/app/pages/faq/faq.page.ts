@@ -1,7 +1,7 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonAccordion, IonAccordionGroup, IonButton, IonButtons, IonContent, IonItem, IonLabel, IonSpinner, IonText, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonAccordion, IonAccordionGroup, IonButton, IonButtons, IonContent, IonHeader, IonItem, IonLabel, IonSpinner, IonText, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { addIcons } from 'ionicons';
@@ -26,7 +26,7 @@ interface HomepageData {
   styleUrls: ['./faq.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonTitle, IonToolbar, CommonModule, FormsModule,
+    IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule,
     IonButtons, IonButton, IonAccordionGroup, IonAccordion, IonItem, IonLabel,
     IonSpinner, IonText
   ],

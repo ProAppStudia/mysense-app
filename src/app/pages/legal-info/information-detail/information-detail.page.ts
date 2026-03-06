@@ -5,6 +5,10 @@ import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
+import { FileViewer } from '@capacitor/file-viewer';
+import { Directory, Filesystem } from '@capacitor/filesystem';
 import {
   IonBackButton,
   IonButtons,
@@ -59,6 +63,8 @@ export class InformationDetailPage implements OnInit, AfterViewInit, OnDestroy {
   private readonly pdfWorkerCdnUrl = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
   private isAlive = true;
   private pdfRenderRetries = 0;
+  private nativePdfAutoOpened = false;
+  readonly isNativeIos = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
 
   constructor(
     private route: ActivatedRoute,
@@ -105,6 +111,7 @@ export class InformationDetailPage implements OnInit, AfterViewInit, OnDestroy {
         this.safePdfUrl.set(mapped.pdfUrl ? this.sanitizer.bypassSecurityTrustResourceUrl(mapped.pdfUrl) : null);
         this.pdfRenderRetries = 0;
         this.tryRenderPdf();
+        this.tryAutoOpenNativePdf(mapped);
       },
       error: () => {
         this.loading.set(false);
@@ -297,7 +304,7 @@ export class InformationDetailPage implements OnInit, AfterViewInit, OnDestroy {
   private tryRenderPdf(): void {
     const info = this.detail();
     const container = this.pdfContainer?.nativeElement;
-    if (!this.isAlive || !info || !info.isPdf || !!info.content || !info.pdfUrl) {
+    if (!this.isAlive || !info || !info.isPdf || !!info.content || !info.pdfUrl || this.isNativeIos) {
       return;
     }
     if (!container) {
@@ -351,5 +358,78 @@ export class InformationDetailPage implements OnInit, AfterViewInit, OnDestroy {
     } finally {
       this.pdfLoading.set(false);
     }
+  }
+
+  async openPdfInBrowser(url: string): Promise<void> {
+    const target = String(url || '').trim();
+    if (!target) {
+      return;
+    }
+
+    if (Capacitor.isNativePlatform()) {
+      const opened = await this.tryOpenPdfNatively(target);
+      if (opened) {
+        return;
+      }
+    }
+
+    try {
+      await Browser.open({ url: target, presentationStyle: 'fullscreen' });
+    } catch {
+      window.open(target, '_blank');
+    }
+  }
+
+  private async tryOpenPdfNatively(url: string): Promise<boolean> {
+    try {
+      await FileViewer.openDocumentFromUrl({ url });
+      return true;
+    } catch {
+      // Some API links do not end with ".pdf", so native URL open may fail.
+    }
+
+    try {
+      const localPath = `legal-info/legal-${Date.now()}.pdf`;
+      await Filesystem.downloadFile({
+        url,
+        path: localPath,
+        directory: Directory.Cache,
+        recursive: true
+      });
+
+      const { uri } = await Filesystem.getUri({
+        path: localPath,
+        directory: Directory.Cache
+      });
+      const nativePath = this.toNativePath(uri);
+      if (!nativePath) {
+        return false;
+      }
+      await FileViewer.openDocumentFromLocalPath({ path: nativePath });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private toNativePath(uri: string): string {
+    const raw = String(uri || '').trim();
+    if (!raw) {
+      return '';
+    }
+    if (raw.startsWith('file://')) {
+      return raw.replace('file://', '');
+    }
+    return raw;
+  }
+
+  private tryAutoOpenNativePdf(info: LegalInformationDetail): void {
+    if (!this.isNativeIos || this.nativePdfAutoOpened || !info.isPdf || !info.pdfUrl || !!info.content) {
+      return;
+    }
+    this.nativePdfAutoOpened = true;
+    setTimeout(() => {
+      void this.openPdfInBrowser(info.pdfUrl);
+    }, 50);
   }
 }

@@ -24,16 +24,20 @@
 
       <div *ngIf="info.isPdf && !info.content" class="legal-info-detail-pdf">
         <p>Ця сторінка доступна у PDF-форматі.</p>
-        <div class="legal-info-detail-pdf-viewer" #pdfContainer></div>
+        <div *ngIf="!isNativeIos" class="legal-info-detail-pdf-viewer" #pdfContainer></div>
         <iframe
-          *ngIf="!isPdfReady() && !pdfLoading() && safePdfUrl()"
+          *ngIf="!isNativeIos && !isPdfReady() && !pdfLoading() && safePdfUrl()"
           class="legal-info-detail-pdf-fallback"
           [src]="safePdfUrl()"
+          scrolling="yes"
+          allowfullscreen
           title="PDF document">
         </iframe>
-        <p class="legal-info-detail-pdf-state" *ngIf="pdfLoading()">Завантаження PDF...</p>
-        <p class="legal-info-detail-pdf-state legal-info-detail-pdf-state--error" *ngIf="pdfErrorText()">{{ pdfErrorText() }}</p>
-        <a *ngIf="info.pdfUrl" [href]="info.pdfUrl" target="_blank" rel="noopener noreferrer">Відкрити PDF</a>
+        <p class="legal-info-detail-pdf-state" *ngIf="!isNativeIos && pdfLoading()">Завантаження PDF...</p>
+        <p class="legal-info-detail-pdf-state legal-info-detail-pdf-state--error" *ngIf="!isNativeIos && pdfErrorText()">{{ pdfErrorText() }}</p>
+        <button *ngIf="info.pdfUrl" type="button" class="legal-info-detail-pdf-open-btn" (click)="openPdfInBrowser(info.pdfUrl)">
+          Відкрити PDF ще раз
+        </button>
         <p class="legal-info-detail-pdf-state legal-info-detail-pdf-state--error" *ngIf="!info.pdfUrl">
           PDF-посилання не знайдено у відповіді API.
         </p>
