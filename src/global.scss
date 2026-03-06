@@ -41,7 +41,7 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 /* @import '@ionic/angular/css/palettes/dark.system.css'; */
 
-@import url('https://fonts.googleapis.com/css2?family=Golos+Text&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Golos+Text:wght@400;500;700&display=swap');
 
 html, body, ion-app {
   height: 100vh; /* Use viewport height to ensure full screen */
@@ -53,6 +53,29 @@ html, body, ion-app {
 body {
   font-family: "Golos Text", sans-serif !important;
   --ion-font-family: "Golos Text", sans-serif !important;
+}
+
+/* Enforce one font app-wide and avoid synthetic style substitutions */
+:root {
+  --ion-default-font: "Golos Text", sans-serif;
+  --ion-font-family: "Golos Text", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  font-family: "Golos Text", sans-serif !important;
+  font-synthesis: none;
+}
+
+/* Form controls + placeholders */
+input,
+textarea,
+select,
+button,
+input::placeholder,
+textarea::placeholder {
+  font-family: "Golos Text", sans-serif !important;
 }
 
 ion-content {
