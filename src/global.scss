@@ -294,11 +294,12 @@ ion-modal.auth-login-modal::part(content) {
   max-width: none;
   min-height: 100%;
   margin: 0;
-  padding: 8px;
+  padding: 20px;
   box-sizing: border-box;
   display: flex;
   align-items: flex-start;
   justify-content: center;
+      background: rgba(40, 37, 49, .75);
 }
 
 .auth-login-modal__shell {
@@ -306,11 +307,10 @@ ion-modal.auth-login-modal::part(content) {
   width: 100%;
   max-width: none;
   margin: 0;
-  padding: 20px;
+  padding: 0px;
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.22);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  
+  
   box-shadow: 0 22px 52px rgba(34, 24, 59, 0.22);
 }
 
@@ -328,10 +328,10 @@ ion-modal.auth-login-modal::part(content) {
 
 .auth-login-modal__close {
  position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 0px;
+    right: 0px;
     width: 40px;
-    height: 49px;
+    height: 54px;
     border: 0;
     border-radius: 8px 8px 0 0;
     background: #fff;
@@ -344,6 +344,7 @@ ion-modal.auth-login-modal::part(content) {
 .auth-login-modal__title {
   font-size: 24px;
         width: 80%;
+        margin: 0;
 }
 
 .auth-login-modal__subtitle {
