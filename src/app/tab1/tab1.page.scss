@@ -671,7 +671,7 @@ ion-content {
   text-align: center;
 }
 .article-card h3 {
-    font-size: 18px;
+    font-size: 20px;
     color: #2f264d;
     line-height: 1.25;
     text-align: left;
@@ -683,6 +683,7 @@ ion-content {
     color: #4a4756;
     margin-top: 10px;
     margin-bottom: 0;
+    font-size: 14px;
 }
 .section-10 {
   border-radius: 8px;
@@ -795,7 +796,7 @@ ion-content {
   background-color: #fff;
   border-radius: 8px;
 
-  padding: 20px;
+  padding: 24px;
   text-align: center;
   width: 100%;
   box-sizing: border-box;
@@ -816,19 +817,21 @@ ion-content {
 }
 
 .review-slide-content h3 {
-  font-size: 16px;
-    font-weight: bold;
+  font-size: 14px;
+    font-weight: 500;
     margin-bottom: 0px;
-    color: #333;
+    color: #423f4d;
     text-align: left;
-    margin-left: 15px;
+    margin-left: 0px;
 }
 
 .review-slide-content p {
   font-size: 16px;
   color: #666;
   line-height: 1.5;
-  padding: 0 15px;
+  padding: 0;
+   margin: 10px 0 0 0;
+   font-weight: 400;
   text-align: left;
 }
 
@@ -865,7 +868,7 @@ button.rewiew-more {
     background: 0 0;
     border: none;
     text-align: left;
-    margin-left: 15px;
+    margin-top: 20px;
 }
 .review-date {
   margin-top: auto; 
@@ -1136,7 +1139,7 @@ button.rewiew-more {
   box-sizing: border-box;
   --box-shadow: none;
   --border-bottom: 0;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 
