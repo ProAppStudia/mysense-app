@@ -273,6 +273,31 @@ ion-modal.auth-login-modal {
   --box-shadow: none;
 }
 
+ion-modal.auth-register-modal {
+  --width: 100%;
+  --max-width: 100%;
+  --height: 100%;
+  --max-height: 100%;
+  --border-radius: 0;
+  --box-shadow: none;
+}
+
+ion-modal.auth-register-modal::part(backdrop) {
+  background: rgba(40, 37, 49, 0.75);
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+  opacity: 1;
+}
+
+ion-modal.auth-register-modal::part(content) {
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+}
+
 ion-modal.auth-login-modal::part(backdrop) {
   background: rgba(40, 37, 49, 0.75);
   -webkit-backdrop-filter: blur(7px);
@@ -333,7 +358,7 @@ ion-modal.auth-login-modal::part(content) {
     width: 40px;
     height: 54px;
     border: 0;
-    border-radius: 8px 8px 0 0;
+    border-radius: 8px;
     background: #fff;
     color: #7a5bda;
     font-size: 20px;
@@ -362,7 +387,7 @@ ion-modal.auth-login-modal::part(content) {
     display: flex;
     align-items: center;
     padding: 16px 0 8px 16px;
-    margin-bottom: 22px;
+    margin-bottom: 16px;
     position: relative;
 }
 
@@ -452,6 +477,82 @@ ion-modal.auth-login-modal::part(content) {
 
 .auth-login-modal__submit[disabled] {
   opacity: 0.7;
+}
+
+.auth-register-modal__confirm {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 0 20px;
+  color: #5c5870;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.auth-register-modal__confirm input[type='checkbox'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  margin-top: 0;
+  border: 2px solid #cfc9e2;
+  border-radius: 6px;
+  background: #fff;
+  flex: 0 0 24px;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.16s ease, background-color 0.16s ease;
+}
+
+.auth-register-modal__confirm input[type='checkbox']:focus-visible {
+  outline: 2px solid rgba(121, 91, 218, 0.35);
+  outline-offset: 2px;
+}
+
+.auth-register-modal__confirm input[type='checkbox']:checked {
+  background: #795bda;
+  border-color: #795bda;
+}
+
+.auth-register-modal__confirm input[type='checkbox']:checked::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px 11px;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='11' viewBox='0 0 12 11' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 5.8L4.57143 9L11 1' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+
+
+.auth-register-modal__confirm a {
+  color: #6e54d6;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.auth-register-modal__resend {
+  margin: 2px 0 16px;
+  text-align: center;
+}
+
+.auth-register-modal__resend p {
+  margin: 0 0 8px;
+  color: #7e7892;
+  font-size: 14px;
+}
+
+.auth-register-modal__resend button {
+  border: 0;
+  background: transparent;
+  color: #795bda;
+  font-size: 14px;
+  padding: 0;
+}
+
+.auth-register-modal__resend button[disabled] {
+  color: #bbb7cc;
 }
 
 .auth-login-modal__error {

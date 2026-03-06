@@ -157,6 +157,7 @@ type RegisterPayload = {
   surname: string;
   email: string;
   phone: string;
+  password?: string;
   confirm: boolean;
   code?: string;
 };
@@ -281,6 +282,10 @@ export class AuthService {
       .set('email', payload.email)
       .set('phone', payload.phone)
       .set('confirm', payload.confirm ? '1' : '0');
+
+    if (payload.password) {
+      body = body.set('password', payload.password);
+    }
 
     if (payload.code) {
       body = body.set('code', payload.code);

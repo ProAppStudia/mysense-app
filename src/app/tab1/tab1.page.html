@@ -427,7 +427,7 @@
             </ion-text>
 
             <div class="auth-login-modal__links">
-              <a routerLink="/register" (click)="closeLoginModal()">Реєстрація</a>
+              <a href="" (click)="switchToRegisterModal($event)">Реєстрація</a>
               <a routerLink="/forgot-password" (click)="closeLoginModal()">Не пам'ятаєте свій пароль?</a>
             </div>
 
@@ -446,109 +446,122 @@
   </ion-modal>
 
   <!-- Register Modal -->
-  <ion-modal [isOpen]="registerOpen()" (willDismiss)="closeRegisterModal()">
+  <ion-modal
+    [isOpen]="registerOpen()"
+    cssClass="auth-register-modal"
+    [enterAnimation]="loginModalEnterAnimation"
+    [leaveAnimation]="loginModalLeaveAnimation"
+    (willDismiss)="closeRegisterModal()">
     <ng-template>
-      <ion-header>
-        <ion-toolbar>
-          <ion-buttons slot="end">
-            <ion-button (click)="closeRegisterModal()">
-              <ion-icon name="close-outline" class="close-icon"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content class="ion-padding">
-        <form [formGroup]="registerForm" (ngSubmit)="onSubmitRegister()">
-          <ion-text>
-            <h1 class="ion-text-center">Реєстрація</h1>
-            <p class="ion-text-center" *ngIf="registerStep() === 'form'">Створіть новий обліковий запис</p>
-            <p class="ion-text-center" *ngIf="registerStep() === 'code'">{{ infoMsg() }}</p>
-          </ion-text>
+      <div class="auth-login-modal__content">
+        <div class="auth-login-modal__shell">
+          <button type="button" class="auth-login-modal__close" (click)="closeRegisterModal()" aria-label="Закрити">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M7 17L16.8995 7.10051" stroke="#795BDA" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M7 7.00001L16.8995 16.8995" stroke="#795BDA" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
 
-          <ion-list *ngIf="registerStep() === 'form'">
-            <ion-item>
-              <ion-input label="Ім'я" labelPlacement="floating" formControlName="name" type="text"></ion-input>
-            </ion-item>
-            <ion-text color="danger" *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
-              <p class="ion-padding-start" *ngIf="registerForm.get('name')?.errors?.['required']">Ім'я обов'язкове.</p>
-              <p class="ion-padding-start" *ngIf="registerForm.get('name')?.errors?.['minlength']">Ім'я повинно бути не менше 2 символів.</p>
-            </ion-text>
+          <form class="auth-login-modal__card" [formGroup]="registerForm" (ngSubmit)="onSubmitRegister()">
+            <h1 class="auth-login-modal__title">
+              {{ registerStep() === 'form' ? 'Створення облікового запису' : 'Підтвердження коду' }}
+            </h1>
+            <p class="auth-login-modal__subtitle" *ngIf="registerStep() === 'form'">Введіть ваші дані</p>
+            <p class="auth-login-modal__subtitle" *ngIf="registerStep() === 'code'">{{ infoMsg() }}</p>
 
-            <ion-item>
-              <ion-input label="Прізвище" labelPlacement="floating" formControlName="surname" type="text"></ion-input>
-            </ion-item>
-            <ion-text color="danger" *ngIf="registerForm.get('surname')?.invalid && registerForm.get('surname')?.touched">
-              <p class="ion-padding-start" *ngIf="registerForm.get('surname')?.errors?.['required']">Прізвище обов'язкове.</p>
-              <p class="ion-padding-start" *ngIf="registerForm.get('surname')?.errors?.['minlength']">Прізвище повинно бути не менше 2 символів.</p>
-            </ion-text>
-
-            <ion-item>
-              <ion-input label="Ел. адреса" labelPlacement="floating" formControlName="email" autocomplete="email" type="email"></ion-input>
-            </ion-item>
-            <ion-text color="danger" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
-              <p class="ion-padding-start" *ngIf="registerForm.get('email')?.errors?.['required']">Ел. адреса обов'язкова.</p>
-              <p class="ion-padding-start" *ngIf="registerForm.get('email')?.errors?.['email']">Будь ласка, введіть дійсну ел. адресу.</p>
-            </ion-text>
-
-            <ion-item>
-              <ion-input label="Телефон" labelPlacement="floating" formControlName="phone" inputmode="tel" type="tel"></ion-input>
-            </ion-item>
-            <ion-text color="danger" *ngIf="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched">
-              <p class="ion-padding-start" *ngIf="registerForm.get('phone')?.errors?.['required']">Телефон обов'язковий.</p>
-              <p class="ion-padding-start" *ngIf="registerForm.get('phone')?.errors?.['pattern']">Будь ласка, введіть дійсний номер телефону.</p>
-            </ion-text>
-
-            <ion-item>
-              <ion-input
-                label="Пароль"
-                labelPlacement="floating"
-                formControlName="password"
-                autocomplete="new-password"
-                [type]="registerPasswordVisible() ? 'text' : 'password'"
-              ></ion-input>
-              <ion-button slot="end" fill="clear" (click)="toggleRegisterPasswordVisibility()">
-                <ion-icon [name]="registerPasswordVisible() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
-              </ion-button>
-            </ion-item>
-            <ion-text color="danger" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
-              <p class="ion-padding-start" *ngIf="registerForm.get('password')?.errors?.['required']">Пароль обов'язковий.</p>
-              <p class="ion-padding-start" *ngIf="registerForm.get('password')?.errors?.['minlength']">Пароль повинен бути не менше 6 символів.</p>
-            </ion-text>
-
-            <ion-item lines="none">
-              <ion-checkbox slot="start" formControlName="confirm"></ion-checkbox>
-              <ion-label>Я погоджуюся з умовами використання</ion-label>
-            </ion-item>
-            <ion-text color="danger" *ngIf="registerForm.get('confirm')?.invalid && registerForm.get('confirm')?.touched">
-              <p class="ion-padding-start" *ngIf="registerForm.get('confirm')?.errors?.['requiredTrue']">Ви повинні погодитись з умовами.</p>
-            </ion-text>
-          </ion-list>
-
-          <ion-list *ngIf="registerStep() === 'code'">
-            <ion-item>
-              <ion-input label="Код" labelPlacement="floating" formControlName="code" inputmode="numeric" maxlength="6"></ion-input>
-            </ion-item>
-            <ion-text color="danger" *ngIf="registerForm.get('code')?.invalid && registerForm.get('code')?.touched">
-              <p class="ion-padding-start" *ngIf="registerForm.get('code')?.errors?.['required']">Код обов'язковий.</p>
-            </ion-text>
-            <div class="ion-text-center ion-padding-vertical">
-              <ion-text *ngIf="countdown() > 0">
-                <p>Надіслати код повторно через {{ formatTime(countdown()) }}</p>
+            <ng-container *ngIf="registerStep() === 'form'">
+              <div class="auth-login-modal__field" [class.is-filled]="!!registerForm.get('name')?.value">
+                <label class="auth-login-modal__label">Ваше ім'я</label>
+                <input formControlName="name" type="text">
+              </div>
+              <ion-text color="danger" *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+                <p class="auth-login-modal__error" *ngIf="registerForm.get('name')?.errors?.['required']">Ім'я обов'язкове.</p>
+                <p class="auth-login-modal__error" *ngIf="registerForm.get('name')?.errors?.['minlength']">Ім'я повинно бути не менше 2 символів.</p>
               </ion-text>
-              <ion-button fill="clear" size="small" (click)="resendCode()" [disabled]="!canResend()">Надіслати код ще раз</ion-button>
-            </div>
-          </ion-list>
 
-          <ion-text color="danger" *ngIf="errorMsg()">
-            <p class="ion-padding-start">{{ errorMsg() }}</p>
-          </ion-text>
+              <div class="auth-login-modal__field" [class.is-filled]="!!registerForm.get('surname')?.value">
+                <label class="auth-login-modal__label">Ваше прізвище</label>
+                <input formControlName="surname" type="text">
+              </div>
+              <ion-text color="danger" *ngIf="registerForm.get('surname')?.invalid && registerForm.get('surname')?.touched">
+                <p class="auth-login-modal__error" *ngIf="registerForm.get('surname')?.errors?.['required']">Прізвище обов'язкове.</p>
+                <p class="auth-login-modal__error" *ngIf="registerForm.get('surname')?.errors?.['minlength']">Прізвище повинно бути не менше 2 символів.</p>
+              </ion-text>
 
-          <ion-button expand="block" type="submit" [disabled]="registerForm.invalid || loading()">
-            <ion-spinner *ngIf="loading()" name="lines-small"></ion-spinner>
-            <span *ngIf="!loading()">{{ registerStep() === 'form' ? 'Зареєструватися' : 'Підтвердити код' }}</span>
-          </ion-button>
-        </form>
-      </ion-content>
+              <div class="auth-login-modal__field" [class.is-filled]="!!registerForm.get('phone')?.value">
+                <label class="auth-login-modal__label">Номер телефону</label>
+                <input formControlName="phone" inputmode="tel" type="tel">
+              </div>
+              <ion-text color="danger" *ngIf="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched">
+                <p class="auth-login-modal__error" *ngIf="registerForm.get('phone')?.errors?.['required']">Телефон обов'язковий.</p>
+                <p class="auth-login-modal__error" *ngIf="registerForm.get('phone')?.errors?.['pattern']">Будь ласка, введіть дійсний номер телефону.</p>
+              </ion-text>
+
+              <div class="auth-login-modal__field" [class.is-filled]="!!registerForm.get('email')?.value">
+                <label class="auth-login-modal__label">Ел. адреса</label>
+                <input formControlName="email" autocomplete="email" type="email">
+              </div>
+              <ion-text color="danger" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+                <p class="auth-login-modal__error" *ngIf="registerForm.get('email')?.errors?.['required']">Ел. адреса обов'язкова.</p>
+                <p class="auth-login-modal__error" *ngIf="registerForm.get('email')?.errors?.['email']">Будь ласка, введіть дійсну ел. адресу.</p>
+              </ion-text>
+
+              <div class="auth-login-modal__field auth-login-modal__field--password" [class.is-filled]="!!registerForm.get('password')?.value">
+                <label class="auth-login-modal__label">Пароль</label>
+                <input
+                  formControlName="password"
+                  autocomplete="new-password"
+                  [type]="registerPasswordVisible() ? 'text' : 'password'">
+                <button type="button" class="auth-login-modal__eye" (click)="toggleRegisterPasswordVisibility()" aria-label="Показати або приховати пароль">
+                  <img src="assets/icon/eye.svg" alt="">
+                </button>
+              </div>
+              <ion-text color="danger" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+                <p class="auth-login-modal__error" *ngIf="registerForm.get('password')?.errors?.['required']">Пароль обов'язковий.</p>
+                <p class="auth-login-modal__error" *ngIf="registerForm.get('password')?.errors?.['minlength']">Пароль повинен бути не менше 6 символів.</p>
+              </ion-text>
+
+              <label class="auth-register-modal__confirm">
+                <input type="checkbox" formControlName="confirm">
+                <span>
+                  Мені є 18 років, я погоджуюся з
+                  <a routerLink="/terms-of-use" (click)="closeRegisterModal()">правилами користування</a> та
+                  <a routerLink="/privacy-policy" (click)="closeRegisterModal()">політикою конфіденційності</a>.
+                </span>
+              </label>
+              <ion-text color="danger" *ngIf="registerForm.get('confirm')?.invalid && registerForm.get('confirm')?.touched">
+                <p class="auth-login-modal__error" *ngIf="registerForm.get('confirm')?.errors?.['requiredTrue']">Ви повинні погодитись з умовами.</p>
+              </ion-text>
+            </ng-container>
+
+            <ng-container *ngIf="registerStep() === 'code'">
+              <div class="auth-login-modal__field" [class.is-filled]="!!registerForm.get('code')?.value">
+                <label class="auth-login-modal__label">Код</label>
+                <input formControlName="code" inputmode="numeric" maxlength="6">
+              </div>
+              <ion-text color="danger" *ngIf="registerForm.get('code')?.invalid && registerForm.get('code')?.touched">
+                <p class="auth-login-modal__error" *ngIf="registerForm.get('code')?.errors?.['required']">Код обов'язковий.</p>
+              </ion-text>
+
+              <div class="auth-register-modal__resend">
+                <ion-text *ngIf="countdown() > 0">
+                  <p>Надіслати код повторно через {{ formatTime(countdown()) }}</p>
+                </ion-text>
+                <button type="button" (click)="resendCode()" [disabled]="!canResend()">Надіслати код ще раз</button>
+              </div>
+            </ng-container>
+
+            <ion-text color="danger" *ngIf="registerErrorMsg()">
+              <p class="auth-login-modal__error">{{ registerErrorMsg() }}</p>
+            </ion-text>
+
+            <button class="auth-login-modal__submit" type="submit" [disabled]="registerForm.invalid || registerLoading()">
+              <ion-spinner *ngIf="registerLoading()" name="lines-small"></ion-spinner>
+              <span *ngIf="!registerLoading()">{{ registerStep() === 'form' ? 'Продовжити' : 'Підтвердити код' }}</span>
+            </button>
+          </form>
+        </div>
+      </div>
     </ng-template>
   </ion-modal>
 

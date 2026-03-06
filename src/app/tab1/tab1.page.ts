@@ -214,6 +214,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   canResend = signal(false);
   registerPasswordVisible = signal(false);
   private countdownSubscription: Subscription | null = null;
+  private authModalSwitchTimer: ReturnType<typeof setTimeout> | null = null;
 
   registerForm = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.minLength(2)]),
@@ -253,6 +254,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.stopCountdown();
+    this.clearAuthModalSwitchTimer();
   }
 
   formatSessionTime(timeRange: string): { date: string; time: string } {
@@ -586,6 +588,16 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     this.passwordVisible.set(false);
   }
 
+  switchToRegisterModal(event?: Event) {
+    event?.preventDefault();
+    this.clearAuthModalSwitchTimer();
+    this.closeLoginModal();
+    this.authModalSwitchTimer = setTimeout(() => {
+      this.openRegisterModal();
+      this.authModalSwitchTimer = null;
+    }, 140);
+  }
+
   onSubmitLogin() {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
@@ -633,6 +645,13 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     this.resetRegisterModalState();
   }
 
+  private clearAuthModalSwitchTimer() {
+    if (this.authModalSwitchTimer) {
+      clearTimeout(this.authModalSwitchTimer);
+      this.authModalSwitchTimer = null;
+    }
+  }
+
   private resetRegisterModalState() {
     this.registerLoading.set(false);
     this.registerErrorMsg.set(null);
@@ -677,60 +696,122 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     this.registerLoading.set(true);
     this.registerErrorMsg.set(null);
 
-    const { name, surname, email, phone, password, confirm, code } = this.registerForm.value;
+    const payload = this.buildRegisterPayload(this.registerStep() === 'code');
+    if (!payload) {
+      this.registerLoading.set(false);
+      this.registerErrorMsg.set('Заповніть, будь ласка, всі обовʼязкові поля.');
+      return;
+    }
 
-    // Ensure confirm is always a boolean
-    const isConfirmed = confirm ?? false;
-
-    if (name && surname && email && phone && password && isConfirmed !== undefined) {
-      const payload = {
-        name,
-        surname,
-        email,
-        phone,
-        password,
-        confirm: isConfirmed,
-        code: this.registerStep() === 'code' ? code || '' : undefined // Only send code if on 'code' step
-      };
-
-      this.authService.register(payload).subscribe({
-        next: (response) => {
-          this.registerLoading.set(false);
-          if (response.stage === 'awaiting_code') {
-            this.registerStep.set('code');
-            this.infoMsg.set(response.message);
-            this.startCountdown(60);
-            this.canResend.set(false);
-            this.registerForm.get('code')?.setValue(''); // Clear code field for new input
-          } else if (response.stage === 'done') {
-            this.isLoggedIn.set(true);
-            this.loadUserRole();
-            this.closeRegisterModal();
-          } else if (response.stage === 'error') {
-            this.registerErrorMsg.set(response.message);
-            if (this.registerStep() === 'code') {
-              this.canResend.set(true); // Allow resend on code error
-            }
-          }
-        },
-        error: (err) => {
-          this.registerLoading.set(false);
-          this.registerErrorMsg.set('An unexpected error occurred during registration. Please try again later.');
-          console.error('Register error:', err);
+    this.authService.register(payload).subscribe({
+      next: (response) => {
+        this.registerLoading.set(false);
+        if (response.stage === 'awaiting_code') {
+          this.registerStep.set('code');
+          this.infoMsg.set(response.message);
+          this.startCountdown(60);
+          this.canResend.set(false);
+          this.registerForm.get('code')?.setValue(''); // Clear code field for new input
+        } else if (response.stage === 'done') {
+          this.isLoggedIn.set(true);
+          this.loadUserRole();
+          this.closeRegisterModal();
+        } else if (response.stage === 'error') {
+          this.registerErrorMsg.set(response.message);
           if (this.registerStep() === 'code') {
-            this.canResend.set(true); // Allow resend on network error
+            this.canResend.set(true); // Allow resend on code error
           }
         }
-      });
-    }
+      },
+      error: (err) => {
+        this.registerLoading.set(false);
+        this.registerErrorMsg.set('An unexpected error occurred during registration. Please try again later.');
+        console.error('Register error:', err);
+        if (this.registerStep() === 'code') {
+          this.canResend.set(true); // Allow resend on network error
+        }
+      }
+    });
   }
 
   resendCode() {
-    this.registerForm.get('code')?.clearValidators(); // Clear code validators for resend
-    this.registerForm.get('code')?.updateValueAndValidity();
-    this.registerForm.get('code')?.setValue(''); // Clear code field
+    if (this.registerLoading()) {
+      return;
+    }
+
+    const payload = this.buildRegisterPayload(false);
+    if (!payload) {
+      this.registerErrorMsg.set('Заповніть, будь ласка, всі обовʼязкові поля.');
+      return;
+    }
+
+    this.registerLoading.set(true);
+    this.registerErrorMsg.set(null);
+    this.infoMsg.set(null);
     this.canResend.set(false);
     this.registerPasswordVisible.set(false);
+    this.registerForm.get('code')?.setValue('');
+    this.registerForm.get('code')?.clearValidators();
+    this.registerForm.get('code')?.updateValueAndValidity();
+
+    this.authService.register(payload).subscribe({
+      next: (response) => {
+        this.registerLoading.set(false);
+        if (response.stage === 'awaiting_code') {
+          this.infoMsg.set(response.message);
+          this.startCountdown(60);
+          return;
+        }
+        if (response.stage === 'error') {
+          this.registerErrorMsg.set(response.message || 'Не вдалося надіслати код повторно.');
+          this.canResend.set(true);
+        }
+      },
+      error: (err) => {
+        this.registerLoading.set(false);
+        this.registerErrorMsg.set('Не вдалося надіслати код повторно. Спробуйте ще раз.');
+        this.canResend.set(true);
+        console.error('Resend code error:', err);
+      }
+    });
+  }
+
+  private buildRegisterPayload(includeCode: boolean): {
+    name: string;
+    surname: string;
+    email: string;
+    phone: string;
+    password: string;
+    confirm: boolean;
+    code?: string;
+  } | null {
+    const { name, surname, email, phone, password, confirm, code } = this.registerForm.value;
+    if (!name || !surname || !email || !phone || !password) {
+      return null;
+    }
+
+    const payload: {
+      name: string;
+      surname: string;
+      email: string;
+      phone: string;
+      password: string;
+      confirm: boolean;
+      code?: string;
+    } = {
+      name,
+      surname,
+      email,
+      phone,
+      password,
+      confirm: !!confirm
+    };
+
+    if (includeCode && code) {
+      payload.code = code;
+    }
+
+    return payload;
   }
 
   startCountdown(seconds: number) {
