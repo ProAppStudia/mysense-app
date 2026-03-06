@@ -393,8 +393,8 @@ ion-modal.auth-login-modal::part(content) {
 }
 
 .auth-login-modal__eye img {
-  width: 46px;
-  height: 46px;
+  width: 30px;
+
 }
 
 .auth-login-modal__links {
@@ -406,19 +406,26 @@ ion-modal.auth-login-modal::part(content) {
 
 .auth-login-modal__links a {
   color: #6f53d6;
-  font-size: 48px;
+  font-size: 14px;
   text-decoration: none;
 }
 
 .auth-login-modal__submit {
-  width: 100%;
-  height: 112px;
-  border: 0;
-  border-radius: 20px;
-  background: linear-gradient(90deg, #7a5bda 0%, #7357d3 100%);
-  color: #fff;
-  font-size: 52px;
-  font-weight: 500;
+    width: 100%;
+   
+    border: 0;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #7a5bda 0%, #7357d3 100%);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    background: #795bda;
+    border-radius: 8px;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 20px 0;
 }
 
 .auth-login-modal__submit[disabled] {
