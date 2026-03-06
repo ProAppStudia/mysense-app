@@ -381,72 +381,58 @@
 
   </div>
 
-  <ion-modal [isOpen]="loginOpen()" (willDismiss)="closeLoginModal()">
+  <ion-modal [isOpen]="loginOpen()" cssClass="auth-login-modal" (willDismiss)="closeLoginModal()">
     <ng-template>
-      <ion-header>
-        <ion-toolbar>
-          <ion-buttons slot="end">
-            <ion-button (click)="closeLoginModal()">
-              <ion-icon name="close-outline" class="close-icon"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content class="ion-padding">
-        <form class="loginform" [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()">
-          <ion-text>
-            <h1 class="ion-text-center">Вхід в особистий кабінет</h1>
-            <p class="ion-text-center">Увійдіть до свого облікового запису</p>
-          </ion-text>
-          <ion-list class="login-inputs">
-            <ion-item>
-              <ion-input
-                label="Ел. адреса"
-                labelPlacement="floating"
-                formControlName="email"
-                autocomplete="email"
-                type="email"
-              ></ion-input>
-            </ion-item>
+      <div class="auth-login-modal__content">
+        <div class="auth-login-modal__shell">
+          <button type="button" class="auth-login-modal__close" (click)="closeLoginModal()" aria-label="Закрити">
+            ×
+          </button>
+
+          <form class="auth-login-modal__card" [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()">
+            <h1 class="auth-login-modal__title">Вхід в особистий кабінет</h1>
+            <p class="auth-login-modal__subtitle">Увійдіть до свого облікового запису</p>
+
+            <div class="auth-login-modal__field">
+              <input formControlName="email" autocomplete="email" type="email" placeholder="Ел. адреса">
+            </div>
             <ion-text color="danger" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-              <p class="ion-padding-start" *ngIf="loginForm.get('email')?.errors?.['required']">Ел. адреса обов'язкова.</p>
-              <p class="ion-padding-start" *ngIf="loginForm.get('email')?.errors?.['email']">Будь ласка, введіть дійсну ел. адресу.</p>
+              <p class="auth-login-modal__error" *ngIf="loginForm.get('email')?.errors?.['required']">Ел. адреса обов'язкова.</p>
+              <p class="auth-login-modal__error" *ngIf="loginForm.get('email')?.errors?.['email']">Будь ласка, введіть дійсну ел. адресу.</p>
             </ion-text>
 
-            <ion-item>
-              <ion-input
-                label="Пароль"
-                labelPlacement="floating"
+            <div class="auth-login-modal__field auth-login-modal__field--password">
+              <input
                 formControlName="password"
                 autocomplete="current-password"
                 [type]="passwordVisible() ? 'text' : 'password'"
-              ></ion-input>
-              <ion-button slot="end" fill="clear" (click)="togglePasswordVisibility()">
-                <ion-icon [name]="passwordVisible() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
-              </ion-button>
-            </ion-item>
+                placeholder="Пароль"
+              >
+              <button type="button" class="auth-login-modal__eye" (click)="togglePasswordVisibility()" aria-label="Показати або приховати пароль">
+                <img src="assets/icon/eye.svg" alt="">
+              </button>
+            </div>
             <ion-text color="danger" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-              <p class="ion-padding-start" *ngIf="loginForm.get('password')?.errors?.['required']">Пароль обов'язковий.</p>
-              <p class="ion-padding-start" *ngIf="loginForm.get('password')?.errors?.['minlength']">Пароль повинен бути не менше 6 символів.</p>
+              <p class="auth-login-modal__error" *ngIf="loginForm.get('password')?.errors?.['required']">Пароль обов'язковий.</p>
+              <p class="auth-login-modal__error" *ngIf="loginForm.get('password')?.errors?.['minlength']">Пароль повинен бути не менше 6 символів.</p>
             </ion-text>
-          </ion-list>
 
-          <div class="ion-padding-vertical ion-text-center">
-            <a routerLink="/register" (click)="closeLoginModal()">Реєстрація</a>
-            <span class="ion-padding-horizontal"></span>
-            <a routerLink="/forgot-password" (click)="closeLoginModal()">Не пам'ятаєте свій пароль?</a>
-          </div>
+            <div class="auth-login-modal__links">
+              <a routerLink="/register" (click)="closeLoginModal()">Реєстрація</a>
+              <a routerLink="/forgot-password" (click)="closeLoginModal()">Не пам'ятаєте свій пароль?</a>
+            </div>
 
-          <ion-text color="danger" *ngIf="errorMsg()">
-            <p class="ion-padding-start">{{ errorMsg() }}</p>
-          </ion-text>
+            <ion-text color="danger" *ngIf="errorMsg()">
+              <p class="auth-login-modal__error">{{ errorMsg() }}</p>
+            </ion-text>
 
-          <ion-button expand="block" type="submit" [disabled]="loginForm.invalid || loading()">
-            <ion-spinner *ngIf="loading()" name="lines-small"></ion-spinner>
-            <span *ngIf="!loading()">Увійти</span>
-          </ion-button>
-        </form>
-      </ion-content>
+            <button class="auth-login-modal__submit" type="submit" [disabled]="loginForm.invalid || loading()">
+              <ion-spinner *ngIf="loading()" name="lines-small"></ion-spinner>
+              <span *ngIf="!loading()">Увійти</span>
+            </button>
+          </form>
+        </div>
+      </div>
     </ng-template>
   </ion-modal>
 
