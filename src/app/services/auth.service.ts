@@ -11,6 +11,12 @@ interface AuthResponse {
   message?: string;
 }
 
+export interface RestorePasswordResponse {
+  success?: boolean | string;
+  error?: string;
+  message?: string;
+}
+
 export interface UserProfile {
   avatar: string;
   firstname: string;
@@ -302,6 +308,33 @@ export class AuthService {
         return of({ stage: 'error', message: 'Network error or server unavailable.' });
       })
     ) as Observable<RegisterResult>; // Explicitly cast the entire Observable
+  }
+
+  restorePassword(email: string): Observable<RestorePasswordResponse> {
+    const body = new HttpParams().set('email', email);
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded'
+    });
+    const url = `${environment.baseUrl}/connector.php?action=restore_password`;
+
+    return this.http.post(url, body.toString(), { headers, responseType: 'text' }).pipe(
+      map((responseText) => {
+        try {
+          const parsed = JSON.parse(responseText);
+          return parsed as RestorePasswordResponse;
+        } catch {
+          const raw = String(responseText || '').trim();
+          if (!raw) {
+            return { error: 'Порожня відповідь сервера.' };
+          }
+          if (raw.toLowerCase().includes('error')) {
+            return { error: raw };
+          }
+          return { success: true, message: raw };
+        }
+      }),
+      catchError(() => of({ error: 'Network error or server unavailable.' }))
+    );
   }
 
   logout(): void {

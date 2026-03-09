@@ -1,5 +1,5 @@
 ion-content {
-  --background:var(--ion-color-mysense-light-purple); /* White background */
+  --background:var(--ion-color-mysense-light-purple);
   text-align: center;
 }
 
@@ -338,13 +338,13 @@ ion-content {
   --background-focused: var(--ion-color-primary-shade);
   --background-hover: var(--ion-color-primary-shade);
   border:var(--ion-color-primary) 2px solid;
-  --color: var(--ion-color-primary); /* White text */
+  --color: var(--ion-color-primary);
   font-size: 20px;
   height: 60px;
   border-radius: 8px;
-  text-transform: none; /* Keep text as is */
+  text-transform: none;
   width: 100%;
-  max-width: 300px; /* Limit button width */
+  max-width: 300px;
   --box-shadow: none;
   color: #2f264d;
     font-weight: 500;
@@ -354,13 +354,13 @@ ion-content {
 .select-psychologist-button-white {
   --background: white;
 
-  --color: #423f4d; /* White text */
+  --color: #423f4d;
   font-size: 16px;
   height: 60px;
   --border-radius: 8px;
-  text-transform: none; /* Keep text as is */
+  text-transform: none;
   width: 100%;
-  max-width: 300px; /* Limit button width */
+  max-width: 300px;
   --box-shadow: none;
 }
 .or-text {
@@ -699,6 +699,7 @@ ion-content {
 }
 .section-10 h2 {
   text-align: left;
+  font-weight: 500;
 }
 .doctor-list {
   display: flex;
@@ -1116,7 +1117,7 @@ button.rewiew-more {
 .section-10 ion-item[slot="header"] {
   --background: #fff;
   --color: #333;
-  font-weight: bold;
+  font-weight: 400;
   --padding-start: 16px; /* Default Ionic padding */
   --padding-end: 4px;
   --inner-padding-start: 0;

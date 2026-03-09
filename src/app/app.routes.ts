@@ -50,6 +50,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/legal-info/refund-policy/refund-policy.page').then( m => m.RefundPolicyPage)
   },
   {
+    path: 'forgot-password',
+    loadComponent: () => import('./pages/forgot-password/forgot-password.page').then( m => m.ForgotPasswordPage)
+  },
+  {
     path: 'quiz/:id',
     loadComponent: () => import('./pages/quiz/quiz.page').then(m => m.QuizPage)
   },

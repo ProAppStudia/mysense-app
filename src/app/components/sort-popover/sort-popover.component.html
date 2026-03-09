@@ -1,14 +1,14 @@
 <ion-list>
-  <ion-item (click)="selectSort('price-asc')" button>
+  <ion-item (click)="selectSort('price-asc')" button detail="false">
     <ion-icon name="arrow-up-outline" slot="start"></ion-icon>
-    <ion-label>За збільшенням ціни</ion-label>
+    <ion-label>За зростанням ціни</ion-label>
   </ion-item>
-  <ion-item (click)="selectSort('price-desc')" button>
+  <ion-item (click)="selectSort('price-desc')" button detail="false">
     <ion-icon name="arrow-down-outline" slot="start"></ion-icon>
-    <ion-label>За зменшенням ціни</ion-label>
+    <ion-label>За спаданням ціни</ion-label>
   </ion-item>
-  <ion-item (click)="selectSort('none')" button>
+  <ion-item (click)="selectSort('none')" button detail="false">
     <ion-icon name="close-outline" slot="start"></ion-icon>
-    <ion-label>Не сортувати</ion-label>
+    <ion-label>Без сортування</ion-label>
   </ion-item>
 </ion-list>

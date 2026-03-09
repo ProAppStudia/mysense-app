@@ -1,3 +1,22 @@
+:host {
+  display: block;
+  width: min(320px, calc(100vw - 24px));
+}
+
+ion-list {
+  width: 100%;
+}
+
 ion-icon {
   color: var(--ion-color-primary);
+}
+
+ion-item {
+  --min-height: 56px;
+  --padding-start: 12px;
+  --inner-padding-end: 10px;
+}
+
+ion-label {
+  white-space: nowrap;
 }

@@ -5,3 +5,24 @@ ion-content {
   --padding-end: 20px;
   --background: var(--ion-color-mysense-light-purple);
 }
+
+ion-title {
+  font-weight: 500 !important;
+}
+
+ion-accordion ion-item ion-label {
+  font-weight: 400 !important;
+  color: #2f264d;
+}
+
+ion-accordion [slot='content'],
+ion-accordion [slot='content'] * {
+  font-weight: 400 !important;
+  color: #5c5a66;
+}
+
+ion-content,
+ion-content * {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}

@@ -15,6 +15,7 @@ import { Router, RouterLink, NavigationExtras } from '@angular/router';
 import { TestsBlockComponent } from '../components/tests-block/tests-block.component';
 import { PaymentFlowService, PaymentState } from '../services/payment-flow.service';
 import { NewsListItem, NewsService } from '../services/news.service';
+import { ChatService } from '../services/chat.service';
 
 addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, walletOutline, copyOutline, createOutline, listOutline });
 register();
@@ -121,8 +122,16 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   todayDiaryExists = signal(false);
   todayDiaryEntry = signal<DiaryEntryNormalized | null>(null);
   hasAnyDiaryEntry = signal(false);
+  hasHomeTasks = signal(false);
   homeNews: NewsListItem[] = [];
   homeNewsLoading = false;
+  private homeNewsInFlight = false;
+  private homeNewsLoadedAt = 0;
+  private homeHomepageInFlight = false;
+  private homeHomepageLoadedAt = 0;
+  private homeHomepageRateLimitedUntil = 0;
+  private homeNewsRateLimitedUntil = 0;
+  private readonly homeDataCacheTtlMs = 30000;
   activeArticleSlide = 0;
   homeClientName = signal('Головний');
   homeClientBalance = signal(0);
@@ -195,13 +204,21 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
 
   // Login Modal States
   loginOpen = signal(false);
+  authLoginStep = signal<'login' | 'forgot'>('login');
   loading = signal(false);
   errorMsg = signal<string | null>(null);
   passwordVisible = signal(false);
+  forgotLoading = signal(false);
+  forgotErrorMsg = signal<string | null>(null);
+  forgotSuccessMsg = signal<string | null>(null);
 
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)])
+  });
+
+  forgotPasswordForm = new FormGroup({
+    email: new FormControl('', [Validators.required, Validators.email])
   });
 
   // Register Modal States
@@ -229,6 +246,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
+    private chatService: ChatService,
     private diaryService: DiaryService,
     private router: Router,
     private paymentFlowService: PaymentFlowService,
@@ -345,21 +363,44 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   //   }
   // }
 
-  getHomepageData() {
-    this.http.get<HomepageData>(`${environment.baseUrl}/connector.php?action=get_homepage`).subscribe((data) => {
-      this.homepageData = data;
-      if (this.homepageData && this.homepageData.section_9 && this.homepageData.section_9.reviews) {
-        this.homepageData.section_9.reviews = this.homepageData.section_9.reviews.map(review => ({
-          ...review,
-          showFullText: false,
-          truncatedText: review.text.length > this.TRUNCATE_LENGTH ? review.text.substring(0, this.TRUNCATE_LENGTH) + '...' : review.text
-        }));
-      }
-      console.log('Homepage Data:', this.homepageData);
-      console.log('Doctors Data:', this.homepageData?.doctors); // Add this line to inspect doctors data
-      if (this.isLoggedIn()) {
-        this.loadHomeSessions();
-      }
+  getHomepageData(force = false) {
+    const now = Date.now();
+    if (!force && now < this.homeHomepageRateLimitedUntil) {
+      return;
+    }
+    if (this.homeHomepageInFlight) {
+      return;
+    }
+    if (!force && this.homepageData && (now - this.homeHomepageLoadedAt) < this.homeDataCacheTtlMs) {
+      return;
+    }
+
+    this.homeHomepageInFlight = true;
+    this.http.get<HomepageData>(`${environment.baseUrl}/connector.php?action=get_homepage`).subscribe({
+      next: (data) => {
+        this.homepageData = data;
+        if (this.homepageData && this.homepageData.section_9 && this.homepageData.section_9.reviews) {
+          this.homepageData.section_9.reviews = this.homepageData.section_9.reviews.map(review => ({
+            ...review,
+            showFullText: false,
+            truncatedText: review.text.length > this.TRUNCATE_LENGTH ? review.text.substring(0, this.TRUNCATE_LENGTH) + '...' : review.text
+          }));
+        }
+        this.homeHomepageLoadedAt = Date.now();
+        if (this.isLoggedIn()) {
+          this.loadHomeSessions();
+        }
+      },
+      error: (error: any) => {
+        if (error?.status === 429) {
+          this.homeHomepageRateLimitedUntil = Date.now() + 15000;
+        }
+        this.homeHomepageInFlight = false;
+        // Keep stale data if available and avoid aggressive retries under 429.
+      },
+      complete: () => {
+        this.homeHomepageInFlight = false;
+      },
     });
   }
 
@@ -576,16 +617,26 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   // Login Modal Methods
   openLoginModal() {
     this.loginOpen.set(true);
+    this.authLoginStep.set('login');
     this.errorMsg.set(null);
     this.loginForm.reset();
     this.passwordVisible.set(false);
+    this.forgotPasswordForm.reset();
+    this.forgotLoading.set(false);
+    this.forgotErrorMsg.set(null);
+    this.forgotSuccessMsg.set(null);
   }
 
   closeLoginModal() {
     this.loginOpen.set(false);
+    this.authLoginStep.set('login');
     this.errorMsg.set(null);
     this.loginForm.reset();
     this.passwordVisible.set(false);
+    this.forgotPasswordForm.reset();
+    this.forgotLoading.set(false);
+    this.forgotErrorMsg.set(null);
+    this.forgotSuccessMsg.set(null);
   }
 
   switchToRegisterModal(event?: Event) {
@@ -632,6 +683,58 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
 
   togglePasswordVisibility() {
     this.passwordVisible.update(value => !value);
+  }
+
+  openForgotPasswordStep(event?: Event) {
+    event?.preventDefault();
+    this.authLoginStep.set('forgot');
+    this.forgotErrorMsg.set(null);
+    this.forgotSuccessMsg.set(null);
+  }
+
+  backToLoginStep(event?: Event) {
+    event?.preventDefault();
+    this.authLoginStep.set('login');
+    this.forgotLoading.set(false);
+    this.forgotErrorMsg.set(null);
+    this.forgotSuccessMsg.set(null);
+  }
+
+  onSubmitForgotPassword() {
+    if (this.forgotLoading()) {
+      return;
+    }
+
+    if (this.forgotPasswordForm.invalid) {
+      this.forgotPasswordForm.markAllAsTouched();
+      return;
+    }
+
+    this.forgotLoading.set(true);
+    this.forgotErrorMsg.set(null);
+    this.forgotSuccessMsg.set(null);
+
+    const email = String(this.forgotPasswordForm.get('email')?.value ?? '').trim();
+
+    this.authService.restorePassword(email).subscribe({
+      next: (response) => {
+        this.forgotLoading.set(false);
+        if (response?.error) {
+          this.forgotErrorMsg.set(String(response.error));
+          return;
+        }
+
+        const successText =
+          typeof response?.success === 'string'
+            ? response.success
+            : String(response?.message ?? 'Інструкції для відновлення пароля надіслано на пошту.');
+        this.forgotSuccessMsg.set(successText);
+      },
+      error: () => {
+        this.forgotLoading.set(false);
+        this.forgotErrorMsg.set('Не вдалося виконати запит. Спробуйте пізніше.');
+      }
+    });
   }
 
   // Register Modal Methods
@@ -853,8 +956,8 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
 
   handleRefresh(event: RefresherCustomEvent) {
     this.syncHomeAuthState();
-    this.getHomepageData();
-    this.loadHomeNews();
+    this.getHomepageData(true);
+    this.loadHomeNews(true);
     this.refreshDiaryState();
     this.loadHomeSessionsIfLoggedIn();
 
@@ -868,13 +971,19 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     this.authService.getProfile().subscribe({
       next: (profile) => {
         this.applyHomeClientInfo(profile);
-        this.isDoctor.set(
-          !!(profile?.is_doctor === true || profile?.is_doctor === 1 || profile?.is_doctor === '1')
-        );
+        const isDoctorProfile = !!(profile?.is_doctor === true || profile?.is_doctor === 1 || profile?.is_doctor === '1');
+        this.isDoctor.set(isDoctorProfile);
+        if (!isDoctorProfile) {
+          const currentUserId = Number(profile?.user_id) || 0;
+          this.loadHomeTasksPresence(currentUserId);
+        } else {
+          this.hasHomeTasks.set(false);
+        }
         this.loadHomeSessions();
       },
       error: () => {
         this.isDoctor.set(false);
+        this.hasHomeTasks.set(false);
         this.userSessions = [];
       }
     });
@@ -925,9 +1034,80 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     this.isLoggedIn.set(this.authService.isAuthenticated());
     if (!this.isLoggedIn()) {
       this.isDoctor.set(false);
+      this.hasHomeTasks.set(false);
       this.userSessions = [];
       this.recentPsychologists = [];
     }
+  }
+
+  private loadHomeTasksPresence(currentUserId: number) {
+    this.hasHomeTasks.set(false);
+    if (!this.isLoggedIn() || this.isDoctor()) {
+      return;
+    }
+
+    this.chatService.getMyChats().subscribe({
+      next: (data: any) => {
+        const chats = Array.isArray(data) ? data : (Array.isArray(data?.chats) ? data.chats : []);
+        if (!chats.length) {
+          this.hasHomeTasks.set(false);
+          return;
+        }
+
+        const checkNext = (index: number) => {
+          if (index >= chats.length) {
+            this.hasHomeTasks.set(false);
+            return;
+          }
+
+          const peerId = this.getHomeTaskPeerId(chats[index], currentUserId);
+          if (!peerId) {
+            checkNext(index + 1);
+            return;
+          }
+
+          this.chatService.getMyTasks(peerId).subscribe({
+            next: (resp: any) => {
+              const tasks = Array.isArray(resp?.tasks) ? resp.tasks : [];
+              if (tasks.length > 0) {
+                this.hasHomeTasks.set(true);
+                return;
+              }
+              checkNext(index + 1);
+            },
+            error: () => {
+              checkNext(index + 1);
+            }
+          });
+        };
+
+        checkNext(0);
+      },
+      error: () => {
+        this.hasHomeTasks.set(false);
+      }
+    });
+  }
+
+  private getHomeTaskPeerId(chat: any, currentUserId: number): number {
+    const candidates = [
+      Number(chat?.from_user_id),
+      Number(chat?.to_user_id),
+      Number(chat?.user_id)
+    ].filter((value) => Number.isFinite(value) && value > 0);
+
+    if (!candidates.length) {
+      return 0;
+    }
+
+    if (currentUserId > 0) {
+      const peer = candidates.find((id) => id !== currentUserId);
+      if (peer) {
+        return peer;
+      }
+    }
+
+    return candidates[0];
   }
 
   private loadHomeSessionsIfLoggedIn() {
@@ -1549,7 +1729,19 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     void this.router.navigate(['/tabs/news', articleId]);
   }
 
-  loadHomeNews(): void {
+  loadHomeNews(force = false): void {
+    const now = Date.now();
+    if (!force && now < this.homeNewsRateLimitedUntil) {
+      return;
+    }
+    if (this.homeNewsInFlight) {
+      return;
+    }
+    if (!force && this.homeNews.length > 0 && (now - this.homeNewsLoadedAt) < this.homeDataCacheTtlMs) {
+      return;
+    }
+
+    this.homeNewsInFlight = true;
     this.homeNewsLoading = true;
     this.activeArticleSlide = 0;
     this.newsService.getNewsList(1).subscribe({
@@ -1557,12 +1749,14 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         const results = Array.isArray(resp?.results) ? resp.results : [];
         this.homeNews = results.slice(0, 6);
         this.activeArticleSlide = 0;
+        this.homeNewsLoadedAt = Date.now();
         this.homeNewsLoading = false;
+        this.homeNewsInFlight = false;
       },
       error: () => {
-        this.homeNews = [];
-        this.activeArticleSlide = 0;
+        this.homeNewsRateLimitedUntil = Date.now() + 15000;
         this.homeNewsLoading = false;
+        this.homeNewsInFlight = false;
       }
     });
   }
