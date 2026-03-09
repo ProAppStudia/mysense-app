@@ -1,7 +1,7 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, Location } from '@angular/common'; // Import Location
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonBackButton, IonButtons, IonIcon, IonButton } from '@ionic/angular/standalone';
+import { IonContent, IonTitle, IonToolbar, IonBackButton, IonButtons, IonIcon, IonButton } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router'; // Import Router
 import { addIcons } from 'ionicons';
 import { calendarOutline, chatbubbleEllipsesOutline, arrowBackOutline } from 'ionicons/icons'; // Import arrowBackOutline
@@ -19,7 +19,7 @@ register();
   templateUrl: './therapist-profile.page.html',
   styleUrls: ['./therapist-profile.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonBackButton, IonButtons, IonIcon, IonButton],
+  imports: [IonContent, IonTitle, IonToolbar, CommonModule, FormsModule, IonBackButton, IonButtons, IonIcon, IonButton],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class TherapistProfilePage implements OnInit {
@@ -56,6 +56,17 @@ export class TherapistProfilePage implements OnInit {
   }
 
   ngOnInit() {
+    if (this.router.url.startsWith('/therapist-profile/')) {
+      const id = this.route.snapshot.paramMap.get('id');
+      if (id) {
+        this.router.navigate(['/tabs/therapist-profile', id], {
+          queryParamsHandling: 'merge',
+          replaceUrl: true
+        });
+        return;
+      }
+    }
+
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {

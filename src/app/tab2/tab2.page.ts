@@ -130,7 +130,7 @@ export class Tab2Page implements OnInit {
   }
 
   goToProfile(doctorId: number | string) {
-    this.router.navigate(['therapist-profile', doctorId]);
+    this.router.navigate(['/tabs/therapist-profile', doctorId]);
   }
   
   isDoctorCardView(doctor: DoctorCardView | { error: string }): doctor is DoctorCardView {

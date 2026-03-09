@@ -1,13 +1,11 @@
-<ion-header class="app-back-toolbar">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button (click)="goBack()" fill="clear" class="custom-back-button app-back-btn">
-        <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="custom-back-icon">
-      </ion-button>
-    </ion-buttons>
-    <ion-title>{{ isDoctorCardView(doctor) ? doctor.fullName : 'Профіль' }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-toolbar class="app-back-toolbar">
+  <ion-buttons slot="start">
+    <ion-button (click)="goBack()" fill="clear" class="custom-back-button app-back-btn">
+      <img src="assets/icon/arrow-left-color.svg" alt="Назад" class="custom-back-icon">
+    </ion-button>
+  </ion-buttons>
+  <ion-title>{{ isDoctorCardView(doctor) ? doctor.fullName : 'Профіль' }}</ion-title>
+</ion-toolbar>
 
 <ion-content class="ion-padding">
   <div *ngIf="doctor">

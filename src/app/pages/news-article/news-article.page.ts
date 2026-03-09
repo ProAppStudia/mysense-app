@@ -75,7 +75,7 @@ export class NewsArticlePage implements OnInit {
     if (!doctorId) {
       return;
     }
-    this.router.navigate(['therapist-profile', doctorId]);
+    this.router.navigate(['/tabs/therapist-profile', doctorId]);
   }
 
   private resolvePhoto(raw: string): string {
