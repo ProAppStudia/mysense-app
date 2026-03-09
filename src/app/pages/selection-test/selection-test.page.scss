@@ -171,6 +171,10 @@ p.intro-p-left {
       margin-top: 16px;
 }
 
+.button-group + .privacy-guarantee {
+  margin-top: 14px;
+}
+
 
 
 .radio-group, .checkbox-group {
@@ -197,7 +201,7 @@ p.intro-p-left {
 .custom-label {
   flex-grow: 1;
   font-size: 17px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ion-color-dark);
   text-align: left;
 }
@@ -809,6 +813,7 @@ ion-button.filter-btn {
   align-items: center;
   justify-content: center;
   --box-shadow: none;
+  font-weight: 500;
 }
 
 ion-toolbar ion-buttons ion-button ion-icon {

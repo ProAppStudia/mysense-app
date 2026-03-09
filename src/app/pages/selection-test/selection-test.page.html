@@ -121,6 +121,7 @@
               
             </ng-container>
             <label class="custom-label">{{ o.text || o.name }}</label>
+            <ion-checkbox [checked]="answers()[node.step_type] === (o.id ?? o.value)" mode="md"></ion-checkbox>
           </div>
       </div>
 
@@ -183,6 +184,7 @@
             </div>
           </div>
       </ng-container>
+
     </div>
 
     <div class="ion-padding-horizontal ion-margin-top button-group">
@@ -194,6 +196,14 @@
         <ion-button expand="block" *ngIf="node" [disabled]="!validate(node)" (click)="nextStep()" class="next-button">Далі <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M0.5 8H14.5M14.5 8L7.5 15M14.5 8L7.5 1" stroke="white" stroke-width="1.5"></path>
 </svg></ion-button>
+    </div>
+
+    <div class="privacy-guarantee">
+      <svg viewBox="0 0 22 22" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18.7022 5.78441L12.7878 3.24968C12.2847 3.03406 11.7153 3.03406 11.2122 3.24968L5.29778 5.78441C4.47855 6.13551 3.99051 6.98635 4.10106 7.87077L4.71405 12.7747C4.9342 14.5359 5.81517 16.1477 7.1787 17.284L10.7196 20.2347C11.4613 20.8528 12.5387 20.8528 13.2804 20.2347L16.8213 17.284C18.1848 16.1477 19.0658 14.5359 19.286 12.7747L19.8989 7.87077C20.0095 6.98635 19.5215 6.13551 18.7022 5.78441Z" stroke="#a89adf" stroke-width="2" stroke-linecap="round"></path>
+        <path d="M9 12L11.5687 14.5687C11.7918 14.7918 12.1633 14.7551 12.3383 14.4925L16 9" stroke="#a89adf" stroke-width="2" stroke-linecap="round"></path>
+      </svg>
+      <p class="intro-p-left">Ми гарантуємо конфіденційність та надійний захист всіх даних, які ви залишаєте на платформі.</p>
     </div>
     </ng-container>
 

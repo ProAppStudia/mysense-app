@@ -1,11 +1,11 @@
-<ion-header class="app-back-toolbar">
-  <ion-toolbar>
+
+  <ion-toolbar class="app-back-toolbar">
     <ion-buttons slot="start">
       <ion-back-button class="app-back-icon-btn" defaultHref="/tabs/filter" icon="assets/icon/arrow-left-color.svg" text=""></ion-back-button>
     </ion-buttons>
     <ion-title>{{ isDoctorCardView(doctor) ? doctor.fullName : 'Профіль' }}</ion-title>
   </ion-toolbar>
-</ion-header>
+
 
 <ion-content>
   <div *ngIf="doctor">
