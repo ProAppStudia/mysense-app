@@ -242,6 +242,11 @@ export class DoctorService {
 
     const therapyTypeIds = this.extractTherapyTypeIds(data);
     const workType = this.extractWorkTypeFlags(data?.work_type);
+    const childAgeLabels = this.extractChildAgeLabels(data);
+    let normalizedWorkWithTypes = this.normalizeWorkWithTypes(data?.types, therapyTypeIds);
+    if (childAgeLabels.length && !normalizedWorkWithTypes.some((item) => /дит|child/i.test(String(item)))) {
+      normalizedWorkWithTypes = [...normalizedWorkWithTypes, 'Діти'];
+    }
 
     return {
       id: data.doctor_id,
@@ -264,7 +269,8 @@ export class DoctorService {
       priceFamily: data.family_session_amount,
       verified: true,
       videoAppealUrl: data.video_appeal_file,
-      workWithTypes: data.types || [],
+      workWithTypes: normalizedWorkWithTypes,
+      childAgeLabels,
       worksWith: worksWith,
       doNotWorkWith: data.do_not_work_with || [],
       worksWithMilitary: data.work_with_military === 1 || data.work_with_military === '1' || data.work_with_military === true,
@@ -276,6 +282,197 @@ export class DoctorService {
       calendar: data.calendar,
       reviews: data.reviews || [],
     };
+  }
+
+  private normalizeWorkWithTypes(rawTypes: any, therapyTypeIds: number[]): string[] {
+    const list = Array.isArray(rawTypes)
+      ? rawTypes
+      : (typeof rawTypes === 'string' ? rawTypes.split(',') : []);
+
+    const normalized: string[] = [];
+    let hasChildType = therapyTypeIds.includes(3);
+
+    for (const token of list) {
+      const text = String(token ?? '').trim();
+      if (!text) {
+        continue;
+      }
+
+      if (/^\d+$/.test(text)) {
+        const n = Number(text);
+        if (n === 1) {
+          normalized.push('Дорослі');
+          continue;
+        }
+        if (n === 2) {
+          normalized.push("Сім'ї (пари)");
+          continue;
+        }
+        if ([3, 4, 5].includes(n)) {
+          hasChildType = true;
+          continue;
+        }
+      }
+
+      if (/дит|child/i.test(text)) {
+        hasChildType = true;
+        continue;
+      }
+
+      normalized.push(text);
+    }
+
+    if (hasChildType) {
+      normalized.push('Діти');
+    }
+
+    // Keep canonical therapy types even if raw `types` is partial/inconsistent.
+    if (therapyTypeIds.includes(1)) {
+      normalized.push('Дорослі');
+    }
+    if (therapyTypeIds.includes(2)) {
+      normalized.push("Сім'ї (пари)");
+    }
+
+    const compact = normalized
+      .map((item) => String(item ?? '').trim())
+      .filter(Boolean)
+      .map((item) => (/дит|child/i.test(item) ? 'Діти' : item))
+      .filter((item) => !/д[іi]т[иi]\s*в[іi]д\s*\d+/i.test(item))
+      .filter((item) => !/^\d{1,2}\s*[-–]\s*\d{1,2}\s*рок/i.test(item));
+
+    const dedup = new Set<string>();
+    return compact.filter((item) => {
+      const key = item.toLowerCase();
+      if (dedup.has(key)) {
+        return false;
+      }
+      dedup.add(key);
+      return true;
+    });
+  }
+
+  private extractChildAgeLabels(data: any): string[] {
+    const sources = [
+      data?.child_age_categories,
+      data?.child_age_category,
+      data?.child_categories,
+      data?.child_ages,
+      data?.children_age_categories,
+      data?.doctor_child_age_categories,
+      data?.child_age_categories_ids,
+      data?.child_age,
+      data?.types,
+    ];
+
+    const ranges = new Set<string>();
+
+    for (const source of sources) {
+      if (!source) {
+        continue;
+      }
+
+      let normalizedItems: any[] = Array.isArray(source) ? source : [source];
+      if (typeof source === 'string') {
+        const text = source.trim();
+        if (text.startsWith('[') || text.startsWith('{')) {
+          try {
+            const parsed = JSON.parse(text);
+            normalizedItems = Array.isArray(parsed) ? parsed : [parsed];
+          } catch {
+            normalizedItems = [source];
+          }
+        }
+      }
+      for (const item of normalizedItems) {
+        const parsedRanges = this.parseChildRangeToken(item);
+        for (const range of parsedRanges) {
+          if (range) {
+            ranges.add(range);
+          }
+        }
+      }
+    }
+
+    return Array.from(ranges).sort((a, b) => {
+      const [aStart] = a.split('-').map((n) => Number(n));
+      const [bStart] = b.split('-').map((n) => Number(n));
+      return aStart - bStart;
+    });
+  }
+
+  private parseChildRangeToken(token: any): string[] {
+    if (token === null || token === undefined) {
+      return [];
+    }
+
+    if (typeof token === 'number' || /^\d+$/.test(String(token).trim())) {
+      const n = Number(token);
+      if (Number.isFinite(n) && n > 0) {
+        const mapped = this.mapChildCategoryIdToRange(n);
+        return [mapped || `${n}-${n}`];
+      }
+    }
+
+    if (typeof token === 'string') {
+      const text = token.trim();
+      if (text.includes(',')) {
+        return text
+          .split(',')
+          .map((part) => this.parseChildRangeToken(part))
+          .reduce((acc: string[], cur: string[]) => acc.concat(cur), [])
+          .filter(Boolean);
+      }
+      const match = text.match(/(\d{1,2})\s*[-–]\s*(\d{1,2})/);
+      if (match) {
+        return [`${Number(match[1])}-${Number(match[2])}`];
+      }
+
+      // Backend may return strings like "Діти від 4 років" where 4 is a category id.
+      const idLikeMatch = text.match(/\b(\d{1,2})\b/);
+      if (idLikeMatch) {
+        const n = Number(idLikeMatch[1]);
+        if (Number.isFinite(n) && n > 0) {
+          const mapped = this.mapChildCategoryIdToRange(n);
+          if (mapped) {
+            return [mapped];
+          }
+        }
+      }
+      return [];
+    }
+
+    if (typeof token === 'object') {
+      const from = Number(
+        token?.from ?? token?.min ?? token?.start ?? token?.age_from ?? token?.category_from
+      );
+      const to = Number(
+        token?.to ?? token?.max ?? token?.end ?? token?.age_to ?? token?.category_to
+      );
+
+      if (Number.isFinite(from) && Number.isFinite(to) && from > 0 && to > 0) {
+        const lo = Math.min(from, to);
+        const hi = Math.max(from, to);
+        return [`${lo}-${hi}`];
+      }
+
+      const single = Number(token?.category ?? token?.age ?? token?.value ?? token?.id);
+      if (Number.isFinite(single) && single > 0) {
+        const mapped = this.mapChildCategoryIdToRange(single);
+        return [mapped || `${single}-${single}`];
+      }
+    }
+
+    return [];
+  }
+
+  private mapChildCategoryIdToRange(value: number): string {
+    const map: Record<number, string> = {
+      3: '6-10',
+      4: '10-15',
+      5: '15-18'
+    };
+    return map[value] || '';
   }
 
   private extractWorkTypeFlags(workTypeRaw: any): { online: boolean; inPerson: boolean } {

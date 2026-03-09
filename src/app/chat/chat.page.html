@@ -79,12 +79,14 @@
 <ion-footer *ngIf="selectedChat && isLoggedIn">
   <ion-toolbar>
     <div class="write__message" *ngIf="activeTab === 'chat'">
-      <ion-input
+      <ion-textarea
         #messageInput
         [(ngModel)]="newMessage"
+        rows="2"
+        autoGrow="true"
         placeholder="Напишіть ваше повідомлення"
-        (keyup.enter)="sendMessage()"
-      ></ion-input>
+        (keydown.enter)="sendMessage(); $event.preventDefault()"
+      ></ion-textarea>
       <button
         type="button"
         aria-label="Надіслати повідомлення"

@@ -83,6 +83,9 @@
         <ul>
           <li *ngFor="let type of doctor.workWithTypes">{{ type }}</li>
         </ul>
+        <div class="child-age-lines" *ngIf="doctor.childAgeLabels && doctor.childAgeLabels.length">
+          <p *ngFor="let age of doctor.childAgeLabels">{{ age.replace('-', ' - ') }} років</p>
+        </div>
         <ng-container *ngIf="doctor.worksWithMilitary || doctor.worksWithLgbt">
         <h4 class="info-title-icon">
           <ion-icon src="assets/icon/star.svg"></ion-icon>

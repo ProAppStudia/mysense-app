@@ -1,7 +1,7 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonToolbar, IonButton, IonIcon, IonFooter, IonInput, IonItem, RefresherCustomEvent } from '@ionic/angular/standalone';
+import { IonContent, IonToolbar, IonButton, IonIcon, IonFooter, IonInput, IonItem, IonTextarea, RefresherCustomEvent } from '@ionic/angular/standalone';
 import { ChatService } from '../services/chat.service';
 import { AuthService } from '../services/auth.service'; // Import AuthService
 import { ActivatedRoute } from '@angular/router';
@@ -15,12 +15,12 @@ import { DoctorService } from '../services/doctor.service';
   templateUrl: './chat.page.html',
   styleUrls: ['./chat.page.scss'],
   standalone: true,
-  imports: [IonContent, IonToolbar, CommonModule, FormsModule, IonButton, IonIcon, IonFooter, IonInput, IonItem],
+  imports: [IonContent, IonToolbar, CommonModule, FormsModule, IonButton, IonIcon, IonFooter, IonInput, IonItem, IonTextarea],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ChatPage implements OnInit {
   @ViewChild(IonContent) content?: IonContent;
-  @ViewChild('messageInput') messageInput?: IonInput;
+  @ViewChild('messageInput') messageInput?: IonTextarea;
   @ViewChild('taskFileInput') taskFileInput?: ElementRef<HTMLInputElement>;
 
   chats: any[] = [];
@@ -40,6 +40,7 @@ export class ChatPage implements OnInit {
   pendingDoctorId: number | null = null;
   shouldAutoEnhanceOnOpen = false;
   selectedTaskFiles: File[] = [];
+  private readonly lastWrittenPeerKey = 'chat_last_written_peer_user_id';
 
   constructor(
     private chatService: ChatService,
@@ -251,7 +252,7 @@ export class ChatPage implements OnInit {
       }
     }
 
-    return candidates
+    const mapped = candidates
       .filter((item) => item && typeof item === 'object')
       .map((chat: any) => ({
         ...chat,
@@ -263,6 +264,104 @@ export class ChatPage implements OnInit {
         to_user_id: Number(chat.to_user_id ?? chat.user_id_to ?? chat.receiver_id ?? chat.to_id ?? 0) || undefined,
         user_id: Number(chat.user_id ?? chat.peer_user_id ?? chat.id ?? 0) || undefined
       }));
+
+    return this.sortChatsByRecencyAndLastWritten(mapped);
+  }
+
+  private sortChatsByRecencyAndLastWritten(chats: any[]): any[] {
+    const sorted = [...chats].sort((a, b) => this.getChatSortTimestamp(b) - this.getChatSortTimestamp(a));
+    const lastWrittenPeerId = this.getLastWrittenPeerId();
+    if (!lastWrittenPeerId) {
+      return sorted;
+    }
+
+    const idx = sorted.findIndex((chat) => this.getSelectedUserId(chat) === lastWrittenPeerId);
+    if (idx <= 0) {
+      return sorted;
+    }
+
+    const [chat] = sorted.splice(idx, 1);
+    sorted.unshift(chat);
+    return sorted;
+  }
+
+  private getChatSortTimestamp(chat: any): number {
+    if (!chat || typeof chat !== 'object') {
+      return 0;
+    }
+
+    const values = [
+      chat.last_message_datetime,
+      chat.last_message_date,
+      chat.last_date,
+      chat.updated_at,
+      chat.created_at,
+      chat.date
+    ];
+
+    let maxTs = 0;
+    for (const value of values) {
+      const ts = this.parseAnyDateToTimestamp(value);
+      if (ts > maxTs) {
+        maxTs = ts;
+      }
+    }
+    return maxTs;
+  }
+
+  private parseAnyDateToTimestamp(value: any): number {
+    const raw = String(value ?? '').trim();
+    if (!raw) {
+      return 0;
+    }
+
+    const direct = Date.parse(raw);
+    if (!Number.isNaN(direct)) {
+      return direct;
+    }
+
+    const full = raw.match(/^(\d{2})\.(\d{2})\.(\d{4})(?:\s+(\d{2}):(\d{2}))?$/);
+    if (full) {
+      const [, dd, mm, yyyy, hh = '00', min = '00'] = full;
+      const ts = Date.parse(`${yyyy}-${mm}-${dd}T${hh}:${min}:00`);
+      return Number.isNaN(ts) ? 0 : ts;
+    }
+
+    const short = raw.match(/^(\d{2})\.(\d{2})(?:\s+(\d{2}):(\d{2}))?$/);
+    if (short) {
+      const year = new Date().getFullYear();
+      const [, dd, mm, hh = '00', min = '00'] = short;
+      const ts = Date.parse(`${year}-${mm}-${dd}T${hh}:${min}:00`);
+      return Number.isNaN(ts) ? 0 : ts;
+    }
+
+    return 0;
+  }
+
+  private getLastWrittenPeerId(): number | null {
+    const raw = localStorage.getItem(this.lastWrittenPeerKey);
+    const id = Number(raw);
+    return Number.isFinite(id) && id > 0 ? id : null;
+  }
+
+  private setLastWrittenPeerId(peerId: number): void {
+    if (Number.isFinite(peerId) && peerId > 0) {
+      localStorage.setItem(this.lastWrittenPeerKey, String(peerId));
+    }
+  }
+
+  private bumpChatToTopByPeerId(peerId: number): void {
+    if (!peerId || !Array.isArray(this.chats) || this.chats.length < 2) {
+      return;
+    }
+
+    const idx = this.chats.findIndex((chat: any) => this.getSelectedUserId(chat) === peerId);
+    if (idx <= 0) {
+      return;
+    }
+
+    const [chat] = this.chats.splice(idx, 1);
+    this.chats.unshift(chat);
   }
 
   private findPreferredChat(): any | null {
@@ -416,6 +515,8 @@ export class ChatPage implements OnInit {
         return;
       } else {
         this.pendingType = null;
+        this.setLastWrittenPeerId(toUserId);
+        this.bumpChatToTopByPeerId(toUserId);
 
         // If backend returns created message object, replace optimistic one immediately.
         const serverMessage = result?.response?.message;
@@ -576,6 +677,8 @@ export class ChatPage implements OnInit {
           this.isSending = false;
           return;
         }
+        this.setLastWrittenPeerId(toUserId);
+        this.bumpChatToTopByPeerId(toUserId);
 
         this.newMessage = '';
         this.selectedTaskFiles = [];
