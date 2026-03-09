@@ -31,6 +31,7 @@ export class TherapistProfilePage implements OnInit {
   isEducationExpanded = false;
   isReviewsExpanded = false;
   isWorkwithExpanded = false;
+  isDoNotWorkwithExpanded = false;
   sessionType: 'online' | 'offline' = 'online';
   bookingFor: 'me' | 'pair' | 'child' = 'me';
   
@@ -41,6 +42,7 @@ export class TherapistProfilePage implements OnInit {
   selectedDayKey: string | null = null;
   selectedTime: number | null = null;
   isOpeningChat = false;
+  descriptionParagraphs: string[] = [];
   private interactionRecoveryTimers: Array<ReturnType<typeof setTimeout>> = [];
   
   constructor(
@@ -73,6 +75,7 @@ export class TherapistProfilePage implements OnInit {
         this.doctorService.getDoctorProfile(id).subscribe(data => {
           this.doctor = data;
           if (this.isDoctorCardView(this.doctor)) {
+            this.descriptionParagraphs = this.buildDescriptionParagraphs(this.doctor.description);
             if (this.doctor.calendar) {
               this.weeks = Object
                 .values(this.doctor.calendar.weeks)
@@ -101,6 +104,54 @@ export class TherapistProfilePage implements OnInit {
 
   isDoctorCardView(doctor: any): doctor is DoctorCardView {
     return doctor && doctor.id !== undefined;
+  }
+
+  private buildDescriptionParagraphs(raw?: string): string[] {
+    const source = String(raw ?? '').trim();
+    if (!source) {
+      return [];
+    }
+
+    let normalized = source
+      .replace(/\r\n?/g, '\n')
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/\u00A0/g, ' ')
+      .replace(/&amp;/gi, '&')
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;/gi, '\'')
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>');
+
+    const htmlParagraphMatches = normalized.match(/<p[^>]*>[\s\S]*?<\/p>/gi);
+    if (htmlParagraphMatches?.length) {
+      const paragraphs = htmlParagraphMatches
+        .map((part) => this.stripHtml(part))
+        .map((part) => part.replace(/\s+/g, ' ').trim())
+        .filter(Boolean);
+      if (paragraphs.length) {
+        return paragraphs;
+      }
+    }
+
+    normalized = this.stripHtml(normalized);
+
+    const withParagraphHints = normalized
+      .replace(/([.!?])\s*(✔)/g, '$1\n\n$2')
+      .replace(/([.!?])(?:&nbsp;|\u00A0|\s){2,}(?=[A-ZА-ЯІЇЄҐ])/g, '$1\n\n')
+      .replace(/([.!?])\s+(?=(Працюю|Завдяки|Навіть|Запрошую)\b)/g, '$1\n\n')
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+
+    return withParagraphHints
+      .split(/\n{2,}/)
+      .map((part) => part.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim())
+      .filter(Boolean);
+  }
+
+  private stripHtml(value: string): string {
+    return String(value).replace(/<[^>]*>/g, ' ');
   }
 
   get availableBookingTypes(): Array<{ value: 'me' | 'pair' | 'child'; label: string }> {
@@ -178,6 +229,10 @@ export class TherapistProfilePage implements OnInit {
   }
   toggleWorkwith() {
     this.isWorkwithExpanded = !this.isWorkwithExpanded;
+  }
+
+  toggleDoNotWorkwith() {
+    this.isDoNotWorkwithExpanded = !this.isDoNotWorkwithExpanded;
   }
   toggleReviews() {
     this.isReviewsExpanded = !this.isReviewsExpanded;

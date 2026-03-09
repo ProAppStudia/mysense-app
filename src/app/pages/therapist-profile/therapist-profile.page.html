@@ -106,7 +106,9 @@
       <div class="info-block about-me">
         <h4 class="info-title-about">Про мене</h4>
         <div class="description" [class.expanded]="isDescriptionExpanded">
-          <p>{{ doctor.description }}</p>
+          <div class="description-content">
+            <p class="p1" *ngFor="let paragraph of descriptionParagraphs">{{ paragraph }}</p>
+          </div>
         </div>
         <button (click)="toggleDescription()" class="show-more-button">
           {{ isDescriptionExpanded ? 'Згорнути' : 'Показати більше' }}
@@ -118,21 +120,30 @@
          <div class="work-with" [class.expanded]="isWorkwithExpanded">
         <h4 class="info-title">Я працюю з:</h4>
         <ul>
-          <li *ngFor="let item of doctor.worksWith">{{ item }}</li>
+          <ng-container *ngFor="let item of doctor.worksWith; let i = index">
+            <li *ngIf="isWorkwithExpanded || i < 2">{{ item }}</li>
+          </ng-container>
         </ul>
         
       </div>
-      <button (click)="toggleWorkwith()" class="show-more-button">
+      <button *ngIf="doctor.worksWith && doctor.worksWith.length > 2" (click)="toggleWorkwith()" class="show-more-button">
           {{ isWorkwithExpanded ? 'Згорнути' : 'Показати більше' }}
         </button>
       </div>
       </div>
 <div class="psychologist-card">
       <div class="info-block">
-        <h4 class="info-title">Я не працюю з:</h4>
-        <ul>
-          <li *ngFor="let item of doctor.doNotWorkWith" class="not-work-with">{{ item }}</li>
-        </ul>
+        <div class="work-with" [class.expanded]="isDoNotWorkwithExpanded">
+          <h4 class="info-title">Я не працюю з:</h4>
+          <ul>
+            <ng-container *ngFor="let item of doctor.doNotWorkWith; let i = index">
+              <li *ngIf="isDoNotWorkwithExpanded || i < 2" class="not-work-with">{{ item }}</li>
+            </ng-container>
+          </ul>
+        </div>
+        <button *ngIf="doctor.doNotWorkWith && doctor.doNotWorkWith.length > 2" (click)="toggleDoNotWorkwith()" class="show-more-button">
+          {{ isDoNotWorkwithExpanded ? 'Згорнути' : 'Показати більше' }}
+        </button>
       </div>
 </div>
       <div class="psychologist-card">
@@ -228,7 +239,7 @@
       </div>
 
       <div class="diploma-gallery" *ngIf="doctor.doctorFiles && doctor.doctorFiles.length > 0">
-        <swiper-container slides-per-view="auto" space-between="10">
+        <swiper-container slides-per-view="2" space-between="10">
           <swiper-slide *ngFor="let file of doctor.doctorFiles">
             <a [href]="file.file" target="_blank">
               <img [src]="file.thumb">
