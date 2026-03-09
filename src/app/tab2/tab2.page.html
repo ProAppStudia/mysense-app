@@ -88,5 +88,14 @@
         </div>
       </ng-template>
     </ng-container>
+
+    <div class="empty-state" *ngIf="doctors.length === 0">
+      <p class="empty-state__text">
+        Нам дуже шкода, але ми не змогли знайти психолога, який відповідає заданим параметрам.
+      </p>
+      <p class="empty-state__text">
+        Спробуйте змінити параметри пошуку
+      </p>
+    </div>
   </div>
 </ion-content>

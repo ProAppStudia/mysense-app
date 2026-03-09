@@ -84,8 +84,11 @@
     </div>
   </div>
 
-  <div class="filter-actions">
-    <button class="custom-filter-button primary" (click)="applyFilters()">Застосувати</button>
-    <button class="custom-filter-button secondary" (click)="resetFilters()">Скинути фільтри</button>
-  </div>
 </ion-content>
+
+<ion-footer class="filter-footer">
+  <div class="filter-actions">
+    <button class="custom-filter-button secondary" (click)="resetFilters()">Скасувати все</button>
+    <button class="custom-filter-button primary" (click)="applyFilters()">Застосувати</button>
+  </div>
+</ion-footer>

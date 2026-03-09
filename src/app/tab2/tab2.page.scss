@@ -258,3 +258,22 @@ ion-toolbar ion-buttons ion-button ion-icon {
 .sort-select::part(icon) {
   display: none;
 }
+
+.empty-state {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px 20px;
+  text-align: left;
+}
+
+.empty-state__text {
+  margin: 0;
+  color: #2f264d;
+  font-size: 18px;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+.empty-state__text + .empty-state__text {
+  margin-top: 10px;
+}
