@@ -92,7 +92,9 @@
       
       <div class="diary-card diary-card--tasks">
         <h3><ion-icon name="checkmark-circle-outline"></ion-icon>Мої завдання</h3>
-        <ion-button expand="block" class="add-diary-button" routerLink="/tabs/tasks">Дивитись завдання</ion-button>
+        <button type="button" class="home-text-action home-text-action--tasks" routerLink="/tabs/tasks">
+          Дивитися завдання
+        </button>
       </div>
     </div>
 
@@ -262,15 +264,17 @@
     <ion-icon class="diary-card__icon" name="book-outline"></ion-icon>
     <ng-container *ngIf="hasAnyDiaryEntry(); else diaryFirstEntryBanner">
       <p>Не забувайте вести свій особистий щоденник, відстежувати настрій та записувати думки</p>
-      <ion-button expand="block" class="add-diary-button" (click)="openDiaryFromHome()">
-        Додати запис
-      </ion-button>
+      <button type="button" class="home-text-action home-text-action--diary" (click)="openDiaryFromHome()">
+        <span class="home-text-action__plus">+</span>
+        <span>Додати запис</span>
+      </button>
     </ng-container>
     <ng-template #diaryFirstEntryBanner>
       <p>Записуйте свої думки, відмічайте стан та відповідайте на запитання для щоденної рефлексії</p>
-      <ion-button expand="block" class="add-diary-button" (click)="openDiaryFromHome()">
-        Почати
-      </ion-button>
+      <button type="button" class="home-text-action home-text-action--diary" (click)="openDiaryFromHome()">
+        <span class="home-text-action__plus">+</span>
+        <span>Додати запис</span>
+      </button>
     </ng-template>
   </div>
     </div>
@@ -695,7 +699,6 @@
         <button type="button" class="late-cancel-modal__close" (click)="closeLateCancelConfirm()" aria-label="Закрити">
           ×
         </button>
-        <h2 class="late-cancel-modal__title">Підтвердіть скасування сесії</h2>
         <p class="late-cancel-modal__text" *ngIf="lateCancelIsUrgent(); else regularCancelTextHome">
           Ви скасовуєте сесію менш ніж за 24 години до її початку.<br>
           За правилами платформи кошти в такому разі не повертаються.<br>

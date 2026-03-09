@@ -19,6 +19,8 @@ p.intro-p-left {
     text-align: left;
     color: #1c1c1c;
     margin-bottom: 0;
+    margin-top: 0;
+    font-size: 10px;
 }
 /* Styles for the initial 'type' and 'info' screens' pagination */
 .progress-dots {
@@ -109,7 +111,7 @@ p.intro-p-left {
 
 .card-text {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ion-color-dark);
 }
 

@@ -10,6 +10,11 @@ ion-content.tasks-page {
   margin-top: 10px;
 }
 
+.tasks-empty.no-tasks {
+  font-size: 15px;
+  text-align: center;
+}
+
 .chats-row {
   display: flex;
   gap: 10px;

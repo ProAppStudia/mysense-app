@@ -133,8 +133,8 @@ ion-toolbar.app-back-toolbar .back-btn {
   border: 0;
   background: transparent;
   padding: 0;
-  width: 46px;
-  height: 46px;
+  width: 56px;
+  height: 56px;
   min-width: 46px;
   min-height: 46px;
   display: inline-flex;
@@ -156,8 +156,8 @@ ion-toolbar.app-back-toolbar .app-back-btn-icon,
 ion-toolbar.app-back-toolbar .back-btn-icon,
 ion-toolbar.app-back-toolbar .custom-back-icon,
 ion-toolbar.app-back-toolbar .header-back-icon {
-  width: 30px;
-  height: 30px;
+  width: 42px;
+  height: 42px;
   min-width: 30px;
   min-height: 30px;
   display: block;
@@ -220,7 +220,7 @@ ion-modal.late-cancel-modal::part(content) {
   margin: 0;
   color: #4a4756;
   text-align: center;
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1.35;
 }
 
@@ -274,7 +274,7 @@ ion-modal.late-cancel-modal::part(content) {
   }
 
   .late-cancel-modal__text {
-    font-size: 16px;
+    font-size: 18px;
     line-height: 1.3;
   }
 
