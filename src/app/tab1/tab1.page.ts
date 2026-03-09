@@ -137,6 +137,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   homeClientBalance = signal(0);
   homeClientAvatar = signal('');
   hasSuccessfulClientSession = signal(false);
+  hasAnyClientSession = signal(false);
   homeProfileEditorOpen = signal(false);
   homeProfileEditorLoading = signal(false);
   homeProfileEditorError = signal<string | null>(null);
@@ -985,6 +986,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         this.isDoctor.set(false);
         this.hasHomeTasks.set(false);
         this.userSessions = [];
+        this.hasAnyClientSession.set(false);
       }
     });
   }
@@ -1037,6 +1039,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       this.hasHomeTasks.set(false);
       this.userSessions = [];
       this.recentPsychologists = [];
+      this.hasAnyClientSession.set(false);
     }
   }
 
@@ -1337,19 +1340,26 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
           this.userSessions = [];
           this.recentPsychologists = [];
           this.hasSuccessfulClientSession.set(false);
+          this.hasAnyClientSession.set(false);
           return;
         }
 
         const mappedSessions = all
           .map((item, index) => this.mapApiSession(item, index));
 
+        this.hasAnyClientSession.set(mappedSessions.length > 0);
+
         this.hasSuccessfulClientSession.set(
           mappedSessions.some((session) => this.isSuccessfulClientSession(session))
         );
 
-        this.userSessions = mappedSessions
+        const normalizedHomeSessions = mappedSessions
+          .map((session) => this.normalizeHomeSessionForDisplay(session))
+          .filter((session): session is Session => session !== null);
+
+        this.userSessions = normalizedHomeSessions
           .sort((a, b) => this.compareByOrderCreationDesc(a, b))
-          .slice(0, this.isDoctor() ? 2 : all.length);
+          .slice(0, this.isDoctor() ? 2 : normalizedHomeSessions.length);
 
         this.recentPsychologists = this.extractRecentPsychologists(all).slice(0, 3);
       },
@@ -1357,6 +1367,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         this.userSessions = [];
         this.recentPsychologists = [];
         this.hasSuccessfulClientSession.set(false);
+        this.hasAnyClientSession.set(false);
       }
     });
   }
@@ -1376,6 +1387,46 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     const statusText = String(session.status || '').toLowerCase();
     const statusColor = String(session.status_color || '').toLowerCase();
     return statusId === 5 || statusText.includes('успіш') || statusColor === 'success';
+  }
+
+  private normalizeHomeSessionForDisplay(session: Session): Session | null {
+    const statusId = Number(session.status_id ?? 0);
+    const statusText = String(session.status || '').toLowerCase();
+    const statusColor = String(session.status_color || '').toLowerCase();
+    const startAt = this.resolveSessionStartAt(session);
+
+    const isArchive =
+      statusId === 4 ||
+      statusId === 9 ||
+      statusText.includes('скас') ||
+      statusText.includes('відмін') ||
+      statusText.includes('cancel') ||
+      statusText.includes('неусп') ||
+      statusText.includes('failed') ||
+      statusText.includes('пройд') ||
+      statusText.includes('минул') ||
+      statusText.includes('past');
+
+    if (isArchive) {
+      return null;
+    }
+
+    // Home card should show only upcoming sessions.
+    if (startAt && startAt.getTime() <= Date.now()) {
+      return null;
+    }
+
+    const isCreated =
+      statusId === 1 ||
+      statusText.includes('створ') ||
+      statusText.includes('очіку');
+
+    const displayStatus = isCreated ? 'Створена' : 'Заброньована';
+
+    return {
+      ...session,
+      status: displayStatus
+    };
   }
 
   private extractSessionsFromResponse(resp: any): { all: MySessionItem[] } {
@@ -1442,6 +1493,9 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     const text = String(session.status || '').toLowerCase();
     if (text.includes('створ')) {
       return 'status-created';
+    }
+    if (text.includes('заброн')) {
+      return 'status-paid';
     }
     if (text.includes('неусп') || text.includes('failed')) {
       return 'status-failed';

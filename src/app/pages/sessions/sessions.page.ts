@@ -228,6 +228,12 @@ export class SessionsPage implements OnInit {
     if (text.includes('створ')) {
       return 'status-created';
     }
+    if (text.includes('заброн')) {
+      return 'status-paid';
+    }
+    if (text.includes('проведен')) {
+      return 'status-past';
+    }
     if (text.includes('неусп') || text.includes('failed')) {
       return 'status-failed';
     }
@@ -256,13 +262,14 @@ export class SessionsPage implements OnInit {
     if (this.selectedSegment === 'past') {
       return this.emptyText || 'У вас ще немає минулих сесій.';
     }
-    return this.emptyText || 'У вас ще немає сесій в архіві.';
+    return this.emptyText || 'У вас ще немає скасованих сесій.';
   }
 
   private mapApiSession(item: MySessionItem, segment: 'planned' | 'past', index: number): Session {
     const apiStatus = Number((item as any)?.status_id ?? (item as any)?.status ?? 5);
-    const statusText = String((item as any)?.status_text ?? '').trim() || (segment === 'past' ? 'Пройдена' : 'Заброньована');
+    const rawStatusText = String((item as any)?.status_text ?? '').trim() || (segment === 'past' ? 'Пройдена' : 'Заброньована');
     const statusColor = String((item as any)?.status_color ?? '').trim().toLowerCase();
+    const statusText = this.normalizeSessionStatusLabel(rawStatusText, apiStatus, statusColor, segment);
 
     return {
       id: this.resolveSessionId(item as any, index),
@@ -285,6 +292,41 @@ export class SessionsPage implements OnInit {
       doctor_hash: String((item as any)?.doctor_hash ?? (item as any)?.hash ?? '').trim() || undefined,
       amount: Number((item as any)?.amount ?? (item as any)?.session_amount ?? 0) || undefined
     };
+  }
+
+  private normalizeSessionStatusLabel(
+    rawStatusText: string,
+    statusId: number,
+    statusColor: string,
+    segment: 'planned' | 'past'
+  ): string {
+    const text = String(rawStatusText || '').trim().toLowerCase();
+
+    if (
+      statusId === 9 ||
+      statusId === 4 ||
+      text.includes('скас') ||
+      text.includes('відмін') ||
+      text.includes('cancel') ||
+      text.includes('неусп') ||
+      text.includes('failed')
+    ) {
+      return 'Скасована';
+    }
+
+    if (text.includes('створ') || text.includes('очіку') || statusId === 1) {
+      return 'Створена';
+    }
+
+    if (text.includes('успіш') || text.includes('пройд') || text.includes('минул') || text.includes('past') || segment === 'past') {
+      return 'Проведена';
+    }
+
+    if (text.includes('оплач') || text.includes('заброн') || statusColor === 'success') {
+      return 'Заброньована';
+    }
+
+    return 'Заброньована';
   }
 
   private resolveSessionId(item: any, index: number): number {

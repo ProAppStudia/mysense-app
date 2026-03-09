@@ -25,13 +25,13 @@
     </div>
 
     <!-- My Sessions Block -->
-    <div *ngIf="isLoggedIn() && userSessions.length > 0" class="my-sessions-block">
+    <div *ngIf="isLoggedIn() && !isDoctor() && hasAnyClientSession()" class="my-sessions-block">
       <div class="sessions-header">
         <h2>Мої сесії</h2>
         <a (click)="viewAllSessions()">Дивитись всі</a>
       </div>
 
-      <div class="sessions-list">
+      <div class="sessions-list" *ngIf="userSessions.length > 0; else homeSessionsEmpty">
         <div class="session-card" *ngFor="let session of userSessions | slice:0:2">
           <div class="session-info">
             <div class="session-status-row">
@@ -74,6 +74,9 @@
           </div>
         </div>
       </div>
+      <ng-template #homeSessionsEmpty>
+        <p class="home-sessions-empty">У вас поки немає запланованих сесій.</p>
+      </ng-template>
       <ion-button expand="block" class="book-session-button" (click)="openBookSession()">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
         Забронювати сесію
