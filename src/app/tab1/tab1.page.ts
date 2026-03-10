@@ -238,7 +238,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     name: new FormControl('', [Validators.required, Validators.minLength(2)]),
     surname: new FormControl('', [Validators.required, Validators.minLength(2)]),
     email: new FormControl('', [Validators.required, Validators.email]),
-    phone: new FormControl('', [Validators.required, Validators.pattern(/^\+?[0-9\s\-()]{7,25}$/)]),
+    phone: new FormControl('380', [Validators.required, Validators.pattern(/^[0-9]{7,15}$/)]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
     confirm: new FormControl(false, [Validators.requiredTrue]),
     code: new FormControl('', []) // Code field initially not required
@@ -761,8 +761,15 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     this.registerErrorMsg.set(null);
     this.infoMsg.set(null);
     this.registerStep.set('form');
-    this.registerForm.reset();
-    this.registerForm.get('confirm')?.setValue(false); // Ensure checkbox is reset
+    this.registerForm.reset({
+      name: '',
+      surname: '',
+      email: '',
+      phone: '380',
+      password: '',
+      confirm: false,
+      code: ''
+    });
     this.registerForm.get('code')?.clearValidators(); // Clear code validators
     this.registerForm.get('code')?.updateValueAndValidity();
     this.stopCountdown();
@@ -890,6 +897,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     code?: string;
   } | null {
     const { name, surname, email, phone, password, confirm, code } = this.registerForm.value;
+    const normalizedPhone = this.normalizePhoneDigits(phone);
     if (!name || !surname || !email || !phone || !password) {
       return null;
     }
@@ -906,7 +914,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       name,
       surname,
       email,
-      phone,
+      phone: normalizedPhone,
       password,
       confirm: !!confirm
     };
@@ -949,6 +957,25 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
 
   private pad(num: number): string {
     return num < 10 ? '0' + num : '' + num;
+  }
+
+  onRegisterPhoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input) {
+      return;
+    }
+
+    const digits = this.normalizePhoneDigits(input.value);
+    if (digits !== input.value) {
+      input.value = digits;
+    }
+    this.registerForm.get('phone')?.setValue(digits, { emitEvent: false });
+    this.registerForm.get('phone')?.markAsDirty();
+    this.registerForm.get('phone')?.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private normalizePhoneDigits(value: unknown): string {
+    return String(value ?? '').replace(/\D/g, '');
   }
 
   toggleRegisterPasswordVisibility() {

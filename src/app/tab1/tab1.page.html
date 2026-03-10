@@ -515,7 +515,7 @@
 
               <div class="auth-login-modal__field" [class.is-filled]="!!registerForm.get('phone')?.value">
                 <label class="auth-login-modal__label">Номер телефону</label>
-                <input formControlName="phone" inputmode="tel" type="tel">
+                <input formControlName="phone" inputmode="tel" type="tel" maxlength="15" autocomplete="tel" (input)="onRegisterPhoneInput($event)">
               </div>
               <ion-text color="danger" *ngIf="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched">
                 <p class="auth-login-modal__error" *ngIf="registerForm.get('phone')?.errors?.['required']">Телефон обов'язковий.</p>

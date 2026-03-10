@@ -339,11 +339,26 @@ export class ChatService {
       const response = this.parseBackendResponse(rawResponse);
       const code = String(response?.code ?? '');
       const redirect = String(response?.redirect ?? '');
-      const isSuccess = response?.success === true || response?.success === 1 || response?.success === '1';
+      const hasExplicitError = !!String(response?.error ?? '').trim();
+      const isSuccess =
+        response?.success === true ||
+        response?.success === 1 ||
+        response?.success === '1' ||
+        response?.ok === true ||
+        response?.ok === 1 ||
+        response?.ok === '1' ||
+        response?.status === 'ok' ||
+        response?.status === 'success';
       const isKnownCode = code === 'chat_found' || code === 'message_created';
       const isChatRedirect = !redirect || redirect === 'chat_page';
+      const hasUsefulPayload =
+        !!response?.doctor_user_id ||
+        !!response?.to_user_id ||
+        !!response?.hash ||
+        !!response?.chat_id ||
+        !!response?.message_id;
 
-      if (isSuccess && isKnownCode && isChatRedirect) {
+      if ((isSuccess && isKnownCode && isChatRedirect) || (isSuccess && !hasExplicitError && (isChatRedirect || hasUsefulPayload))) {
         return { ok: true, action, response };
       }
 

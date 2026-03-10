@@ -369,11 +369,11 @@ export class TherapistProfilePage implements OnInit {
           firstMessageResult.error ??
           ''
         ).trim();
-        this.isOpeningChat = false;
         if (backendError) {
+          this.isOpeningChat = false;
           window.alert(backendError);
+          return;
         }
-        return;
       }
     }
 

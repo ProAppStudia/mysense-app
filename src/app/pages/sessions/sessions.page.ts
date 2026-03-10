@@ -318,7 +318,11 @@ export class SessionsPage implements OnInit {
       return 'Створена';
     }
 
-    if (text.includes('успіш') || text.includes('пройд') || text.includes('минул') || text.includes('past') || segment === 'past') {
+    if (text.includes('успіш')) {
+      return segment === 'past' ? 'Проведена' : 'Заброньована';
+    }
+
+    if (text.includes('пройд') || text.includes('минул') || text.includes('past') || segment === 'past') {
       return 'Проведена';
     }
 
