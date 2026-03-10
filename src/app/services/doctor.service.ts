@@ -244,7 +244,7 @@ export class DoctorService {
     const workType = this.extractWorkTypeFlags(data?.work_type);
     const childAgeLabels = this.extractChildAgeLabels(data);
     let normalizedWorkWithTypes = this.normalizeWorkWithTypes(data?.types, therapyTypeIds);
-    if (childAgeLabels.length && !normalizedWorkWithTypes.some((item) => /дит|child/i.test(String(item)))) {
+    if (childAgeLabels.length && !normalizedWorkWithTypes.some((item) => /д[іi]т|дит|child/i.test(String(item)))) {
       normalizedWorkWithTypes = [...normalizedWorkWithTypes, 'Діти'];
     }
 
@@ -314,7 +314,7 @@ export class DoctorService {
         }
       }
 
-      if (/дит|child/i.test(text)) {
+      if (/д[іi]т|дит|child/i.test(text)) {
         hasChildType = true;
         continue;
       }
@@ -337,7 +337,7 @@ export class DoctorService {
     const compact = normalized
       .map((item) => String(item ?? '').trim())
       .filter(Boolean)
-      .map((item) => (/дит|child/i.test(item) ? 'Діти' : item))
+      .map((item) => (/д[іi]т|дит|child/i.test(item) ? 'Діти' : item))
       .filter((item) => !/д[іi]т[иi]\s*в[іi]д\s*\d+/i.test(item))
       .filter((item) => !/^\d{1,2}\s*[-–]\s*\d{1,2}\s*рок/i.test(item));
 
@@ -423,9 +423,14 @@ export class DoctorService {
           .reduce((acc: string[], cur: string[]) => acc.concat(cur), [])
           .filter(Boolean);
       }
-      const match = text.match(/(\d{1,2})\s*[-–]\s*(\d{1,2})/);
-      if (match) {
-        return [`${Number(match[1])}-${Number(match[2])}`];
+      const rangeRegex = /(\d{1,2})\s*[-–]\s*(\d{1,2})/g;
+      const ranges: string[] = [];
+      let match: RegExpExecArray | null = null;
+      while ((match = rangeRegex.exec(text)) !== null) {
+        ranges.push(`${Number(match[1])}-${Number(match[2])}`);
+      }
+      if (ranges.length) {
+        return ranges;
       }
 
       // Backend may return strings like "Діти від 4 років" where 4 is a category id.
