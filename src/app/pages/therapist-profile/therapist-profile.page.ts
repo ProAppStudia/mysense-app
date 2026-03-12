@@ -345,6 +345,9 @@ export class TherapistProfilePage implements OnInit {
     const queryParams: Record<string, string | number> = { type };
     const hash = String(this.doctor.hash ?? '').trim();
     const toUserId = Number(this.doctor.userId ?? 0);
+    const doctorId = Number(this.doctor.id ?? 0);
+    const targetName = String(this.doctor.fullName ?? '').trim();
+    const targetPhoto = String(this.doctor.avatarUrl ?? '').trim();
 
     if (hash) {
       queryParams['hash'] = hash;
@@ -352,6 +355,19 @@ export class TherapistProfilePage implements OnInit {
 
     if (Number.isFinite(toUserId) && toUserId > 0) {
       queryParams['to_user_id'] = toUserId;
+      queryParams['doctor_user_id'] = toUserId;
+    }
+
+    if (Number.isFinite(doctorId) && doctorId > 0) {
+      queryParams['doctor_id'] = doctorId;
+    }
+
+    if (targetName) {
+      queryParams['target_name'] = targetName;
+    }
+
+    if (targetPhoto) {
+      queryParams['target_photo'] = targetPhoto;
     }
 
     if (!queryParams['hash'] && !queryParams['to_user_id']) {

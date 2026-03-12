@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <div class="chat-actions">
+    <div class="chat-actions" *ngIf="isDoctor">
       <button [class.active-action]="activeTab === 'chat'" (click)="setActiveTab('chat')">Чат</button>
       <button [class.active-action]="activeTab === 'tasks'" (click)="setActiveTab('tasks')">Завдання</button>
       <button class="btn-reserve" fill="clear" (click)="openReservePage()">Забронювати сесію</button>

@@ -38,6 +38,8 @@ export class ChatPage implements OnInit {
   pendingType: '15min' | 'write' | null = null;
   pendingToUserId: number | null = null;
   pendingDoctorId: number | null = null;
+  pendingTargetName = '';
+  pendingTargetPhoto = '';
   shouldAutoEnhanceOnOpen = false;
   selectedTaskFiles: File[] = [];
   private readonly lastWrittenPeerKey = 'chat_last_written_peer_user_id';
@@ -59,7 +61,15 @@ export class ChatPage implements OnInit {
       this.pendingType = this.normalizePendingType(params.get('type'));
 
       const qpToUserId = Number(params.get('to_user_id'));
-      this.pendingToUserId = Number.isFinite(qpToUserId) && qpToUserId > 0 ? qpToUserId : null;
+      const qpDoctorUserId = Number(params.get('doctor_user_id'));
+      const qpDoctorId = Number(params.get('doctor_id'));
+      const resolvedPendingUserId = Number.isFinite(qpToUserId) && qpToUserId > 0
+        ? qpToUserId
+        : (Number.isFinite(qpDoctorUserId) && qpDoctorUserId > 0 ? qpDoctorUserId : null);
+      this.pendingToUserId = resolvedPendingUserId;
+      this.pendingDoctorId = Number.isFinite(qpDoctorId) && qpDoctorId > 0 ? qpDoctorId : null;
+      this.pendingTargetName = String(params.get('target_name') ?? '').trim();
+      this.pendingTargetPhoto = String(params.get('target_photo') ?? '').trim();
       this.shouldAutoEnhanceOnOpen = !!(this.pendingHash || this.pendingType || this.pendingToUserId);
 
       // Chat tab is cached in Ionic tabs, so ngOnInit may not rerun.
@@ -74,12 +84,16 @@ export class ChatPage implements OnInit {
       this.authService.getProfile().subscribe({
         next: (profile) => {
           this.isDoctor = !!(profile?.is_doctor === true || profile?.is_doctor === 1 || profile?.is_doctor === '1');
+          if (!this.isDoctor) {
+            this.activeTab = 'chat';
+          }
           this.currentUserId = Number(profile?.user_id) || null;
           this.currentDoctorHash = String((profile as any)?.hash ?? '').trim();
           this.initChatAndLoad();
         },
         error: () => {
           this.isDoctor = false;
+          this.activeTab = 'chat';
           this.currentUserId = null;
           this.currentDoctorHash = '';
           this.initChatAndLoad();
@@ -219,15 +233,15 @@ export class ChatPage implements OnInit {
 
         if (this.chats && this.chats.length > 0) {
           const preferredChat = this.findPreferredChat();
-          this.selectChat(preferredChat ?? this.chats[0]);
+          if (preferredChat) {
+            this.selectChat(preferredChat);
+          } else if (this.pendingToUserId) {
+            this.selectChat(this.buildPendingChat(this.pendingToUserId));
+          } else {
+            this.selectChat(this.chats[0]);
+          }
         } else if (this.pendingToUserId) {
-          const pendingChat = {
-            from_user_id: this.pendingToUserId,
-            to_user_id: this.pendingToUserId,
-            user_id: this.pendingToUserId,
-            fullname: 'Психолог'
-          };
-          this.selectChat(pendingChat);
+          this.selectChat(this.buildPendingChat(this.pendingToUserId));
         } else {
           this.selectedChat = null;
           this.messages = [];
@@ -239,6 +253,16 @@ export class ChatPage implements OnInit {
         event?.detail.complete();
       }
     });
+  }
+
+  private buildPendingChat(toUserId: number): any {
+    return {
+      from_user_id: toUserId,
+      to_user_id: toUserId,
+      user_id: toUserId,
+      fullname: this.pendingTargetName || 'Психолог',
+      photo: this.pendingTargetPhoto || 'assets/icon/favicon.png'
+    };
   }
 
   private extractChatsFromResponse(data: any): any[] {
@@ -389,7 +413,22 @@ export class ChatPage implements OnInit {
       }
     }
 
+    if (this.pendingTargetName) {
+      const wanted = this.normalizeName(this.pendingTargetName);
+      const byName = this.chats.find((chat: any) => this.normalizeName(chat?.fullname) === wanted);
+      if (byName) {
+        return byName;
+      }
+    }
+
     return null;
+  }
+
+  private normalizeName(value: any): string {
+    return String(value ?? '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, ' ');
   }
 
   selectChat(chat: any) {
