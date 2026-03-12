@@ -43,6 +43,7 @@ export class TherapistProfilePage implements OnInit {
   selectedTime: number | null = null;
   isOpeningChat = false;
   descriptionParagraphs: string[] = [];
+  availableBookingTypeOptions: Array<{ value: 'me' | 'pair' | 'child'; label: string }> = [];
   
   constructor(
     private route: ActivatedRoute,
@@ -89,6 +90,7 @@ export class TherapistProfilePage implements OnInit {
               this.currentWeekIndex = activeIndex >= 0 ? activeIndex : 0;
               this.initialWeekIndex = this.currentWeekIndex;
             }
+            this.availableBookingTypeOptions = this.buildAvailableBookingTypes();
             this.normalizeBookingTypeSelection();
           }
         });
@@ -148,7 +150,7 @@ export class TherapistProfilePage implements OnInit {
     return String(value).replace(/<[^>]*>/g, ' ');
   }
 
-  get availableBookingTypes(): Array<{ value: 'me' | 'pair' | 'child'; label: string }> {
+  private buildAvailableBookingTypes(): Array<{ value: 'me' | 'pair' | 'child'; label: string }> {
     if (!this.isDoctorCardView(this.doctor)) {
       return [];
     }
@@ -191,7 +193,7 @@ export class TherapistProfilePage implements OnInit {
   }
 
   private normalizeBookingTypeSelection(): void {
-    const availableValues = this.availableBookingTypes.map((item) => item.value);
+    const availableValues = this.availableBookingTypeOptions.map((item) => item.value);
     if (!availableValues.length) {
       this.bookingFor = 'me';
       return;
@@ -230,6 +232,18 @@ export class TherapistProfilePage implements OnInit {
   }
   toggleReviews() {
     this.isReviewsExpanded = !this.isReviewsExpanded;
+  }
+
+  setSessionType(type: 'online' | 'offline', event?: Event): void {
+    this.sessionType = type;
+    const button = event?.currentTarget as HTMLElement | null;
+    button?.blur?.();
+  }
+
+  setBookingFor(type: 'me' | 'pair' | 'child', event?: Event): void {
+    this.bookingFor = type;
+    const button = event?.currentTarget as HTMLElement | null;
+    button?.blur?.();
   }
 
   get currentWeek(): Week | undefined {

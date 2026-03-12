@@ -153,23 +153,21 @@
       <div #bookingBlock class="booking-block" *ngIf="doctor.calendar">
         <h3>Забронювати сесію</h3>
         <p class="timezone-info">Бронювання проводиться за київським часом</p>
-
         <div class="session-type-toggle">
-          <button class="sessionbutton" [class.active]="sessionType === 'online'" (click)="sessionType = 'online'">Онлайн</button>
-          <button *ngIf="doctor.inPerson" class="sessionbutton" [class.active]="sessionType === 'offline'" (click)="sessionType = 'offline'">Очно</button>
+          <div class="sessionbutton" [class.active]="sessionType === 'online'" (click)="setSessionType('online', $event)">Онлайн</div>
+          <div *ngIf="doctor.inPerson" class="sessionbutton" [class.active]="sessionType === 'offline'" (click)="setSessionType('offline', $event)">Очно</div>
         </div>
 
         <div class="booking-for-toggle">
-          <button
-            *ngFor="let typeOption of availableBookingTypes"
+          <div
+            *ngFor="let typeOption of availableBookingTypeOptions"
             class="sessionbutton"
             [class.active]="bookingFor === typeOption.value"
-            (click)="bookingFor = typeOption.value"
+            (click)="setBookingFor(typeOption.value, $event)"
           >
             {{ typeOption.label }}
-          </button>
+          </div>
         </div>
-
         <ng-container *ngIf="!showContactRequestBlock; else pairOnlineRequestBlock">
           <div class="week-navigator">
             <div class="week-nav-arrows">

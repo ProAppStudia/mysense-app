@@ -131,7 +131,7 @@ ion-content {
       }
     }
     
-button.sessionbutton {
+.sessionbutton {
     background: #ffffff;
     flex: 1 1 0;
     min-width: 0;
@@ -146,7 +146,7 @@ button.sessionbutton {
     border: 1px solid #795bda;
     border-radius: 5px;
 }
-button.sessionbutton.active {
+.sessionbutton.active {
     background: #7a5bda;
     flex: 1 1 0;
     min-width: 0;
