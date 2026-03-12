@@ -154,6 +154,11 @@ ion-content {
 
 .doctor-home-chat .psychologists-container {
   display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  padding: 0 10px;
   margin-bottom: 10px;
   gap: 10px;
 }
@@ -167,6 +172,7 @@ ion-content {
   background-color: #fff;
   cursor: pointer;
   min-width: 180px;
+  flex: 0 0 auto;
   border: 2px solid transparent;
 }
 
@@ -306,7 +312,7 @@ ion-content {
   flex-direction: column;
   gap: 12px;
   background: #fff;
-  margin: 0 10px;
+  
 }
 
 .doctor-home-chat .task-item {
@@ -434,6 +440,10 @@ ion-content {
 .doctor-home-chat .tasks-write .attach-btn ion-icon {
   color: #795bda;
   font-size: 22px;
+}
+
+.doctor-home-chat .task-file-input {
+  display: none;
 }
 
 .doctor-home-chat .tasks-write button:last-child {
