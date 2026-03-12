@@ -116,9 +116,12 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   lateCancelConfirmOpen = signal(false);
   lateCancelIsUrgent = signal(false);
   recentPsychologists: RecentPsychologist[] = [];
-  selectedReserveDoctorUserId: number | null = null;
-  private pendingReserveNavigationExtras: NavigationExtras | null = null;
+  pickerPsychologists: RecentPsychologist[] = [];
+  selectedPickerDoctorUserId: number | null = null;
+  pickerMode: 'reserve' | 'chat' = 'reserve';
+  private pendingPickerNavigation: { commands: any[]; extras?: NavigationExtras } | null = null;
   private pendingCancelSessionId: number | null = null;
+  private homeCurrentUserId = 0;
   todayDiaryExists = signal(false);
   todayDiaryEntry = signal<DiaryEntryNormalized | null>(null);
   hasAnyDiaryEntry = signal(false);
@@ -1021,14 +1024,17 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         this.isDoctor.set(isDoctorProfile);
         if (!isDoctorProfile) {
           const currentUserId = Number(profile?.user_id) || 0;
+          this.homeCurrentUserId = currentUserId;
           this.loadHomeTasksPresence(currentUserId);
         } else {
+          this.homeCurrentUserId = Number(profile?.user_id) || 0;
           this.hasHomeTasks.set(false);
         }
         this.loadHomeSessions();
       },
       error: () => {
         this.isDoctor.set(false);
+        this.homeCurrentUserId = 0;
         this.hasHomeTasks.set(false);
         this.userSessions = [];
         this.hasAnyClientSession.set(false);
@@ -1081,9 +1087,11 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     this.isLoggedIn.set(this.authService.isAuthenticated());
     if (!this.isLoggedIn()) {
       this.isDoctor.set(false);
+      this.homeCurrentUserId = 0;
       this.hasHomeTasks.set(false);
       this.userSessions = [];
       this.recentPsychologists = [];
+      this.pickerPsychologists = [];
       this.hasAnyClientSession.set(false);
     }
   }
@@ -1176,8 +1184,35 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.selectedReserveDoctorUserId = this.recentPsychologists[0]?.doctor_user_id ?? null;
+    this.pickerMode = 'reserve';
+    this.pickerPsychologists = [...this.recentPsychologists];
+    this.selectedPickerDoctorUserId = this.pickerPsychologists[0]?.doctor_user_id ?? null;
     this.reservePickerOpen.set(true);
+  }
+
+  openWriteToChat() {
+    if (this.isDoctor()) {
+      void this.router.navigate(['/tabs/chat']);
+      return;
+    }
+
+    this.chatService.getMyChats().subscribe({
+      next: (data: any) => {
+        const chatPsychologists = this.extractRecentPsychologistsFromChats(data);
+        if (!chatPsychologists.length) {
+          void this.router.navigate(['/tabs/chat']);
+          return;
+        }
+
+        this.pickerMode = 'chat';
+        this.pickerPsychologists = chatPsychologists;
+        this.selectedPickerDoctorUserId = this.pickerPsychologists[0]?.doctor_user_id ?? null;
+        this.reservePickerOpen.set(true);
+      },
+      error: () => {
+        void this.router.navigate(['/tabs/chat']);
+      }
+    });
   }
 
   closeReservePicker() {
@@ -1185,27 +1220,44 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   }
 
   selectReserveDoctor(doctorUserId: number) {
-    this.selectedReserveDoctorUserId = doctorUserId;
+    this.selectedPickerDoctorUserId = doctorUserId;
   }
 
   continueReserveWithSelectedDoctor() {
-    if (!this.selectedReserveDoctorUserId) {
+    if (!this.selectedPickerDoctorUserId) {
       return;
     }
 
-    const selected = this.recentPsychologists.find((item) => item.doctor_user_id === this.selectedReserveDoctorUserId);
+    const selected = this.pickerPsychologists.find((item) => item.doctor_user_id === this.selectedPickerDoctorUserId);
     if (!selected) {
       return;
     }
 
-    this.pendingReserveNavigationExtras = {
-      queryParams: {
-        to_user_id: selected.doctor_user_id,
-        doctor_user_id: selected.doctor_user_id,
-        target_name: selected.fullname,
-        target_photo: selected.photo
+    if (this.pickerMode === 'chat') {
+      this.pendingPickerNavigation = {
+        commands: ['/tabs/chat'],
+        extras: {
+          queryParams: {
+            to_user_id: selected.doctor_user_id,
+            doctor_user_id: selected.doctor_user_id,
+            target_name: selected.fullname,
+            target_photo: selected.photo
+          }
+        }
+      };
+    } else {
+      this.pendingPickerNavigation = {
+        commands: ['/tabs/session-request'],
+        extras: {
+          queryParams: {
+            to_user_id: selected.doctor_user_id,
+            doctor_user_id: selected.doctor_user_id,
+            target_name: selected.fullname,
+            target_photo: selected.photo
+          }
+        }
       }
-    };
+    }
     this.closeReservePicker();
   }
 
@@ -1369,11 +1421,12 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onReservePickerDidDismiss() {
-    const extras = this.pendingReserveNavigationExtras;
-    this.pendingReserveNavigationExtras = null;
-    this.selectedReserveDoctorUserId = null;
-    if (extras) {
-      void this.router.navigate(['/tabs/session-request'], extras);
+    const pendingNavigation = this.pendingPickerNavigation;
+    this.pendingPickerNavigation = null;
+    this.selectedPickerDoctorUserId = null;
+    this.pickerPsychologists = [];
+    if (pendingNavigation) {
+      void this.router.navigate(pendingNavigation.commands, pendingNavigation.extras);
     }
   }
 
@@ -1733,6 +1786,65 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     return Array.from(unique.values());
+  }
+
+  private extractRecentPsychologistsFromChats(data: any): RecentPsychologist[] {
+    const chats = Array.isArray(data)
+      ? data
+      : (Array.isArray(data?.chats) ? data.chats : (Array.isArray(data?.results) ? data.results : []));
+
+    const unique = new Map<number, RecentPsychologist>();
+    for (const chat of chats) {
+      if (!chat || typeof chat !== 'object') {
+        continue;
+      }
+
+      const doctorUserId = this.resolvePeerUserIdFromChat(chat);
+      if (!doctorUserId || unique.has(doctorUserId)) {
+        continue;
+      }
+
+      const fullName = String(
+        chat.fullname ??
+        chat.name ??
+        chat.username ??
+        `${String(chat.firstname ?? '').trim()} ${String(chat.lastname ?? '').trim()}`.trim() ??
+        'Психолог'
+      ).trim() || 'Психолог';
+
+      const photo = this.normalizePhoto(
+        String(chat.img ?? chat.photo ?? chat.avatar ?? chat.image ?? '').trim()
+      );
+
+      unique.set(doctorUserId, {
+        doctor_user_id: doctorUserId,
+        fullname: fullName,
+        photo
+      });
+    }
+
+    return Array.from(unique.values());
+  }
+
+  private resolvePeerUserIdFromChat(chat: any): number {
+    const candidates = [
+      Number(chat?.from_user_id ?? chat?.user_id_from ?? chat?.sender_id ?? chat?.from_id ?? 0),
+      Number(chat?.to_user_id ?? chat?.user_id_to ?? chat?.receiver_id ?? chat?.to_id ?? 0),
+      Number(chat?.user_id ?? chat?.peer_user_id ?? chat?.id ?? 0)
+    ].filter((value) => Number.isFinite(value) && value > 0);
+
+    if (!candidates.length) {
+      return 0;
+    }
+
+    if (this.homeCurrentUserId > 0) {
+      const peerId = candidates.find((id) => id !== this.homeCurrentUserId);
+      if (peerId) {
+        return peerId;
+      }
+    }
+
+    return candidates[0];
   }
 
   private refreshDiaryState() {

@@ -81,7 +81,7 @@
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
         Забронювати сесію
       </ion-button>
-      <ion-button *ngIf="!isDoctor()" expand="block" class="chat-session-button" routerLink="/tabs/chat">
+      <ion-button *ngIf="!isDoctor()" expand="block" class="chat-session-button" (click)="openWriteToChat()">
         <ion-icon name="chatbubbles-outline" slot="start"></ion-icon>
         Написати в чат
       </ion-button>
@@ -661,7 +661,7 @@
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-title>Оберіть психолога</ion-title>
+          <ion-title>{{ pickerMode === 'chat' ? 'Оберіть психолога для чату' : 'Оберіть психолога' }}</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="closeReservePicker()">
               <ion-icon name="close-outline" class="close-icon"></ion-icon>
@@ -674,8 +674,8 @@
           <button
             type="button"
             class="reserve-picker-item"
-            *ngFor="let doctor of recentPsychologists"
-            [class.active]="selectedReserveDoctorUserId === doctor.doctor_user_id"
+            *ngFor="let doctor of pickerPsychologists"
+            [class.active]="selectedPickerDoctorUserId === doctor.doctor_user_id"
             (click)="selectReserveDoctor(doctor.doctor_user_id)"
           >
             <img [src]="doctor.photo" alt="{{ doctor.fullname }}">
@@ -683,8 +683,8 @@
           </button>
         </div>
 
-        <ion-button expand="block" class="select-psychologist-button" (click)="continueReserveWithSelectedDoctor()" [disabled]="!selectedReserveDoctorUserId">
-          Продовжити
+        <ion-button expand="block" class="select-psychologist-button" (click)="continueReserveWithSelectedDoctor()" [disabled]="!selectedPickerDoctorUserId">
+          {{ pickerMode === 'chat' ? 'Перейти в чат' : 'Продовжити' }}
         </ion-button>
       </ion-content>
     </ng-template>

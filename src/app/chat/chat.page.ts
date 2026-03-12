@@ -41,6 +41,7 @@ export class ChatPage implements OnInit {
   shouldAutoEnhanceOnOpen = false;
   selectedTaskFiles: File[] = [];
   private readonly lastWrittenPeerKey = 'chat_last_written_peer_user_id';
+  private hasInitializedChat = false;
 
   constructor(
     private chatService: ChatService,
@@ -60,6 +61,12 @@ export class ChatPage implements OnInit {
       const qpToUserId = Number(params.get('to_user_id'));
       this.pendingToUserId = Number.isFinite(qpToUserId) && qpToUserId > 0 ? qpToUserId : null;
       this.shouldAutoEnhanceOnOpen = !!(this.pendingHash || this.pendingType || this.pendingToUserId);
+
+      // Chat tab is cached in Ionic tabs, so ngOnInit may not rerun.
+      // Re-apply pending chat target on every navigation with explicit query params.
+      if (this.hasInitializedChat && this.shouldAutoEnhanceOnOpen) {
+        this.initChatAndLoad();
+      }
     });
 
     this.isLoggedIn = this.authService.isAuthenticated(); // Check login status on init
@@ -82,6 +89,7 @@ export class ChatPage implements OnInit {
   }
 
   private initChatAndLoad() {
+    this.hasInitializedChat = true;
     if (this.pendingHash) {
       this.chatService.initChatByHash(this.pendingHash, this.pendingType ?? undefined).subscribe({
         next: (data: any) => {
