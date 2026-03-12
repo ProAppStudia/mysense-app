@@ -9,23 +9,208 @@
     </button>
     <button class="register-button" (click)="openRegisterModal()">Реєстрація</button>
   </div>
-  <div class="main-content">
+  <div class="main-content" [class.main-content--doctor]="isDoctor()">
     <div *ngIf="isLoggedIn()" class="client-home-brief">
       <div class="client-home-brief__top">
-        <img class="client-home-brief__avatar" [src]="homeClientAvatarSrc" alt="Аватар">
+        <img *ngIf="!isDoctor()" class="client-home-brief__avatar" [src]="homeClientAvatarSrc" alt="Аватар">
         <div class="client-home-brief__title-wrap">
           <h2 class="client-home-brief__title">
             <span class="client-home-brief__name">{{ homeClientName() }}</span>, вітаємо!
           </h2>
         </div>
-        <button type="button" class="client-home-brief__edit-btn" (click)="openProfileEditor()" aria-label="Редагувати профіль">
+        <button *ngIf="!isDoctor()" type="button" class="client-home-brief__edit-btn" (click)="openProfileEditor()" aria-label="Редагувати профіль">
           <ion-icon class="client-home-brief__edit" name="create-outline"></ion-icon>
         </button>
+      </div>
+      <div *ngIf="isDoctor()" class="doctor-home-nav-wrap">
+        <div class="doctor-home-nav">
+        <button
+          type="button"
+          class="doctor-home-nav__btn"
+          [class.is-active]="doctorHomeTab() === 'clients'"
+          (click)="openDoctorHomeSection('clients')"
+        >
+          Мої клієнти
+        </button>
+        <button
+          type="button"
+          class="doctor-home-nav__btn"
+          [class.is-active]="doctorHomeTab() === 'sessions'"
+          (click)="openDoctorHomeSection('sessions')"
+        >
+          Мої сесії
+        </button>
+        <button
+          type="button"
+          class="doctor-home-nav__btn"
+          [class.is-active]="doctorHomeTab() === 'profile'"
+          (click)="openDoctorHomeSection('profile')"
+        >
+          Редагувати профіль
+        </button>
+        <button
+          type="button"
+          class="doctor-home-nav__btn"
+          [class.is-active]="doctorHomeTab() === 'stats'"
+          (click)="openDoctorHomeSection('stats')"
+        >
+          Моя статист
+        </button>
+        <button
+          type="button"
+          class="doctor-home-nav__btn"
+          [class.is-active]="doctorHomeTab() === 'schedule'"
+          (click)="openDoctorScheduleFromHome()"
+        >
+          Робочий графік
+        </button>
+        <button
+          type="button"
+          class="doctor-home-nav__btn doctor-home-nav__btn--logout"
+          (click)="logoutFromDoctorHome()"
+        >
+          Вийти
+        </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="isLoggedIn() && isDoctor() && doctorHomeTab() === 'clients'" class="doctor-home-chat">
+      <div class="psychologists-container" *ngIf="doctorChats.length > 0">
+        <button
+          type="button"
+          class="psychologist-card"
+          *ngFor="let chat of doctorChats"
+          [class.active]="chat === doctorSelectedChat"
+          (click)="selectDoctorClient(chat)"
+        >
+          <div class="psychologist-avatar">
+            <img [src]="chat.photo || 'assets/icon/favicon.png'" alt="{{ chat.fullname }}">
+          </div>
+          <div class="psychologist-text">{{ chat.fullname }}</div>
+        </button>
+      </div>
+
+      <div class="chat-actions" *ngIf="doctorSelectedChat">
+        <button
+          [class.active-action]="doctorActiveChatTab === 'chat'"
+          (click)="setDoctorChatTab('chat')"
+        >Чат</button>
+        <button
+          [class.active-action]="doctorActiveChatTab === 'tasks'"
+          (click)="setDoctorChatTab('tasks')"
+        >Завдання</button>
+        <button class="btn-reserve" (click)="openDoctorReserveFromHome()">Забронювати сесію</button>
+      </div>
+
+      <div class="message-list" *ngIf="doctorSelectedChat && doctorActiveChatTab === 'chat'">
+        <div
+          *ngFor="let message of doctorMessages"
+          class="message-item"
+          [class.my-message]="message.side === 'right'"
+        >
+          <div class="message-bubble">
+            <p>{{ message.text }}</p>
+            <span class="timestamp">{{ message.date }}</span>
+            <img
+              class="message-tail"
+              [src]="message.side === 'right' ? 'assets/icon/chat-polygon.svg' : 'assets/icon/chat-polygon-grey.svg'"
+              alt=""
+              aria-hidden="true"
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="tasks-list" *ngIf="doctorSelectedChat && doctorActiveChatTab === 'tasks'">
+        <div class="task-item" *ngFor="let task of doctorTasks">
+          <div class="task-content">
+            <div class="task-head">
+              <p class="task-text">{{ task.text }}</p>
+              <div class="task-actions">
+                <button type="button" class="task-edit" (click)="editDoctorTask(task)" aria-label="Редагувати завдання">
+                  <ion-icon name="create-outline"></ion-icon>
+                </button>
+                <button type="button" class="task-delete" (click)="deleteDoctorTask(task.id)" aria-label="Видалити завдання">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </button>
+              </div>
+            </div>
+            <span class="task-time">{{ task.date }}</span>
+            <div class="task-files" *ngIf="task.files?.length">
+              <button
+                type="button"
+                class="task-file-link"
+                *ngFor="let file of task.files"
+                (click)="openDoctorTaskFile(file.url)"
+              >
+                {{ file.name }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="tasks-empty" *ngIf="doctorTasks.length === 0">Поки що немає завдань</div>
+      </div>
+
+      <div class="doctor-home-fixed-composer" *ngIf="doctorSelectedChat">
+        <div class="write__message" *ngIf="doctorActiveChatTab === 'chat'">
+          <ion-textarea
+            [(ngModel)]="doctorNewMessage"
+            rows="2"
+            autoGrow="true"
+            placeholder="Напишіть ваше повідомлення"
+            (keydown.enter)="sendDoctorMessage(); $event.preventDefault()"
+          ></ion-textarea>
+          <button
+            type="button"
+            aria-label="Надіслати повідомлення"
+            (click)="sendDoctorMessage()"
+            [disabled]="doctorIsSending || !doctorNewMessage.trim()"
+          >
+            <img src="assets/icon/send_message_icon.svg" alt="Надіслати">
+          </button>
+        </div>
+
+        <div class="write__message tasks-write" *ngIf="doctorActiveChatTab === 'tasks'">
+          <input
+            #doctorTaskFileInput
+            type="file"
+            class="task-file-input"
+            (change)="onDoctorTaskFilesSelected($event)"
+            multiple
+          >
+          <button
+            type="button"
+            class="attach-btn"
+            aria-label="Додати файли"
+            (click)="doctorTaskFileInput.click()"
+            [disabled]="doctorIsSending"
+          >
+            <ion-icon name="attach-outline"></ion-icon>
+          </button>
+          <ion-input
+            [(ngModel)]="doctorNewMessage"
+            [placeholder]="doctorSelectedTaskFiles.length ? 'Файлів обрано: ' + doctorSelectedTaskFiles.length : 'Додати нове завдання'"
+            (keyup.enter)="sendDoctorTask()"
+          ></ion-input>
+          <button
+            type="button"
+            aria-label="Додати завдання"
+            (click)="sendDoctorTask()"
+            [disabled]="doctorIsSending || !doctorNewMessage.trim()"
+          >
+            <ion-icon name="add-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="doctor-home-chat__empty" *ngIf="doctorChats.length === 0">
+        У вас ще немає чатів
       </div>
     </div>
 
     <!-- My Sessions Block -->
-    <div *ngIf="isLoggedIn() && hasAnyClientSession()" class="my-sessions-block">
+    <div *ngIf="isLoggedIn() && !isDoctor() && hasAnyClientSession()" class="my-sessions-block">
       <div class="sessions-header">
         <h2>Мої сесії</h2>
         <a (click)="viewAllSessions()">Дивитись всі</a>

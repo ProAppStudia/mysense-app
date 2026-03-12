@@ -10,14 +10,14 @@ import { DiaryEntryNormalized, DiaryService } from '../services/diary.service';
 import { environment } from '../../environments/environment'; // Import environment for base URL
 import { Subscription, interval } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, checkmarkDoneOutline, heart, checkmarkCircleOutline, walletOutline, copyOutline, createOutline, listOutline } from 'ionicons/icons';
+import { timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, checkmarkDoneOutline, heart, checkmarkCircleOutline, walletOutline, copyOutline, createOutline, listOutline, attachOutline, trashOutline } from 'ionicons/icons';
 import { Router, RouterLink, NavigationExtras } from '@angular/router';
 import { TestsBlockComponent } from '../components/tests-block/tests-block.component';
 import { PaymentFlowService, PaymentState } from '../services/payment-flow.service';
 import { NewsListItem, NewsService } from '../services/news.service';
 import { ChatService } from '../services/chat.service';
 
-addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, walletOutline, copyOutline, createOutline, listOutline });
+addIcons({ timeOutline, videocamOutline, personOutline, addCircleOutline, calendarOutline, chatbubblesOutline, searchOutline, peopleOutline, bookOutline, checkboxOutline, documentTextOutline, closeOutline, eyeOffOutline, eyeOutline, addOutline, arrowForwardOutline, walletOutline, copyOutline, createOutline, listOutline, attachOutline, trashOutline });
 register();
 
 interface Doctor {
@@ -139,6 +139,15 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   homeClientName = signal('Головний');
   homeClientBalance = signal(0);
   homeClientAvatar = signal('');
+  doctorHomeTab = signal<'clients' | 'sessions' | 'profile' | 'stats' | 'schedule'>('clients');
+  doctorChats: any[] = [];
+  doctorSelectedChat: any = null;
+  doctorMessages: any[] = [];
+  doctorTasks: any[] = [];
+  doctorActiveChatTab: 'chat' | 'tasks' = 'chat';
+  doctorNewMessage = '';
+  doctorIsSending = false;
+  doctorSelectedTaskFiles: File[] = [];
   hasSuccessfulClientSession = signal(false);
   hasAnyClientSession = signal(false);
   homeProfileEditorOpen = signal(false);
@@ -268,7 +277,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     private paymentFlowService: PaymentFlowService,
     private newsService: NewsService
   ) {
-      addIcons({calendarOutline,arrowForwardOutline,closeOutline,addCircleOutline,chatbubblesOutline,checkmarkCircleOutline,bookOutline});}
+      addIcons({createOutline,trashOutline,attachOutline,addOutline,calendarOutline,arrowForwardOutline,closeOutline,addCircleOutline,chatbubblesOutline,checkmarkCircleOutline,bookOutline});}
 
   ngOnInit() {
     this.getHomepageData();
@@ -628,6 +637,36 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
 
   viewAllSessions() {
     void this.router.navigate(['/sessions']);
+  }
+
+  openDoctorHomeSection(section: 'clients' | 'sessions' | 'profile' | 'stats') {
+    if (section === 'clients') {
+      this.doctorHomeTab.set('clients');
+      this.loadDoctorHomeChats();
+      return;
+    }
+
+    this.doctorHomeTab.set(section as 'sessions' | 'profile' | 'stats');
+    if (section === 'sessions') {
+      void this.router.navigate(['/sessions']);
+      return;
+    }
+    if (section === 'profile') {
+      void this.router.navigate(['/tabs/profile']);
+      return;
+    }
+    void this.router.navigate(['/tabs/doctor-stats']);
+  }
+
+  openDoctorScheduleFromHome() {
+    this.doctorHomeTab.set('schedule');
+    void this.router.navigate(['/tabs/doctor-work-schedule']);
+  }
+
+  logoutFromDoctorHome() {
+    this.authService.logout();
+    this.syncHomeAuthState();
+    void this.router.navigate(['/tabs/home']);
   }
 
   // Login Modal Methods
@@ -1022,6 +1061,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         this.applyHomeClientInfo(profile);
         const isDoctorProfile = !!(profile?.is_doctor === true || profile?.is_doctor === 1 || profile?.is_doctor === '1');
         this.isDoctor.set(isDoctorProfile);
+        this.doctorHomeTab.set('clients');
         if (!isDoctorProfile) {
           const currentUserId = Number(profile?.user_id) || 0;
           this.homeCurrentUserId = currentUserId;
@@ -1029,6 +1069,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         } else {
           this.homeCurrentUserId = Number(profile?.user_id) || 0;
           this.hasHomeTasks.set(false);
+          this.loadDoctorHomeChats();
         }
         this.loadHomeSessions();
       },
@@ -1092,6 +1133,10 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       this.userSessions = [];
       this.recentPsychologists = [];
       this.pickerPsychologists = [];
+      this.doctorChats = [];
+      this.doctorSelectedChat = null;
+      this.doctorMessages = [];
+      this.doctorTasks = [];
       this.hasAnyClientSession.set(false);
     }
   }
@@ -1171,6 +1216,9 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     this.loadUserRole();
+    if (this.isDoctor()) {
+      this.loadDoctorHomeChats();
+    }
   }
 
   openBookSession() {
@@ -1824,6 +1872,360 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     }
 
     return Array.from(unique.values());
+  }
+
+  private loadDoctorHomeChats() {
+    if (!this.isLoggedIn() || !this.isDoctor()) {
+      this.doctorChats = [];
+      this.doctorSelectedChat = null;
+      this.doctorMessages = [];
+      this.doctorTasks = [];
+      return;
+    }
+
+    this.chatService.getMyChats().subscribe({
+      next: (data: any) => {
+        this.doctorChats = this.extractDoctorChatsFromResponse(data);
+        if (!this.doctorChats.length) {
+          this.doctorSelectedChat = null;
+          this.doctorMessages = [];
+          this.doctorTasks = [];
+          return;
+        }
+
+        const currentPeerId = this.getDoctorPeerUserId(this.doctorSelectedChat);
+        const stillExists = this.doctorChats.find((chat) => this.getDoctorPeerUserId(chat) === currentPeerId);
+        this.selectDoctorClient(stillExists ?? this.doctorChats[0]);
+      },
+      error: () => {
+        this.doctorChats = [];
+        this.doctorSelectedChat = null;
+        this.doctorMessages = [];
+        this.doctorTasks = [];
+      }
+    });
+  }
+
+  private extractDoctorChatsFromResponse(data: any): any[] {
+    const candidates: any[] = [];
+    if (Array.isArray(data)) {
+      candidates.push(...data);
+    }
+
+    if (data && typeof data === 'object') {
+      const keys = ['chats', 'results', 'items', 'data', 'dialogs', 'users', 'list'];
+      for (const key of keys) {
+        const value = (data as any)[key];
+        if (Array.isArray(value)) {
+          candidates.push(...value);
+        }
+      }
+      if (Array.isArray((data as any).result)) {
+        candidates.push(...(data as any).result);
+      }
+    }
+
+    return candidates
+      .filter((item) => item && typeof item === 'object')
+      .map((chat: any) => ({
+        ...chat,
+        fullname:
+          String(chat.fullname ?? chat.name ?? chat.username ?? chat.firstname ?? chat.title ?? '').trim() ||
+          'Користувач',
+        photo: this.normalizePhoto(String(chat.img ?? chat.photo ?? chat.avatar ?? chat.image ?? '')),
+        from_user_id: Number(chat.from_user_id ?? chat.user_id_from ?? chat.sender_id ?? chat.from_id ?? 0) || undefined,
+        to_user_id: Number(chat.to_user_id ?? chat.user_id_to ?? chat.receiver_id ?? chat.to_id ?? 0) || undefined,
+        user_id: Number(chat.user_id ?? chat.peer_user_id ?? chat.id ?? 0) || undefined
+      }));
+  }
+
+  selectDoctorClient(chat: any) {
+    if (!chat) {
+      return;
+    }
+    this.doctorSelectedChat = chat;
+    this.doctorNewMessage = '';
+    this.doctorActiveChatTab = 'chat';
+    this.doctorSelectedTaskFiles = [];
+    this.loadDoctorMessages();
+    this.loadDoctorTasks();
+  }
+
+  setDoctorChatTab(tab: 'chat' | 'tasks') {
+    this.doctorActiveChatTab = tab;
+    if (tab === 'tasks') {
+      this.loadDoctorTasks();
+    }
+  }
+
+  private getDoctorPeerUserId(chat: any): number {
+    if (!chat) {
+      return 0;
+    }
+    const candidates = [
+      Number(chat.from_user_id),
+      Number(chat.to_user_id),
+      Number(chat.user_id)
+    ].filter((value) => Number.isFinite(value) && value > 0);
+    if (!candidates.length) {
+      return 0;
+    }
+    if (this.homeCurrentUserId > 0) {
+      const peerId = candidates.find((id) => id !== this.homeCurrentUserId);
+      if (peerId) {
+        return peerId;
+      }
+    }
+    return candidates[0];
+  }
+
+  private loadDoctorMessages() {
+    const peerId = this.getDoctorPeerUserId(this.doctorSelectedChat);
+    if (!peerId) {
+      this.doctorMessages = [];
+      return;
+    }
+    this.chatService.getChatMessages(peerId).subscribe({
+      next: (data: any) => {
+        this.doctorMessages = Array.isArray(data?.messages) ? data.messages : [];
+      },
+      error: () => {
+        this.doctorMessages = [];
+      }
+    });
+  }
+
+  private loadDoctorTasks() {
+    const peerId = this.getDoctorPeerUserId(this.doctorSelectedChat);
+    if (!peerId) {
+      this.doctorTasks = [];
+      return;
+    }
+    this.chatService.getMyTasks(peerId).subscribe({
+      next: (data: any) => {
+        this.doctorTasks = Array.isArray(data?.tasks) ? data.tasks : [];
+      },
+      error: () => {
+        this.doctorTasks = [];
+      }
+    });
+  }
+
+  async sendDoctorMessage() {
+    const text = String(this.doctorNewMessage || '').trim();
+    const peerId = this.getDoctorPeerUserId(this.doctorSelectedChat);
+    if (!text || !peerId || this.doctorIsSending) {
+      return;
+    }
+    this.doctorIsSending = true;
+    const result = await this.chatService.sendChatMessage(peerId, text);
+    if (result.ok) {
+      this.doctorNewMessage = '';
+      this.loadDoctorMessages();
+      this.loadDoctorHomeChats();
+    }
+    this.doctorIsSending = false;
+  }
+
+  sendDoctorTask() {
+    const text = String(this.doctorNewMessage || '').trim();
+    const peerId = this.getDoctorPeerUserId(this.doctorSelectedChat);
+    if (!text || !peerId || this.doctorIsSending) {
+      return;
+    }
+    this.doctorIsSending = true;
+    this.uploadDoctorFilesForTask().then((uploadedFiles) => {
+      this.chatService.createTask(peerId, text, uploadedFiles).subscribe({
+        next: (resp: any) => {
+          this.doctorIsSending = false;
+          if (resp?.error) {
+            return;
+          }
+          this.doctorNewMessage = '';
+          this.doctorSelectedTaskFiles = [];
+          this.loadDoctorTasks();
+        },
+        error: () => {
+          this.doctorIsSending = false;
+        }
+      });
+    }).catch(() => {
+      this.doctorIsSending = false;
+    });
+  }
+
+  onDoctorTaskFilesSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.doctorSelectedTaskFiles = Array.from(input?.files ?? []);
+  }
+
+  private async uploadDoctorFilesForTask(): Promise<Array<{ name: string; path: string }>> {
+    if (!this.doctorSelectedTaskFiles.length) {
+      return [];
+    }
+
+    return new Promise((resolve, reject) => {
+      this.chatService.uploadTaskFiles(this.doctorSelectedTaskFiles).subscribe({
+        next: (resp: any) => {
+          const uploaded = Array.isArray(resp?.files)
+            ? resp.files
+                .filter((file: any) => file?.status === 'ok' && !!file?.path)
+                .map((file: any) => ({
+                  name: String(file?.filename ?? file?.name ?? ''),
+                  path: String(file?.path ?? '')
+                }))
+            : [];
+
+          if (!uploaded.length) {
+            reject(new Error('Files upload failed or empty response'));
+            return;
+          }
+
+          resolve(uploaded);
+        },
+        error: (error) => reject(error)
+      });
+    });
+  }
+
+  deleteDoctorTask(taskId: number) {
+    if (!taskId) {
+      return;
+    }
+
+    const ok = window.confirm('Видалити це завдання?');
+    if (!ok) {
+      return;
+    }
+
+    this.chatService.deleteTask(taskId).subscribe({
+      next: (resp: any) => {
+        if (resp?.error) {
+          window.alert(resp.error);
+          return;
+        }
+        this.loadDoctorTasks();
+      },
+      error: () => {
+        window.alert('Не вдалося видалити завдання');
+      }
+    });
+  }
+
+  editDoctorTask(task: any) {
+    if (!task?.id || !this.doctorSelectedChat || this.doctorIsSending) {
+      return;
+    }
+
+    const currentText = String(task?.text ?? '').trim();
+    const updatedText = window.prompt('Редагувати завдання', currentText)?.trim() ?? '';
+
+    if (!updatedText || updatedText === currentText) {
+      return;
+    }
+
+    const toUserId = this.getDoctorPeerUserId(this.doctorSelectedChat);
+    if (!toUserId) {
+      return;
+    }
+
+    const existingFiles = this.mapDoctorTaskFilesToUploadPayload(task?.files);
+    this.doctorIsSending = true;
+
+    this.chatService.deleteTask(task.id).subscribe({
+      next: (deleteResp: any) => {
+        if (deleteResp?.error) {
+          this.doctorIsSending = false;
+          return;
+        }
+
+        this.chatService.createTask(toUserId, updatedText, existingFiles).subscribe({
+          next: (createResp: any) => {
+            this.doctorIsSending = false;
+            if (createResp?.error) {
+              return;
+            }
+            this.loadDoctorTasks();
+          },
+          error: () => {
+            this.doctorIsSending = false;
+          }
+        });
+      },
+      error: () => {
+        this.doctorIsSending = false;
+      }
+    });
+  }
+
+  openDoctorTaskFile(url: string) {
+    if (!url) {
+      return;
+    }
+    window.open(url, '_blank');
+  }
+
+  private mapDoctorTaskFilesToUploadPayload(files: any[]): Array<{ name: string; path: string }> {
+    if (!Array.isArray(files)) {
+      return [];
+    }
+
+    return files
+      .map((file) => {
+        const name = String(file?.name ?? '').trim();
+        const path = this.extractDoctorPathFromFile(file);
+        if (!name || !path) {
+          return null;
+        }
+        return { name, path };
+      })
+      .filter((item): item is { name: string; path: string } => !!item);
+  }
+
+  private extractDoctorPathFromFile(file: any): string {
+    if (typeof file?.path === 'string' && file.path.trim()) {
+      return file.path.trim();
+    }
+
+    const rawUrl = String(file?.url ?? '').trim();
+    if (!rawUrl) {
+      return '';
+    }
+
+    try {
+      const parsed = new URL(rawUrl);
+      return parsed.pathname || '';
+    } catch {
+      if (rawUrl.startsWith('/')) {
+        return rawUrl;
+      }
+      return '';
+    }
+  }
+
+  openDoctorReserveFromHome() {
+    const peerId = this.getDoctorPeerUserId(this.doctorSelectedChat);
+    if (!peerId) {
+      return;
+    }
+
+    const queryParams: Record<string, string | number> = {
+      to_user_id: peerId,
+      doctor_user_id: Number(this.doctorSelectedChat?.doctor_user_id ?? peerId),
+      target_name: String(this.doctorSelectedChat?.fullname ?? '').trim(),
+      target_photo: String(this.doctorSelectedChat?.photo ?? '').trim()
+    };
+
+    const doctorId = Number(this.doctorSelectedChat?.doctor_id ?? 0);
+    if (doctorId > 0) {
+      queryParams['doctor_id'] = doctorId;
+    }
+    const hash = String(this.doctorSelectedChat?.hash ?? this.doctorSelectedChat?.doctor_hash ?? this.doctorSelectedChat?.chat_hash ?? '').trim();
+    if (hash) {
+      queryParams['hash'] = hash;
+    }
+
+    void this.router.navigate(['/tabs/session-request'], { queryParams });
   }
 
   private resolvePeerUserIdFromChat(chat: any): number {

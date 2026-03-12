@@ -11,6 +11,20 @@ ion-content {
   gap: 30px;
 }
 
+.main-content--doctor {
+  align-items: stretch;
+  max-width: none;
+  width: 100%;
+  gap: 16px;
+  text-align: left;
+}
+
+.main-content--doctor .client-home-brief,
+.main-content--doctor .doctor-home-chat {
+  max-width: none;
+  width: 100%;
+}
+
 .client-home-brief {
   width: 100%;
   max-width: 500px;
@@ -67,6 +81,370 @@ ion-content {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+}
+
+.doctor-home-nav-wrap {
+  margin-top: 14px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.doctor-home-nav {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 8px;
+  min-width: max-content;
+}
+
+.doctor-home-nav__btn {
+  border: 1px solid #d9d2f7;
+  background: #fff;
+  color: #2f264d;
+  border-radius: 10px;
+  padding: 10px 12px;
+  min-width: 108px;
+  font-size: 14px;
+  line-height: 1.15;
+  font-weight: 500;
+  text-align: left;
+}
+
+.doctor-home-nav__btn.is-active {
+  background: #ece8ff;
+  border-color: #ece8ff;
+  color: #5f42c5;
+}
+
+.doctor-home-nav__btn--logout {
+  color: #f05286;
+}
+
+.doctor-home-chat {
+  width: 100%;
+  max-width: 500px;
+  
+  
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: clamp(420px, calc(100vh - 320px), 760px);
+  text-align: left;
+}
+
+.doctor-home-chat__empty {
+  margin-top: 14px;
+  color: #77708e;
+  text-align: center;
+}
+
+.doctor-home-chat .message-list,
+.doctor-home-chat .tasks-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.doctor-home-fixed-composer {
+  margin-top: 0;
+  background: #fff;
+  border-top: 1px solid rgba(227, 225, 229, 1);
+  padding: 4px 0 calc(6px + env(safe-area-inset-bottom));
+}
+
+.doctor-home-chat .psychologists-container {
+  display: flex;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.doctor-home-chat .psychologist-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8px;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  min-width: 180px;
+  border: 2px solid transparent;
+}
+
+.doctor-home-chat .psychologist-card.active {
+  border-color: #795bda;
+}
+
+.doctor-home-chat .psychologist-avatar {
+  width: 48px;
+  height: 48px;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.doctor-home-chat .psychologist-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.doctor-home-chat .psychologist-text {
+  font-size: 12px;
+  color: #2f264d;
+  line-height: 1.15;
+  text-align: left;
+}
+.doctor-home-chat .psychologist-card.active .psychologist-text {
+   
+    color: #795bda;
+}
+.doctor-home-chat .chat-actions {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  gap: 10px;
+  background: #fff;
+  
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
+  border-bottom: 1px solid rgba(227, 225, 229, 1);
+}
+
+.doctor-home-chat .chat-actions button {
+  flex: 1;
+  border: 1px solid #795bda;
+  padding: 5px 10px;
+  font-size: 12px;
+  color: #795bda;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.doctor-home-chat .chat-actions button.active-action {
+  background: var(--ion-color-primary);
+  color: #fff;
+}
+
+.doctor-home-chat .chat-actions .btn-reserve {
+  color: rgba(255, 92, 141, 1);
+}
+
+.doctor-home-chat .message-list {
+  padding: 15px 20px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #fff;
+  
+}
+
+.doctor-home-chat .message-item {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.doctor-home-chat .message-item.my-message {
+  justify-content: flex-end;
+}
+
+.doctor-home-chat .message-bubble {
+  background: #f4f3f8;
+  padding: 10px 16px;
+  width: 80%;
+  font-size: 15px;
+  line-height: 1.2;
+  position: relative;
+  overflow: visible;
+  word-wrap: break-word;
+  border-radius: 8px 8px 8px 0;
+  color: #2f264d;
+}
+
+.doctor-home-chat .message-item.my-message .message-bubble {
+  border-radius: 8px 8px 0 8px;
+  background-color: var(--ion-color-primary);
+  color: #fff;
+}
+
+.doctor-home-chat .message-bubble p {
+  margin: 0;
+  text-align: left;
+}
+
+.doctor-home-chat .timestamp {
+  font-size: 10px;
+  display: block;
+  text-align: right;
+  margin-top: 8px;
+  font-weight: 500;
+  color: #9895a6;
+}
+
+.doctor-home-chat .message-item.my-message .timestamp {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.doctor-home-chat .message-tail {
+  position: absolute;
+  bottom: 0;
+  width: 10px;
+  height: 17px;
+  display: block;
+  pointer-events: none;
+  left: -10px;
+}
+
+.doctor-home-chat .message-item.my-message .message-tail {
+  left: auto;
+  right: -10px;
+}
+
+.doctor-home-chat .tasks-list {
+  padding: 15px 20px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #fff;
+  margin: 0 10px;
+}
+
+.doctor-home-chat .task-item {
+  background: #f4f3f8;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.doctor-home-chat .task-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.doctor-home-chat .task-text {
+  margin: 0;
+  font-size: 16px;
+  color: #2f264d;
+  font-weight: 600;
+  text-align: left;
+}
+
+.doctor-home-chat .task-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.doctor-home-chat .task-edit,
+.doctor-home-chat .task-delete {
+  border: 0;
+  background: transparent;
+  color: #9ba0ad;
+  padding: 0;
+  display: flex;
+}
+
+.doctor-home-chat .task-time {
+  display: block;
+  margin-top: 10px;
+  color: #9ba0ad;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.doctor-home-chat .task-files {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.doctor-home-chat .task-file-link {
+  border: 1px solid #d8d2f2;
+  background: #fff;
+  color: #6c54d1;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+.doctor-home-chat .tasks-empty {
+  text-align: center;
+  color: #9ba0ad;
+  padding: 28px 0;
+}
+
+.doctor-home-chat .write__message {
+  background: rgba(241, 237, 255, 1);
+  border-radius: 8px;
+  justify-content: space-between;
+  align-items: center;
+  margin: 4px 10px;
+  padding: 5px;
+  display: flex;
+  flex: 1;
+}
+
+.doctor-home-chat .write__message ion-textarea,
+.doctor-home-chat .write__message ion-input {
+  flex: 1;
+  --background: transparent;
+  --padding-start: 14px;
+  --padding-end: 10px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  --placeholder-color: #6f6f78;
+  --placeholder-opacity: 1;
+  color: #3f3f49;
+}
+
+.doctor-home-chat .write__message button {
+  background: #795bda;
+  border: none;
+  border-radius: 4px;
+  width: 56px;
+  min-width: 56px;
+  height: 44px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doctor-home-chat .write__message button:disabled {
+  opacity: 0.6;
+}
+
+.doctor-home-chat .write__message button img {
+  width: 20px;
+  height: 20px;
+}
+
+.doctor-home-chat .tasks-write .attach-btn {
+  background: #fff;
+  border: 1px solid #795bda;
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  padding: 0;
+  margin-right: 6px;
+}
+
+.doctor-home-chat .tasks-write .attach-btn ion-icon {
+  color: #795bda;
+  font-size: 22px;
+}
+
+.doctor-home-chat .tasks-write button:last-child {
+  width: 50px;
+  min-width: 50px;
+  height: 42px;
+}
+
+.doctor-home-chat .tasks-write button:last-child ion-icon {
+  color: #fff;
+  font-size: 26px;
 }
 
 .client-home-brief__bottom {
