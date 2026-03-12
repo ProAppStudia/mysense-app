@@ -149,19 +149,25 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   loginModalEnterAnimation = (baseEl: HTMLElement): Animation => {
     const root = baseEl.shadowRoot;
     const backdrop = root?.querySelector('ion-backdrop');
-    const wrapper = root?.querySelector('.modal-wrapper');
+    const wrapper = root?.querySelector('.modal-wrapper, .ion-overlay-wrapper');
 
-    const backdropAnimation = createAnimation()
-      .addElement(backdrop as any)
-      .fromTo('opacity', '0', '1');
+    const backdropAnimation = createAnimation();
+    if (backdrop) {
+      backdropAnimation
+        .addElement(backdrop as any)
+        .fromTo('opacity', '0', '1');
+    }
 
-    const wrapperAnimation = createAnimation()
-      .addElement(wrapper as any)
-      .beforeStyles({ opacity: '1' })
-      .keyframes([
-        { offset: 0, opacity: '0', transform: 'scale(0.98)' },
-        { offset: 1, opacity: '1', transform: 'scale(1)' }
-      ]);
+    const wrapperAnimation = createAnimation();
+    if (wrapper) {
+      wrapperAnimation
+        .addElement(wrapper as any)
+        .beforeStyles({ opacity: '1' })
+        .keyframes([
+          { offset: 0, opacity: '0', transform: 'scale(0.98)' },
+          { offset: 1, opacity: '1', transform: 'scale(1)' }
+        ]);
+    }
 
     return createAnimation()
       .addElement(baseEl)
@@ -173,19 +179,25 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   loginModalLeaveAnimation = (baseEl: HTMLElement): Animation => {
     const root = baseEl.shadowRoot;
     const backdrop = root?.querySelector('ion-backdrop');
-    const wrapper = root?.querySelector('.modal-wrapper');
+    const wrapper = root?.querySelector('.modal-wrapper, .ion-overlay-wrapper');
 
-    const backdropAnimation = createAnimation()
-      .addElement(backdrop as any)
-      .fromTo('opacity', '1', '0');
+    const backdropAnimation = createAnimation();
+    if (backdrop) {
+      backdropAnimation
+        .addElement(backdrop as any)
+        .fromTo('opacity', '1', '0');
+    }
 
-    const wrapperAnimation = createAnimation()
-      .addElement(wrapper as any)
-      .beforeStyles({ opacity: '1' })
-      .keyframes([
-        { offset: 0, opacity: '1', transform: 'scale(1)' },
-        { offset: 1, opacity: '0', transform: 'scale(0.98)' }
-      ]);
+    const wrapperAnimation = createAnimation();
+    if (wrapper) {
+      wrapperAnimation
+        .addElement(wrapper as any)
+        .beforeStyles({ opacity: '1' })
+        .keyframes([
+          { offset: 0, opacity: '1', transform: 'scale(1)' },
+          { offset: 1, opacity: '0', transform: 'scale(0.98)' }
+        ]);
+    }
 
     return createAnimation()
       .addElement(baseEl)
@@ -667,6 +679,9 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
           this.loading.set(false);
           if (response.success) {
             this.isLoggedIn.set(true);
+            this.getHomepageData(true);
+            this.loadHomeNews(true);
+            this.refreshDiaryState();
             this.loadUserRole();
             this.closeLoginModal();
           } else {
@@ -825,6 +840,9 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
           this.registerForm.get('code')?.setValue(''); // Clear code field for new input
         } else if (response.stage === 'done') {
           this.isLoggedIn.set(true);
+          this.getHomepageData(true);
+          this.loadHomeNews(true);
+          this.refreshDiaryState();
           this.loadUserRole();
           this.closeRegisterModal();
         } else if (response.stage === 'error') {

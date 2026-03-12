@@ -43,7 +43,6 @@ export class TherapistProfilePage implements OnInit {
   selectedTime: number | null = null;
   isOpeningChat = false;
   descriptionParagraphs: string[] = [];
-  private interactionRecoveryTimers: Array<ReturnType<typeof setTimeout>> = [];
   
   constructor(
     private route: ActivatedRoute,
@@ -51,8 +50,7 @@ export class TherapistProfilePage implements OnInit {
     private chatService: ChatService,
     private location: Location, // Inject Location service
     private router: Router, // Inject Router
-    private navCtrl: NavController,
-    private hostEl: ElementRef<HTMLElement>
+    private navCtrl: NavController
   ) {
     addIcons({ calendarOutline, chatbubbleEllipsesOutline, arrowBackOutline }); // Add arrowBackOutline
   }
@@ -96,10 +94,6 @@ export class TherapistProfilePage implements OnInit {
         });
       }
     });
-  }
-
-  ionViewDidEnter() {
-    this.scheduleInteractionRecovery();
   }
 
   isDoctorCardView(doctor: any): doctor is DoctorCardView {
@@ -451,64 +445,6 @@ export class TherapistProfilePage implements OnInit {
 
     const targetTop = Math.max((bookingEl.offsetTop || 0) - 16, 0);
     this.content?.scrollToPoint(0, targetTop, 450);
-  }
-
-  private restoreIosInteractionLayer(): void {
-    // iOS workaround: after auth/navigation transitions an inert/hidden layer
-    // may remain and swallow all clicks on this page.
-    const active = document.activeElement as HTMLElement | null;
-    active?.blur?.();
-
-    const host = this.hostEl.nativeElement;
-    host.removeAttribute('inert');
-    host.removeAttribute('aria-hidden');
-    host.classList.remove('ion-page-hidden', 'ion-page-invisible');
-    host.style.pointerEvents = 'auto';
-
-    const outlet = document.querySelector('ion-router-outlet') as HTMLElement | null;
-    if (outlet) {
-      outlet.removeAttribute('inert');
-      outlet.removeAttribute('aria-hidden');
-      outlet.style.pointerEvents = 'auto';
-    }
-
-    const pageEl = host.closest('.ion-page') as HTMLElement | null;
-    if (pageEl) {
-      pageEl.removeAttribute('inert');
-      pageEl.removeAttribute('aria-hidden');
-      pageEl.classList.remove('ion-page-hidden', 'ion-page-invisible');
-      pageEl.style.pointerEvents = 'auto';
-    }
-
-    // If any stale overlay was left mounted, close it without controller DI.
-    const overlays = Array.from(document.querySelectorAll('ion-modal, ion-popover')) as any[];
-    for (const overlay of overlays) {
-      try {
-        if (typeof overlay.dismiss === 'function') {
-          overlay.dismiss();
-        }
-      } catch {}
-    }
-  }
-
-  private scheduleInteractionRecovery(): void {
-    this.clearInteractionRecoveryTimers();
-    const delays = [0, 60, 180, 360, 700];
-    for (const delay of delays) {
-      const timer = setTimeout(() => this.restoreIosInteractionLayer(), delay);
-      this.interactionRecoveryTimers.push(timer);
-    }
-  }
-
-  private clearInteractionRecoveryTimers(): void {
-    for (const timer of this.interactionRecoveryTimers) {
-      clearTimeout(timer);
-    }
-    this.interactionRecoveryTimers = [];
-  }
-
-  ngOnDestroy(): void {
-    this.clearInteractionRecoveryTimers();
   }
 
 }

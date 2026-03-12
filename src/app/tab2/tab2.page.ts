@@ -44,6 +44,11 @@ export class Tab2Page implements OnInit {
     addIcons({ filterCircleOutline, swapVerticalOutline, arrowUpOutline, arrowDownOutline, closeOutline, filterOutline, searchOutline });
   }
 
+  private restoreRouterInteractionState(): void {
+    const activeElement = document.activeElement as HTMLElement | null;
+    activeElement?.blur?.();
+  }
+
   ngOnInit() {
     this.loadDoctors(this.currentFilters); // Load doctors initially with stored filters
 
@@ -105,6 +110,7 @@ export class Tab2Page implements OnInit {
     await popover.present();
 
     const { data } = await popover.onWillDismiss();
+    this.restoreRouterInteractionState();
     if (data) {
       this.sortDoctorsByPrice(data);
     }
@@ -129,8 +135,25 @@ export class Tab2Page implements OnInit {
     });
   }
 
-  goToProfile(doctorId: number | string) {
-    this.router.navigate(['/tabs/therapist-profile', doctorId]);
+  private async cleanupStaleOverlaysBeforeNav(): Promise<void> {
+    try {
+      const topModal = await this.modalController.getTop();
+      if (topModal) {
+        await topModal.dismiss();
+      }
+    } catch {}
+
+    try {
+      const topPopover = await this.popoverController.getTop();
+      if (topPopover) {
+        await topPopover.dismiss();
+      }
+    } catch {}
+  }
+
+  async goToProfile(doctorId: number | string) {
+    await this.cleanupStaleOverlaysBeforeNav();
+    await this.router.navigate(['/tabs/therapist-profile', doctorId]);
   }
   
   isDoctorCardView(doctor: DoctorCardView | { error: string }): doctor is DoctorCardView {
@@ -158,12 +181,12 @@ export class Tab2Page implements OnInit {
         formats: this.formats, // Pass the formats data
         genders: this.genders, // Pass the genders data
         initialFilters: this.currentFilters // Pass the currently applied filters
-      },
-      presentingElement: document.querySelector('ion-router-outlet') || undefined
+      }
     });
     await modal.present();
 
     const { data } = await modal.onWillDismiss();
+    this.restoreRouterInteractionState();
     if (data) {
       if (data.reset) {
         this.currentFilters = {}; // Reset stored filters

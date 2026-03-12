@@ -9,8 +9,8 @@
     </button>
     <button class="register-button" (click)="openRegisterModal()">Реєстрація</button>
   </div>
-  <div class="main-content" *ngIf="homepageData">
-    <div *ngIf="isLoggedIn() && !isDoctor()" class="client-home-brief">
+  <div class="main-content">
+    <div *ngIf="isLoggedIn()" class="client-home-brief">
       <div class="client-home-brief__top">
         <img class="client-home-brief__avatar" [src]="homeClientAvatarSrc" alt="Аватар">
         <div class="client-home-brief__title-wrap">
@@ -25,7 +25,7 @@
     </div>
 
     <!-- My Sessions Block -->
-    <div *ngIf="isLoggedIn() && !isDoctor() && hasAnyClientSession()" class="my-sessions-block">
+    <div *ngIf="isLoggedIn() && hasAnyClientSession()" class="my-sessions-block">
       <div class="sessions-header">
         <h2>Мої сесії</h2>
         <a (click)="viewAllSessions()">Дивитись всі</a>
@@ -77,7 +77,7 @@
       <ng-template #homeSessionsEmpty>
         <p class="home-sessions-empty">У вас поки немає запланованих сесій.</p>
       </ng-template>
-      <ion-button expand="block" class="book-session-button" (click)="openBookSession()">
+      <ion-button *ngIf="!isDoctor()" expand="block" class="book-session-button" (click)="openBookSession()">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
         Забронювати сесію
       </ion-button>
@@ -100,7 +100,7 @@
 
    
 
-    <div *ngIf="showClientPromoContent()" class="section-1-block">
+    <div *ngIf="homepageData && showClientPromoContent()" class="section-1-block">
       <h1 class="main-title">{{ homepageData.section_1.heading }}</h1>
       <p class="description-text">{{ homepageData.section_1.sub_heading }}</p>
       <p class="banner__description__for" *ngIf="bannerDescriptionItems.length > 0; else bannerDescriptionFallback">
@@ -124,7 +124,7 @@
       </div>
     </div>
 
-    <section *ngIf="showClientPromoContent()" class="banner-features">
+    <section *ngIf="homepageData && showClientPromoContent()" class="banner-features">
       <div class="banner-features__inner">
         <div class="banner-feature">
           <img src="assets/icon/prei1.svg" alt="">
@@ -162,7 +162,7 @@
 
    
     <!-- How It Works Section -->
-    <div *ngIf="showClientPromoContent()" class="how-it-works-section how-start">
+    <div *ngIf="homepageData && showClientPromoContent()" class="how-it-works-section how-start">
       <h2>My Sense - це зручна і проста платформа</h2>
       <p class="how-it-works-description">Спробуйте і ви переконаєтеся в цьому самі</p>
       <swiper-container
@@ -234,7 +234,7 @@
         <button type="button" class="how-start__btn how-start__btn--next" (click)="slideNextHowItWorks()" aria-label="Наступний крок"></button>
       </div>
     </div>
-<div *ngIf="showClientPromoContent()" class="section-1-block psychologists-recommendation-block">
+<div *ngIf="homepageData && showClientPromoContent()" class="section-1-block psychologists-recommendation-block">
       <h2>Порекомендуємо психолога під ваш запит</h2>
       <swiper-container
         class="featured-doctors-swiper"
@@ -280,7 +280,7 @@
     </div>
 
     <!-- Section 3 -->
-    <div *ngIf="showClientPromoContent()" class="free-consultation-banner">
+    <div *ngIf="homepageData && showClientPromoContent()" class="free-consultation-banner">
       <span class="free-tag">це безкоштовно ;)</span>
       <h2 class="banner-title">{{ homepageData.section_3.heading_acquaintance }}</h2>
       <p class="banner-description">{{ homepageData.section_3.text_acquaintance }}</p>
@@ -288,7 +288,7 @@
     </div>
 
     <!-- Reviews Slider Section -->
-    <div *ngIf="showClientPromoContent()" class="reviews-container">
+    <div *ngIf="homepageData && showClientPromoContent()" class="reviews-container">
       <div class="reviews-slider-section">
         <h3>{{ homepageData.section_9.heading }}</h3>
         <div class="swiper-navigation-container">
@@ -314,7 +314,7 @@
     </div>
 
     <!-- Section 10 - Accordion for Questions and Answers -->
-    <div *ngIf="showClientPromoContent()" class="section-10">
+    <div *ngIf="homepageData && showClientPromoContent()" class="section-10">
       <h2>{{ homepageData.section_10.heading }}</h2>
       <ion-accordion-group>
         <ion-accordion *ngFor="let item of homepageData.section_10.items" value="{{ item.heading }}" toggleIcon="add-outline" toggleIconSlot="end">
@@ -333,7 +333,7 @@
     <app-tests-block></app-tests-block>
   </div>-->
     <!-- Section 11 -->
-    <div *ngIf="showClientPromoContent()" class="articles-container">
+    <div *ngIf="homepageData && showClientPromoContent()" class="articles-container">
       <div class="section-11">
         <div class="section-11__head">
           <h2>Поради наших психологів</h2>
@@ -381,9 +381,10 @@
   <ion-modal
     [isOpen]="loginOpen()"
     cssClass="auth-login-modal"
+    [backdropDismiss]="true"
     [enterAnimation]="loginModalEnterAnimation"
     [leaveAnimation]="loginModalLeaveAnimation"
-    (willDismiss)="closeLoginModal()">
+    (didDismiss)="closeLoginModal()">
     <ng-template>
       <div class="auth-login-modal__content">
         <div class="auth-login-modal__shell">
@@ -474,9 +475,10 @@
   <ion-modal
     [isOpen]="registerOpen()"
     cssClass="auth-register-modal"
+    [backdropDismiss]="true"
     [enterAnimation]="loginModalEnterAnimation"
     [leaveAnimation]="loginModalLeaveAnimation"
-    (willDismiss)="closeRegisterModal()">
+    (didDismiss)="closeRegisterModal()">
     <ng-template>
       <div class="auth-login-modal__content">
         <div class="auth-login-modal__shell">
