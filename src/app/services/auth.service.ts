@@ -342,6 +342,10 @@ export class AuthService {
     window.location.reload(); // Full page reload after logout
   }
 
+  clearSession(): void {
+    this.tokenStorage.clear();
+  }
+
   isAuthenticated(): boolean {
     return !!this.tokenStorage.getToken();
   }

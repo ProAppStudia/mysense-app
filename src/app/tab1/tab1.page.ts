@@ -136,9 +136,10 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   private homeNewsRateLimitedUntil = 0;
   private readonly homeDataCacheTtlMs = 30000;
   activeArticleSlide = 0;
-  homeClientName = signal('Головний');
+  homeClientName = signal('');
   homeClientBalance = signal(0);
   homeClientAvatar = signal('');
+  homeProfileReady = signal(false);
   doctorHomeTab = signal<'clients' | 'sessions' | 'profile' | 'stats' | 'schedule'>('clients');
   doctorChats: any[] = [];
   doctorSelectedChat: any = null;
@@ -283,6 +284,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
     this.getHomepageData();
     this.loadHomeNews();
     this.isLoggedIn.set(this.authService.isAuthenticated());
+    this.homeProfileReady.set(false);
     this.refreshDiaryState();
     if (this.isLoggedIn()) {
       this.loadUserRole();
@@ -1056,9 +1058,22 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadUserRole() {
+    this.homeProfileReady.set(false);
     this.authService.getProfile().subscribe({
       next: (profile) => {
+        const hasExplicitError = profile?.success === false || !!String(profile?.error || '').trim();
+        const hasIdentity =
+          Number(profile?.user_id) > 0 ||
+          !!String(profile?.firstname || '').trim() ||
+          !!String(profile?.fullname || '').trim() ||
+          !!String(profile?.email || '').trim() ||
+          !!String(profile?.phone || '').trim();
+
+        if (hasExplicitError || !hasIdentity) {
+          return;
+        }
         this.applyHomeClientInfo(profile);
+        this.homeProfileReady.set(true);
         const isDoctorProfile = !!(profile?.is_doctor === true || profile?.is_doctor === 1 || profile?.is_doctor === '1');
         this.isDoctor.set(isDoctorProfile);
         this.doctorHomeTab.set('clients');
@@ -1074,11 +1089,7 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
         this.loadHomeSessions();
       },
       error: () => {
-        this.isDoctor.set(false);
-        this.homeCurrentUserId = 0;
-        this.hasHomeTasks.set(false);
-        this.userSessions = [];
-        this.hasAnyClientSession.set(false);
+        this.homeProfileReady.set(false);
       }
     });
   }
@@ -1086,9 +1097,8 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   private applyHomeClientInfo(profile: any): void {
     const firstName = String(profile?.firstname || '').trim();
     const fullName = String(profile?.fullname || '').trim();
-    const fallback = 'Головний';
-    const name = firstName || (fullName ? fullName.split(/\s+/)[0] : fallback);
-    this.homeClientName.set(name || fallback);
+    const name = firstName || (fullName ? fullName.split(/\s+/)[0] : '');
+    this.homeClientName.set(name);
 
     const avatarRaw = String(profile?.avatar || profile?.photo || '').trim();
     this.homeClientAvatar.set(avatarRaw);
@@ -1127,18 +1137,25 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
   private syncHomeAuthState() {
     this.isLoggedIn.set(this.authService.isAuthenticated());
     if (!this.isLoggedIn()) {
-      this.isDoctor.set(false);
-      this.homeCurrentUserId = 0;
-      this.hasHomeTasks.set(false);
-      this.userSessions = [];
-      this.recentPsychologists = [];
-      this.pickerPsychologists = [];
-      this.doctorChats = [];
-      this.doctorSelectedChat = null;
-      this.doctorMessages = [];
-      this.doctorTasks = [];
-      this.hasAnyClientSession.set(false);
+      this.resetHomeUiState();
     }
+  }
+
+  private resetHomeUiState(): void {
+    this.isDoctor.set(false);
+    this.homeProfileReady.set(false);
+    this.homeClientName.set('');
+    this.homeClientAvatar.set('');
+    this.homeCurrentUserId = 0;
+    this.hasHomeTasks.set(false);
+    this.userSessions = [];
+    this.recentPsychologists = [];
+    this.pickerPsychologists = [];
+    this.doctorChats = [];
+    this.doctorSelectedChat = null;
+    this.doctorMessages = [];
+    this.doctorTasks = [];
+    this.hasAnyClientSession.set(false);
   }
 
   private loadHomeTasksPresence(currentUserId: number) {

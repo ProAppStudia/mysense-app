@@ -10,7 +10,7 @@
     <button class="register-button" (click)="openRegisterModal()">Реєстрація</button>
   </div>
   <div class="main-content" [class.main-content--doctor]="isDoctor()">
-    <div *ngIf="isLoggedIn()" class="client-home-brief">
+    <div *ngIf="isLoggedIn() && homeProfileReady()" class="client-home-brief">
       <div class="client-home-brief__top">
         <img *ngIf="!isDoctor()" class="client-home-brief__avatar" [src]="homeClientAvatarSrc" alt="Аватар">
         <div class="client-home-brief__title-wrap">
