@@ -71,13 +71,14 @@ export class SessionRequestPage implements OnInit {
   };
 
   readonly reserveTimeOptions = Array.from({ length: 17 }, (_, i) => i + 7);
-  readonly weekHourOptions = Array.from({ length: 13 }, (_, i) => i + 9); // 9:00 - 21:00
   weeks: Week[] = [];
   currentWeekIndex = 0;
   selectedDateTimeIso = '';
   doctorDatePickerOpen = false;
   doctorDateMinIso = '';
   private resolveSeq = 0;
+  availableSessionTypeOptions: Array<{ value: number; label: string }> = [];
+  availableFormatOptions: Array<{ value: 'online' | 'offline'; label: string }> = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -163,8 +164,11 @@ export class SessionRequestPage implements OnInit {
     return this.isDoctor ? 'Клієнт' : 'Психолог';
   }
 
-  get availableSessionTypes(): Array<{ value: number; label: string }> {
-    const doctor = this.doctor();
+  get selectedTypeLabel(): string {
+    return this.availableSessionTypeOptions.find((item) => item.value === Number(this.form.type))?.label || '';
+  }
+
+  private buildAvailableSessionTypes(doctor: DoctorCardView | null): Array<{ value: number; label: string }> {
     if (!doctor) {
       return [];
     }
@@ -204,8 +208,7 @@ export class SessionRequestPage implements OnInit {
     return options.sort((a, b) => a.value - b.value);
   }
 
-  get availableFormats(): Array<{ value: 'online' | 'offline'; label: string }> {
-    const doctor = this.doctor();
+  private buildAvailableFormats(doctor: DoctorCardView | null): Array<{ value: 'online' | 'offline'; label: string }> {
     if (!doctor) {
       return [];
     }
@@ -218,10 +221,6 @@ export class SessionRequestPage implements OnInit {
       options.push({ value: 'offline', label: 'Очно' });
     }
     return options;
-  }
-
-  get selectedTypeLabel(): string {
-    return this.availableSessionTypes.find((item) => item.value === Number(this.form.type))?.label || '';
   }
 
   get showPairOnlineRequestBlock(): boolean {
@@ -272,7 +271,7 @@ export class SessionRequestPage implements OnInit {
       this.error.set('Не вдалося визначити психолога для бронювання.');
       return;
     }
-    if (!this.availableSessionTypes.length || !this.availableFormats.length) {
+    if (!this.availableSessionTypeOptions.length || !this.availableFormatOptions.length) {
       this.error.set('Для цього психолога недоступні потрібні параметри сесії.');
       return;
     }
@@ -643,9 +642,7 @@ export class SessionRequestPage implements OnInit {
             return;
           }
 
-          this.doctor.set(result as DoctorCardView);
-          this.setupCalendarFromDoctor(result as DoctorCardView);
-          this.applyDefaultsByDoctor();
+          this.applyResolvedDoctor(result as DoctorCardView);
           this.loading.set(false);
         },
         error: () => {
@@ -672,9 +669,7 @@ export class SessionRequestPage implements OnInit {
             return;
           }
           if (!(result as any)?.error) {
-            this.doctor.set(result as DoctorCardView);
-            this.setupCalendarFromDoctor(result as DoctorCardView);
-            this.applyDefaultsByDoctor();
+            this.applyResolvedDoctor(result as DoctorCardView);
             this.loading.set(false);
             return;
           }
@@ -697,9 +692,7 @@ export class SessionRequestPage implements OnInit {
             return;
           }
           if (!(result as any)?.error) {
-            this.doctor.set(result as DoctorCardView);
-            this.setupCalendarFromDoctor(result as DoctorCardView);
-            this.applyDefaultsByDoctor();
+            this.applyResolvedDoctor(result as DoctorCardView);
             this.loading.set(false);
             return;
           }
@@ -747,6 +740,7 @@ export class SessionRequestPage implements OnInit {
         }
 
         this.doctor.set(found ?? null);
+        this.updateDoctorOptionState(found ?? null);
 
         // Directory list can contain a lightweight doctor object without full calendar.
         // If we have doctor id, reload full profile to get available slots.
@@ -758,10 +752,10 @@ export class SessionRequestPage implements OnInit {
                 return;
               }
               if (!(fullDoctor as any)?.error) {
-                this.doctor.set(fullDoctor as DoctorCardView);
-                this.setupCalendarFromDoctor(fullDoctor as DoctorCardView);
+                this.applyResolvedDoctor(fullDoctor as DoctorCardView);
               } else if (found) {
                 this.setupCalendarFromDoctor(found as DoctorCardView);
+                this.updateDoctorOptionState(found as DoctorCardView);
               }
               this.applyDefaultsByDoctor();
               this.loading.set(false);
@@ -772,6 +766,7 @@ export class SessionRequestPage implements OnInit {
               }
               if (found) {
                 this.setupCalendarFromDoctor(found as DoctorCardView);
+                this.updateDoctorOptionState(found as DoctorCardView);
               }
               this.applyDefaultsByDoctor();
               this.loading.set(false);
@@ -780,6 +775,7 @@ export class SessionRequestPage implements OnInit {
         } else {
           if (found) {
             this.setupCalendarFromDoctor(found as DoctorCardView);
+            this.updateDoctorOptionState(found as DoctorCardView);
           }
           this.applyDefaultsByDoctor();
           this.loading.set(false);
@@ -804,6 +800,7 @@ export class SessionRequestPage implements OnInit {
     this.error.set('');
     this.success.set('');
     this.doctor.set(null);
+    this.updateDoctorOptionState(null);
     this.weeks = [];
     this.currentWeekIndex = 0;
   }
@@ -813,8 +810,8 @@ export class SessionRequestPage implements OnInit {
   }
 
   private applyDefaultsByDoctor() {
-    const types = this.availableSessionTypes;
-    const formats = this.availableFormats;
+    const types = this.availableSessionTypeOptions;
+    const formats = this.availableFormatOptions;
 
     if (types.length > 0 && !types.some((item) => item.value === Number(this.form.type))) {
       this.form.type = types[0].value;
@@ -842,6 +839,18 @@ export class SessionRequestPage implements OnInit {
       this.form.date = '';
       this.form.time = 0;
     }
+  }
+
+  private updateDoctorOptionState(doctor: DoctorCardView | null): void {
+    this.availableSessionTypeOptions = this.buildAvailableSessionTypes(doctor);
+    this.availableFormatOptions = this.buildAvailableFormats(doctor);
+  }
+
+  private applyResolvedDoctor(doctor: DoctorCardView): void {
+    this.doctor.set(doctor);
+    this.updateDoctorOptionState(doctor);
+    this.setupCalendarFromDoctor(doctor);
+    this.applyDefaultsByDoctor();
   }
 
   private getDefaultDate(): string {
@@ -917,8 +926,12 @@ export class SessionRequestPage implements OnInit {
     return `${y}-${m}-${d}T${hh}:${mm}:00`;
   }
 
-  onClientSlotSelect(dayKey: string, hour: number) {
+  onClientSlotSelect(dayKey: string, slot: any) {
     if (this.showContactRequestBlock) {
+      return;
+    }
+
+    if (this.isSlotDisabled(slot)) {
       return;
     }
 
@@ -926,56 +939,31 @@ export class SessionRequestPage implements OnInit {
     if (!date) {
       return;
     }
-    if (!this.isHourAvailable(dayKey, hour)) {
-      return;
-    }
     this.form.date = date;
-    this.form.time = Number(hour);
+    this.form.time = Number(slot?.time ?? 0);
   }
 
-  isSelectedClientSlot(dayKey: string, hour: number): boolean {
+  isSelectedClientSlot(dayKey: string, slot: any): boolean {
     const date = this.resolveDayDate(dayKey);
-    return this.form.date === date && Number(this.form.time) === Number(hour);
+    return this.form.date === date && Number(this.form.time) === Number(slot?.time ?? 0);
   }
 
-  getAvailableSlotsForDay(dayKey: string): Array<{ time: number; disabled: boolean }> {
+  getDaySlots(dayKey: string): any[] {
     const week = this.currentWeek;
     if (!week || !week.days[dayKey]?.times) {
       return [];
     }
-    return week.days[dayKey].times.filter((slot: any) => {
-      const raw = slot?.disabled;
-      if (raw === true || raw === 1 || raw === '1') {
-        return false;
-      }
-      return true; // false / 0 / '0' / null / undefined => enabled
-    });
+    return Array.isArray(week.days[dayKey].times) ? week.days[dayKey].times : [];
   }
 
-  isHourAvailable(dayKey: string, hour: number): boolean {
-    const slots = this.getAvailableSlotsForDay(dayKey);
-    return slots.some((slot) => Number(slot.time) === Number(hour));
-  }
-
-  isHourBooked(dayKey: string, hour: number): boolean {
-    const week = this.currentWeek;
-    const slots = week?.days?.[dayKey]?.times;
-    if (!Array.isArray(slots)) {
-      return false;
-    }
-    const slot = slots.find((item: any) => Number(item?.time) === Number(hour));
-    if (!slot) {
-      return false;
-    }
-    const raw = (slot as any)?.disabled;
+  isSlotDisabled(slot: any): boolean {
+    const raw = slot?.disabled;
     return raw === true || raw === 1 || raw === '1';
   }
 
-  getHourLabel(dayKey: string, hour: number): string {
-    if (this.isHourAvailable(dayKey, hour)) {
-      return `${hour}:00`;
-    }
-    return '';
+  getSlotLabel(slot: any): string {
+    const hour = Number(slot?.time ?? 0);
+    return hour > 0 ? `${hour}:00` : '';
   }
 
   getDayLabel(dayKey: string): string {
@@ -1007,7 +995,7 @@ export class SessionRequestPage implements OnInit {
     }
     for (const dayKey of Object.keys(week.days)) {
       const date = this.resolveDayDate(dayKey);
-      const slots = this.getAvailableSlotsForDay(dayKey);
+      const slots = this.getDaySlots(dayKey).filter((slot) => !this.isSlotDisabled(slot));
       if (this.form.date === date && slots.some((slot) => Number(slot.time) === Number(this.form.time))) {
         return true;
       }
@@ -1100,6 +1088,16 @@ export class SessionRequestPage implements OnInit {
     }
     if (doctor.userId) {
       queryParams['to_user_id'] = Number(doctor.userId);
+      queryParams['doctor_user_id'] = Number(doctor.userId);
+    }
+    if (doctor.id) {
+      queryParams['doctor_id'] = Number(doctor.id);
+    }
+    if (doctor.fullName) {
+      queryParams['target_name'] = String(doctor.fullName).trim();
+    }
+    if (doctor.avatarUrl) {
+      queryParams['target_photo'] = String(doctor.avatarUrl).trim();
     }
     this.router.navigate(['/tabs/chat'], { queryParams });
   }

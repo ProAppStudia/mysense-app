@@ -22,13 +22,13 @@
       <p class="title">Оберіть тип сесії</p>
       <div
         class="buttons-row"
-        *ngIf="availableSessionTypes.length; else noTypes"
-        [style.grid-template-columns]="'repeat(' + availableSessionTypes.length + ', minmax(0, 1fr))'"
+        *ngIf="availableSessionTypeOptions.length; else noTypes"
+        [style.grid-template-columns]="'repeat(' + availableSessionTypeOptions.length + ', minmax(0, 1fr))'"
       >
         <button
           type="button"
           class="choice-btn"
-          *ngFor="let typeOpt of availableSessionTypes"
+          *ngFor="let typeOpt of availableSessionTypeOptions"
           [class.active]="isSessionTypeSelected(typeOpt.value)"
           (click)="onSessionTypeSelect(typeOpt.value)"
         >
@@ -44,13 +44,13 @@
       <p class="title">Оберіть формат сесії</p>
       <div
         class="buttons-row"
-        *ngIf="availableFormats.length; else noFormats"
-        [style.grid-template-columns]="'repeat(' + availableFormats.length + ', minmax(0, 1fr))'"
+        *ngIf="availableFormatOptions.length; else noFormats"
+        [style.grid-template-columns]="'repeat(' + availableFormatOptions.length + ', minmax(0, 1fr))'"
       >
         <button
           type="button"
           class="choice-btn"
-          *ngFor="let formatOpt of availableFormats"
+          *ngFor="let formatOpt of availableFormatOptions"
           [class.active]="form.format === formatOpt.value"
           (click)="onSessionFormatSelect(formatOpt.value)"
         >
@@ -96,16 +96,17 @@
                 <p>{{ getDayNumber(dayKey) }}</p>
               </div>
               <button
-                *ngFor="let hour of weekHourOptions"
+                *ngFor="let slot of getDaySlots(dayKey)"
                 type="button"
                 class="slot-btn"
-                [class.available]="isHourAvailable(dayKey, hour)"
-                [class.unavailable]="!isHourAvailable(dayKey, hour)"
-                [class.booked]="isHourBooked(dayKey, hour)"
-                [class.active]="isSelectedClientSlot(dayKey, hour)"
-                (click)="onClientSlotSelect(dayKey, hour)"
+                [class.available]="!isSlotDisabled(slot)"
+                [class.unavailable]="isSlotDisabled(slot)"
+                [class.booked]="isSlotDisabled(slot)"
+                [class.active]="isSelectedClientSlot(dayKey, slot)"
+                [disabled]="isSlotDisabled(slot)"
+                (click)="onClientSlotSelect(dayKey, slot)"
               >
-                {{ getHourLabel(dayKey, hour) }}
+                {{ getSlotLabel(slot) }}
               </button>
             </div>
           </div>
@@ -182,7 +183,7 @@
       class="submit-btn"
       (click)="submit()"
       *ngIf="!showContactRequestBlock || isDoctor"
-      [disabled]="loading() || !availableSessionTypes.length || !availableFormats.length || (isDoctor && !hasSelectedDoctorDateTime)"
+      [disabled]="loading() || !availableSessionTypeOptions.length || !availableFormatOptions.length || (isDoctor && !hasSelectedDoctorDateTime)"
     >
       {{ loading() ? 'Створення...' : (isDoctor ? 'Підтвердити' : 'Перейти до оплати') }}
     </button>
