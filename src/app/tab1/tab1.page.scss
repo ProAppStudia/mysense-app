@@ -1086,8 +1086,10 @@ ion-content {
   color: #333;
 }
 .section-10 h2 {
-  text-align: left;
-  font-weight: 500;
+ text-align: left;
+    font-weight: 400;
+    line-height: 110%;
+    color: #2f264d;
 }
 .doctor-list {
   display: flex;
@@ -1392,6 +1394,8 @@ button.rewiew-more {
 .psychologists-recommendation-block h2 {
   margin-bottom: 18px;
   margin-top: 0;
+  color: #2f264d;
+    font-weight: 400;
 }
 
 .psychologists-recommendation-block {
@@ -1523,7 +1527,7 @@ button.rewiew-more {
 .section-10 .ion-padding[slot="content"] {
   background-color: #fff;
   text-align: left;
-  color: #666;
+  color: #2f264d;
   padding: 16px; /* Consistent padding */
   box-sizing: border-box;
   --box-shadow: none;
